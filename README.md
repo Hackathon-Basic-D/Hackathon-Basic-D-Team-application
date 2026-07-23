@@ -40,7 +40,5 @@
 ### UI/UXにおいて意識した点
 
 ーーーーーーーーーーーーー
-だんだん分かってきた。思い出してきjjjjjjjjjjjjjlakjljljた
-
-
-dddddddddddddddddddddddddddddddddddddddddddddd
+テスト。git pullってコミット履歴をpullする。
+そのファイルを持ってくるわけではないってこと。
