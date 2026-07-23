@@ -40,4 +40,7 @@
 ### UI/UXにおいて意識した点
 
 ーーーーーーーーーーーーー
-だんだん分かってきた。思い出してきた
+だんだん分かってきた。思い出してきjjjjjjjjjjjjjlakjljljた
+
+
+dddddddddddddddddddddddddddddddddddddddddddddd
