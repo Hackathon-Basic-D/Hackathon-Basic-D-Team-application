@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ static('css/home.css') }}" />
+    <!-- キーだけテンプレートから渡す -->
+    <script>
+      window.GOOGLE_MAPS_API_KEY = "{{ GOOGLE_MAPS_API_KEY_FRONT }}";
+    </script>
+
+    <!-- 共有ローダー（全ページ共通） -->
+    <script src="{{ static('js/mapAPI-loader.js') }}"></script>
+
+    <!-- そのページ固有の地図描画JS -->
+    <script type="module" src="{{ static('js/home.js') }}"></script>
+
+    <title>ホーム | あやかしさんぽ</title>
+  </head>
+  <body>
+    <!-- 地図はこの要素の中に描画される -->
+    <div id="map"></div>
+  </body>
+</html>

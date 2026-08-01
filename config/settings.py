@@ -22,6 +22,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-svhmxr1n0n@%2wujd4!wz5=4q^)br&(fh=_z3o2bd-^r6x&18a'
+# GoogleMapのAPIキーを取得（# .envファイル⇒docker-compose.yml⇒ここ）
+GOOGLE_MAPS_API_KEY_FRONT = os.environ.get('GOOGLE_MAPS_API_KEY_FRONT', '') 
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -133,6 +135,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static'] # 追記
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
