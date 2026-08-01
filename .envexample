@@ -1,0 +1,4 @@
+MYSQL_ROOT_PASSWORD=rootpassword
+MYSQL_DATABASE=ayakashisanpo_db
+MYSQL_USER=django_user
+MYSQL_PASSWORD=django_password
