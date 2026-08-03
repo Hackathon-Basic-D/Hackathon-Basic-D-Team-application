@@ -4,13 +4,78 @@ from .models import User # models.pyからUserモデルをインポート
 # ユーザー管理機能で使用するフォームを定義
 # HTML側では {{ form.フィールド名 }} や {{ field }} で表示される
 
-class SignUpForm(forms.ModelForm):# 新規登録画面フォーム(ModelForm:DBに保存・更新するためのフォーム)
+PREFECTURE_CHOICES = [
+    ("Hokkaido", "北海道"),
+    ("Aomori", "青森県"),
+    ("Iwate", "岩手県"),
+    ("Miyagi", "宮城県"),
+    ("Akita", "秋田県"),
+    ("Yamagata", "山形県"),
+    ("Fukushima", "福島県"),
+    ("Ibaraki", "茨城県"),
+    ("Tochigi", "栃木県"),
+    ("Gunma", "群馬県"),
+    ("Saitama", "埼玉県"),
+    ("Chiba", "千葉県"),
+    ("Tokyo", "東京都"),
+    ("Kanagawa", "神奈川県"),
+    ("Niigata", "新潟県"),
+    ("Toyama", "富山県"),
+    ("Ishikawa", "石川県"),
+    ("Fukui", "福井県"),
+    ("Yamanashi", "山梨県"),
+    ("Nagano", "長野県"),
+    ("Gifu", "岐阜県"),
+    ("Shizuoka", "静岡県"),
+    ("Aichi", "愛知県"),
+    ("Mie", "三重県"),
+    ("Shiga", "滋賀県"),
+    ("Kyoto", "京都府"),
+    ("Osaka", "大阪府"),
+    ("Hyogo", "兵庫県"),
+    ("Nara", "奈良県"),
+    ("Wakayama", "和歌山県"),
+    ("Tottori", "鳥取県"),
+    ("Shimane", "島根県"),
+    ("Okayama", "岡山県"),
+    ("Hiroshima", "広島県"),
+    ("Yamaguchi", "山口県"),
+    ("Tokushima", "徳島県"),
+    ("Kagawa", "香川県"),
+    ("Ehime", "愛媛県"),
+    ("Kochi", "高知県"),
+    ("Fukuoka", "福岡県"),
+    ("Saga", "佐賀県"),
+    ("Nagasaki", "長崎県"),
+    ("Kumamoto", "熊本県"),
+    ("Oita", "大分県"),
+    ("Miyazaki", "宮崎県"),
+    ("Kagoshima", "鹿児島県"),
+    ("Okinawa", "沖縄県"),
+]
+
+# 新規登録画面フォーム(ModelForm:DBに保存・更新するためのフォーム)
+class SignUpForm(forms.ModelForm):
+
+    # Userモデルにはmain_areaフィールドはあるが、ChoiceFieldで都道府県を選択するようにするため、フォーム側で上書きする
+    main_area = forms.ChoiceField(
+        choices=PREFECTURE_CHOICES,
+        initial="Osaka",
+        widget=forms.Select(attrs={
+            "class": "form-select",
+        })
+    )
+
+    # Userモデルのpasswordを入力するためのフォーム項目
+    # 保存時にset_password()でハッシュ化してDBへ保存する
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
             "class": "form-control",
             "placeholder": "パスワードを入力"
         })
     )
+    
+    # Userモデルにはpassword_confirmフィールドはないので、フォーム側で定義する
     password_confirm = forms.CharField(
         widget=forms.PasswordInput(attrs={
             "class": "form-control",
@@ -20,7 +85,7 @@ class SignUpForm(forms.ModelForm):# 新規登録画面フォーム(ModelForm:DB�
 
     class Meta:
         model = User # models.pyのUserモデルを使用
-        fields = [
+        fields = [# 「Userモデルのこの3つのフィールドをフォームに表示してね」
             "user_name",
             "email",
             "main_area",
@@ -33,10 +98,6 @@ class SignUpForm(forms.ModelForm):# 新規登録画面フォーム(ModelForm:DB�
             "email": forms.EmailInput(attrs={
                 "class": "form-control",
                 "placeholder": "メールアドレスを入力"
-            }),
-            "main_area": forms.TextInput(attrs={
-                "class": "form-control",
-                "placeholder": "メインエリアを入力"
             }),
         }
 
@@ -67,11 +128,12 @@ class SignUpForm(forms.ModelForm):# 新規登録画面フォーム(ModelForm:DB�
 # commit=False にすることで、一旦DBへ保存せず Userオブジェクトだけ作成する
 # その後、set_password()でパスワードをハッシュ化し、最後にuser.save()でDBへ保存する
 
-class LoginForm(forms.Form):# ログイン画面フォーム(Form:入力を受け取るだけ＝views.pyがDBと照合する)
-    user_name = forms.CharField(
-        widget=forms.TextInput(attrs={
+# ログイン画面フォーム(Form:入力を受け取るだけ＝views.pyがDBと照合する)
+class LoginForm(forms.Form):
+    email = forms.CharField(
+        widget=forms.EmailInput(attrs={
             "class": "form-control",
-            "placeholder": "ユーザー名を入力"
+            "placeholder": "メールアドレスを入力"
         })
     )
 
@@ -82,5 +144,6 @@ class LoginForm(forms.Form):# ログイン画面フォーム(Form:入力を受�
         })
     )
 
-class UserEditForm(SignUpForm):# ユーザー情報編集画面フォーム(SignUpFormを継承) 
+# ユーザー情報編集画面フォーム(SignUpFormを継承) 
+class UserEditForm(SignUpForm):
     pass# SignUpFormをそのまま使います。追加なしです。passは空の処理を意味する。
