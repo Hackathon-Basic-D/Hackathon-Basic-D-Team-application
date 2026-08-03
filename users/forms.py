@@ -58,8 +58,9 @@ PREFECTURE_CHOICES = [
 class SignUpForm(forms.ModelForm):
 
     # Userモデルにはmain_areaフィールドはあるが、ChoiceFieldで都道府県を選択するようにするため、フォーム側で上書きする
-    main_area = forms.ChoiceField(
+    main_area = forms.ChoiceField(        
         choices=PREFECTURE_CHOICES,
+        label="メインエリア",
         initial="Osaka",
         widget=forms.Select(attrs={
             "class": "form-select",
@@ -69,6 +70,7 @@ class SignUpForm(forms.ModelForm):
     # Userモデルのpasswordを入力するためのフォーム項目
     # 保存時にset_password()でハッシュ化してDBへ保存する
     password = forms.CharField(
+        label="パスワード",
         widget=forms.PasswordInput(attrs={
             "class": "form-control",
             "placeholder": "パスワードを入力"
@@ -77,6 +79,7 @@ class SignUpForm(forms.ModelForm):
     
     # Userモデルにはpassword_confirmフィールドはないので、フォーム側で定義する
     password_confirm = forms.CharField(
+        label="パスワード（確認）",
         widget=forms.PasswordInput(attrs={
             "class": "form-control",
             "placeholder": "もう一度入力してください"
