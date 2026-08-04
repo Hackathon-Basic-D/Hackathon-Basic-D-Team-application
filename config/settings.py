@@ -56,18 +56,10 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.jinja2.Jinja2',
-        'DIRS': [BASE_DIR / 'templates'],
-        'APP_DIRS': False,
-        'OPTIONS': {
-            'environment': 'config.jinja2.environment',
-        },
-    },
-    {
+        {
         # Django管理画面は従来のDjangoテンプレートを使うため残す
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,6 +70,15 @@ TEMPLATES = [
             ],
         },
     },
+#    {
+#        'BACKEND': 'django.template.backends.jinja2.Jinja2',
+#        'DIRS': [],
+#        'APP_DIRS': False,
+#        'OPTIONS': {
+#            'environment': 'config.jinja2.environment',
+#        },
+#    },
+
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
@@ -133,6 +134,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
