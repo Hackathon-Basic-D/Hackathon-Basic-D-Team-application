@@ -92,7 +92,11 @@ function showSpot(spot, marker) {
     if (displayMode === "infowindow") {
         closeBottomSheet();     // ボトムシートは閉じておく
         // 吹き出しの中身を作る
-        infoWindow.setContent(`<strong>${spot.title}</strong><br>${spot.description}`);
+        infoWindow.setContent(`
+            <strong>${spot.title}</strong><br>
+            ${spot.description}<br>
+            <a href="${googleMapsDirUrl(spot)}" target="_blank" rel="noopener">ここへ行く（Googleマップ）</a>
+        `);
         // そのピンに吹き出しを開く
         infoWindow.open({ anchor: marker, map });
     } else {    // ボトムシートモードなら
@@ -126,6 +130,7 @@ function clearSelectedMarker() {
 function openBottomSheet(spot) {
     document.getElementById("bs-title").textContent = spot.title;       // タイトル欄に名前を入れる
     document.getElementById("bs-desc").textContent = spot.description;  // 説明欄に説明を入れる
+    document.getElementById("bs-nav").href = googleMapsDirUrl(spot);    // GoogleMapへのリンクを入れる
     document.getElementById("bottom-sheet").classList.add("open");      // openクラスを付けてせり上げる
 }
 // ボトムシートを閉じる
@@ -201,6 +206,11 @@ function setupLocateButton(AdvancedMarkerElement) {
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 } // 取得の設定：高精度・10秒で時間切れ・キャッシュ不可
         );
     });
+}
+
+// そのスポットへの徒歩ルートをGoogleマップで開くURLを作る
+function googleMapsDirUrl(spot) {
+    return `https://www.google.com/maps/dir/?api=1&destination=${spot.lat},${spot.lng}&travelmode=walking`;
 }
 
 // 最後に初期化を実行してページを立ち上げる
