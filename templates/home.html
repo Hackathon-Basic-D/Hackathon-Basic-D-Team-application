@@ -3,28 +3,46 @@
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
 
     <!-- CSS -->
     <link rel="stylesheet" href="{{ static('css/home.css') }}" />
+
     <!-- キーだけテンプレートから渡す -->
     <script>
-      window.GOOGLE_MAPS_API_KEY = "{{ GOOGLE_MAPS_API_KEY_FRONT }}";
+        window.GOOGLE_MAPS_API_KEY = "{{ GOOGLE_MAPS_API_KEY_FRONT }}";
     </script>
 
-    <!-- 共有ローダー（全ページ共通） -->
+    <!-- クラスタリング用ライブラリ（home.jsより前に） -->
+    <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+
+    <!-- 共有ローダー（全ページ共通）。Google Maps APIを読み込むローダー -->
     <script src="{{ static('js/mapAPI-loader.js') }}"></script>
 
-    <!-- そのページ固有の地図描画JS -->
+    <!-- そのページ固有の地図描画JS。type="module"なので他より後に実行される（ローダー準備後に動く）-->
     <script type="module" src="{{ static('js/home.js') }}"></script>
 
     <title>ホーム | あやかしさんぽ</title>
-  </head>
-  <body>
-    <!-- 地図はこの要素の中に描画される -->
-    <div id="map"></div>
-  </body>
+    </head>
+        <body>
+        <!-- 表示モード切替（地図に重ねる） -->
+        <div id="mode-switch">
+            <label><input type="radio" name="display-mode" value="infowindow" checked> InfoWindow</label>
+            <label><input type="radio" name="display-mode" value="bottomsheet"> ボトムシート</label>
+        </div>
+        <!-- 地図はこの要素の中に描画される -->
+        <div id="map"></div>
+        <!-- 現在位置取得ボタン -->
+        <button id="locate-btn" type="button" aria-label="現在地へ移動">📍</button>
+        <!-- ボトムシート -->
+        <!-- 下から出るパネル。初期はCSSで画面外に隠している -->
+        <div id="bottom-sheet">
+            <div id="bottom-sheet-handle"></div>
+            <button id="bs-close" type="button" aria-label="閉じる">×</button>
+            <h2 id="bs-title"></h2>
+            <p id="bs-desc"></p>
+            <a id="bs-nav" href="#" target="_blank" rel="noopener">ここへ行く（Googleマップ）</a>
+        </div>
+
+    </body>
 </html>
