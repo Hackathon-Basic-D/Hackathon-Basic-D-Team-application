@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}ユーザー登録{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <h2 class="mb-4">ユーザー登録</h2>
+
+    <form method="post">
+      {{ csrf_input }}
+      {% for field in form %}
+      <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label">
+                {{ field.label }}
+            </label>
+
+            {{ field }}
+
+            {% if field.errors %}
+                {% for error in field.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+      </div>
+      {% endfor %}
+
+
+      <button type="submit" class="btn btn-primary">登録する</button>
+      <a href="{{ url('users:login') }}" class="btn btn-outline-secondary"
+        >ログインへ</a
+      >
+    </form>
+  </div>
+</div>
+{% endblock %}
