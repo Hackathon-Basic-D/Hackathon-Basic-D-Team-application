@@ -11,20 +11,20 @@
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
           <ul class="navbar-nav">
             <li class="nav-item">
-                  <a class="nav-link" href="{{ url('settings') }}">設定</a>
+                  <a class="nav-link" href="{{ url('users:setting') }}">設定</a>
             </li>
             <!-- ログイン状態に応じて表示を切り替える(ログイン済みの場合)  -->
             {% if logged_in %}
             <li class="nav-item">
               <!-- バックでログアウト処理をしてログイン画面へ遷移 -->
               <!-- ログアウト処理を行うためのlogoutのURLが必要 -->
-              <a class="nav-link" href="{{ url('logout') }}">ログアウト</a>
+              <a class="nav-link" href="{{ url('users:logout') }}">ログアウト</a>
             </li>
             <!-- ログイン状態に応じて表示を切り替える(未ログインの場合)  -->
             {% else %}
             <li class="nav-item">
               <!-- そのままログイン画面へ遷移 -->
-              <a class="nav-link" href="{{ url('login') }}">ログイン</a>
+              <a class="nav-link" href="{{ url('users:login') }}">ログイン</a>
             </li>
             {% endif %}
           </ul>

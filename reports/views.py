@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Report, ReportComment
-from .forms import ReportForm
+# from .forms import ReportForm
 
 
 # ログイン済みかどうかチェック

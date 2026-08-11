@@ -2,3 +2,5 @@ MYSQL_ROOT_PASSWORD=test_root_password
 MYSQL_DATABASE=test_db
 MYSQL_USER=test_user
 MYSQL_PASSWORD=test_password
+GOOGLE_MAPS_API_KEY_FRONT=your_GoogleMapsAPIKey
+GOOGLE_MAPS_API_KEY_BACK=your_GoogleMapsAPIKey
