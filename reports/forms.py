@@ -18,10 +18,9 @@ class ReportForm(forms.ModelForm):
         model = Report # models.pyのReportモデルを使用
         fields = [# Reportモデルのこの2つのフィールドをフォームに表示してね
             "report_title",
-            "report_description",
-          
+            "report_description",       
         ]
-        widgets = {# HTML側で {{ field }} や {{ form.report_title }} を表示したときの見た目を設定"
+        widgets = {# HTML側で {{ field }} や {{ form.report_title }} を表示したときの見た目を設定
             "report_title": forms.TextInput(attrs={
                 "class": "form-control",
                 "placeholder": "レポートタイトルを入力"
@@ -39,7 +38,7 @@ class ReportCommentForm(forms.ModelForm):
         fields = [# ReportCommmentモデルのこの１つのフィールドをフォームに表示してね]
             "report_comment",
         ]
-        widgets = {"# HTML側で {{ field }} や {{ form.report_comment }} を表示したときの見た目を設定"
+        widgets = {# HTML側で {{ field }} や {{ form.report_comment }} を表示したときの見た目を設定
             "report_comment": forms.Textarea(attrs={
                 "class": "form-control",
                 "placeholder": "コメントを入力"
