@@ -37,8 +37,7 @@ def report_create(request):
     else:
         form = ReportForm() # GETなら空のフォームを表示
 
-    return render(request, 'reports/report_create.html', {'form': form})
-
+    return render(request, 'reports/report_form.html', {'form': form})
 
 # レポート詳細画面（未ログインでも閲覧可能）
 def report_detail(request, pk):
