@@ -44,7 +44,3 @@ class ReportCommentForm(forms.ModelForm):
                 "placeholder": "コメントを入力"
             }),
         }
-
-# レポート編集画面フォーム(RepotFormを継承) 
-class ReportEditForm(ReportForm):
-    pass# RepottFormをそのまま使います。追加なしです。passは空の処理を意味する。
