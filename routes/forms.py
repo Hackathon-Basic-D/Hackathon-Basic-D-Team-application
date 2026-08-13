@@ -12,11 +12,11 @@ class RouteForm(forms.ModelForm):
             ]
 
         widgets = {
-            "route_title": forms.TextInput(attars={
+            "route_title": forms.TextInput(attrs={
                 "class": "form-control",
                 "placeholder": "ルートタイトルを入力"
             }),
-            "route_description": forms.TextInput(attars={
+            "route_description": forms.TextInput(attrs={
                 "class": "form-control",
                 "placeholder": "ルート本文を入力"
             }),
