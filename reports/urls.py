@@ -11,4 +11,6 @@ urlpatterns = [
     path('<int:pk>/edit/',     views.report_edit,    name='report_edit'),       # レポート編集画面
     path('<int:pk>/delete/',   views.report_delete,  name='report_delete'),     # レポート削除
     path('<int:pk>/comments/', views.comment_create, name='comment_create'),    # レポート詳細画面コメント投稿
+    path('myreports/',         views.mypost,         name='mypost'),            # 自分の投稿したレポート一覧（追加機能）
+    path('comments/<int:pk>/delete/', views.comment_delete, name='comment_delete'), # コメント削除
 ]
