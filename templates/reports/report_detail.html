@@ -1,39 +1,61 @@
 {% extends 'base.html' %}
-{% block title %}あやかしさんreport{% endblock %}
-{% block header%}{% include 'header.html' %}{% endblock%}
+{% block title %}あやかしさんぽreport{% endblock %}
+{% block page_css %}
+  <link rel="stylesheet" href="{% static 'css/reports.css' %}">
+{% endblock %}
 {% block content %}
 
 <!-- 操作結果メッセージ（投稿成功など） -->
 
 
 <!-- レポート画像 -->
-<!--  -->
-<img src="#" alt="レポート画像">
+<img class="reportimg" src="{{ report.report_image_url }}" alt="レポート画像">
 
 <!-- レポートタイトル -->
-<!--  -->
-<h1>レポートタイトル</h1>
+<h1>{{ report.report_title }}</h1>
 
 <!-- 本文 -->
-<!--  -->
-<p>本文テキスト</p>
+<p>{{ report.report_description }}</p>
 
 <!-- 投稿日時 -->
-<!--  -->
-<time>2026年7月27日21:30</time>
+<time>{{ report.created_at }}</time>
 
 <!-- 行き方を調べる（Googleマップへ遷移）※ホームで実装した経路リンクと同じ仕組み -->
-<p><a href="#">行き方を調べる（Googlemapへ遷移）</a></p>
+<a id="bs-nav" href="#" target="_blank" rel="noopener">ここへ行く（Googleマップ）</a>
 
 <!-- ここから下は「自分のレポート」のときだけ表示する想定 -->
-<!-- 編集（遷移先: reports:edit ＝ report_form.html） -->
-<a href="#">編集</a>
-<!-- 削除（レポート削除処理） -->
-<a href="#">削除</a>
+{% if user.id == report.user_id %}
+  <!-- 編集（遷移先: reports:edit ＝ report_form.html） -->
+  <button type="button" class="btn btn-purple mx-auto d-block btn-sm">編集</button>
+  <!-- 削除（レポート削除処理） -->
+  <button type="button" class="btn btn-purple mx-auto d-block btn-sm">削除</button>
+{% endif %}
 
 <!-- ===== コメント ===== -->
-<!-- モーダル表示 -->
+<!-- オフキャンバス表示 -->
+<a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasBottom" role="button" aria-controls="offcanvasBottom">
+  コメント
+</a>
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasBottomLabel">コメント</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+      <div class="offcanvas-body small">
+        <!-- レポートについているコメントをすべて表示 -->
+        {% for comment in comments %}
+          <div class="p-2 border-bottom">
+            <!-- コメント本文 -->
+              <p>{{ comment.report_comment }}</p>     
+              
+              <!-- 自分のコメントの場合のみ編集・削除 -->
+              {% if user.id == comment.user_id %}
+                <button type="button" class="btn btn-purple mx-auto d-block btn-sm">編集</button>
+                <button type="button" class="btn btn-purple mx-auto d-block btn-sm">削除</button>
+              {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+  </div>
 
 {% endblock %}
-
-{% block footer%}{% include 'footer.html' %}{% endblock%}

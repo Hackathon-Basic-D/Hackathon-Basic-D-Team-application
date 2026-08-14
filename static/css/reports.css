@@ -1,0 +1,42 @@
+.reportimg {
+    width: 200px;
+}
+
+.btn-purple {
+    background-color: #800080;
+    color: white;
+    border: none;
+    padding: 10px;
+    display: block;
+    border-radius: 6px;
+}
+
+.btn-purple:hover {
+    background-color: #9a00a0;
+    color: white;
+}
+
+.offcanvas {
+    background-color: #EFC5DB;
+    border-top: 1px solid #800080;
+    padding: 10px;
+    height: 150px;
+}
+
+.form-label {
+    background-color: #800080;
+    color: white;
+    width: 150px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.form-control {
+    width: 80%;
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #E6E6FA;
+}

@@ -1,20 +1,9 @@
-<!doctype html>
-<html lang="ja">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <title>レポート作成</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <!-- CSSの読み込み-->
-    <link rel="stylesheet" href="/static/css/base.css">
-  </head>
-
-<body>
-    <header class="header">
-    </header>
+{% extends 'base.html' %}
+{% block title %}あやかしさんぽreport{% endblock %}
+{% block page_css %}
+  <link rel="stylesheet" href="{% static 'css/reports.css' %}">
+{% endblock %}
+{% block content %}
     
 <!-- 投稿位置を示す地図（JSで描画する要素） -->
 <div><!-- 地図（投稿する位置の確認） --></div>
@@ -22,45 +11,30 @@
 <p>この位置に投稿しようとしています</p>
 
 <!-- 投稿フォーム -->
-<form method="post">
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+  
+    <!-- 投稿タイトル -->
+    <label for="report_title" class="form-label">タイトル</label>
+    <input type="text" class="form-control" id="report_title" placeholder="タイトル" name="report_title">
 
-<!-- 投稿タイトル -->
-<p>
-    <label>投稿タイトル
-    <input type="text" name="report_title">
-    </label>
-</p>
+    <!-- 本文 -->
+    <label for="report_description" class="form-label">本文</label>
+    <textarea class="form-control" id="report_description" placeholder="本文" style="height: 100px" name="report_description"></textarea>
 
-<!-- 本文 -->
-<p>
-    <label>本文
-    <textarea name="report_description"></textarea>
-    </label>
-</p>
+    <!-- タグ登録（models.py未設定 -->
+    <label for="tag" class="form-label">タグ</label>
+    <input type="text" class="form-control" id="tag" placeholder="タグ" name="tag">
 
-<!-- タグ登録 -->
-<p>
-  <label>タグ登録
-    <input type="text" name="tags">
-  </label>
-</p>
+    <!-- 画像投稿（添付ファイル） -->
+    <label for="report_image_url" class="form-label">画像投稿</label>
+    <input class="form-control" type="file" id="report_image_url" name="report_image">
 
-<!-- 画像投稿（添付ファイル） -->
-<p>
-    <label>画像投稿
-    <input type="file" name="report_image">
-    </label>
-</p>
-<!-- 報告する（送信）ボタン -->
-<button type="submit">報告する</button>
+    <!-- 報告する（送信）ボタン -->
+    <button type="submit" class="btn btn-purple mt-3">報告する</button>
 
 </form>
 
-<footer class="footer">
-<div class="container">
-    <p class="text-muted">© RareTECH Hackathon 2026 Summer D team. All rights reserved.</p>
-</div>
-</footer>
+{% endblock %}
 
-</body>
-</html>
+{% block footer%}{% include 'footer.html' %}{% endblock%}
