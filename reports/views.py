@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Report, ReportComment
-# from .forms import ReportForm
+from .forms import ReportForm
 
 
 # ログイン済みかどうかチェック
@@ -84,7 +84,7 @@ def report_delete(request, pk):
         return redirect('reports:report_detail', pk=report.pk)
     
     report.delete() # models.pyで論理削除にオーバーライド
-    return redirect('mypost')
+    return redirect('reports:mypost')
 
 
 # コメント作成処理(POST専用、レポート詳細画面のモーダル）

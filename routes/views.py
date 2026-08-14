@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from reports.models import Report
 from .models import Route, RouteReport
-# from .forms import RouteForm
+from .forms import RouteForm
 
 
 # ログイン済みかどうかチェック
@@ -42,7 +42,7 @@ def route_select_reports(request):
 
     # 全てのレポートから選択
     reports = Report.objects.all()
-    return render(request, 'routes/route_select_reports.html', {'reports': reports})
+    return render(request, 'routes/route_edit.html', {'reports': reports})
 
 
 # ルート作成画面
@@ -113,4 +113,4 @@ def route_delete(request, pk):
         return redirect('routes:route_detail', pk=route.pk)
     
     route.delete()
-    return redirect('myroute')
+    return redirect('routes:myroute')
