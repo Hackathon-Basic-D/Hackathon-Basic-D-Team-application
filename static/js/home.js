@@ -1,32 +1,33 @@
 // 設定関連
-const PIN_IMAGE_URL = "/static/image/fire-b.png";           // 通常時のピン画像のパス
+const PIN_IMAGE_URL = "/static/image/fire-v.png";           // 通常時のピン画像のパス
 const PIN_IMAGE_SELECTED_URL = "/static/image/fire-v.png";  // クリックで選択中のときのピン画像
 const MAP_ID = "ea195c40733b8f571251ff61";                  // Google Cloudで作った地図ID（AdvancedMarker必須）
 const DEFAULT_CENTER = { lat: 34.6873, lng: 135.5259 };     // 地図の初期中心（大阪城）
 const PIN_SIZE = "40px";                                    // ピンの通常サイズ高さ
 const PIN_SIZE_SELECTED = "64px";                           // ピンのクリック時のサイズ高さ
 
+let reportMode = false;                                     // レポートモードの状態（true の間は既存ピンの選択を無効化）
+
+
 // 仮のスポットデータ（あとでDBに差し替え）。実際の大阪城・駅とは少しずらしています。
 // ピンを立てる場所の一覧（配列）
 const spots = [
-    { title: "堀の近くスポット",   description: "大阪城の堀付近（仮）",   lat: 34.68585, lng: 135.52360 },
-    { title: "大阪城公園駅の近く", description: "大阪城公園駅の付近（仮）", lat: 34.69080, lng: 135.53020 },
-    { title: "森ノ宮駅の近く",     description: "森ノ宮駅の付近（仮）",   lat: 34.68180, lng: 135.53050 },
-    { title: "スポットA",         description: "サンプル（仮）",         lat: 34.68700, lng: 135.52850 },
-    { title: "スポットB",         description: "サンプル（仮）",         lat: 34.68450, lng: 135.52700 },
+    { id: 1, title: "堀の近くスポット",   date: "2026年7月28日 14:30", description: "大阪城の堀付近（仮）",   lat: 34.68585, lng: 135.52360 },
+    { id: 2, title: "大阪城公園駅の近く", date: "2026年7月27日 21:30", description: "大阪城公園駅の付近（仮）", lat: 34.69080, lng: 135.53020 },
+    { id: 3, title: "森ノ宮駅の近く",     date: "2026年7月26日 10:00", description: "森ノ宮駅の付近（仮）",   lat: 34.68180, lng: 135.53050 },
+    { id: 4, title: "スポットA",         date: "2026年7月25日 09:15", description: "サンプル（仮）",         lat: 34.68700, lng: 135.52850 },
+    { id: 5, title: "スポットB",         date: "2026年7月24日 18:45", description: "サンプル（仮）",         lat: 34.68450, lng: 135.52700 },
 ];
 
 // 地図の初期化（公式推奨の importLibrary を使う）
 let map;                            // 地図オブジェクトを入れる箱（後で複数の関数から使う）
-let infoWindow;                     // 吹き出し(InfoWindow)を入れる箱。1個を使い回す
-let displayMode = "infowindow";     // 今の表示モード。"infowindow" か "bottomsheet"
 let selectedMarker = null;          // 今“選択中”のピンを覚えておく（画像切替用）。最初は無し
 let currentLocationMarker = null;   // 現在地マーカーを覚えておく（2回目以降は位置だけ更新）
 
  // ページ表示時に一度だけ動く「準備」関数
 async function initMap() {
     // "maps" ライブラリ、"AdvancedMarkerElement"ライブラリを実行時に読み込む
-    const { Map, InfoWindow } = await google.maps.importLibrary("maps");            // 地図と吹き出しの部品を取り出す
+    const { Map } = await google.maps.importLibrary("maps");            // 地図と吹き出しの部品を取り出す
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");    // 高度なマーカーの部品を取り出す
 
     // id="map"の要素に地図を作る
@@ -39,10 +40,6 @@ async function initMap() {
         fullscreenControl: false,   // 全画面ボタンを非表示
         mapTypeControl: false,      // 地図/航空写真の切替を非表示
     });
-
-    // infoWindowの作成
-    infoWindow = new InfoWindow();                               // 吹き出しを1つ用意（使い回す）
-    infoWindow.addListener("closeclick", clearSelectedMarker);  // 吹き出しの×で閉じたら、ピン画像を元に戻す
 
     // マーカー作成（mapは付けず、クラスタラーに任せる）
     // spots配列の1件ずつからマーカーを作り、markers配列にまとめる
@@ -70,9 +67,6 @@ async function initMap() {
     // クラスタ表示
     new markerClusterer.MarkerClusterer({ map, markers });  // 近いピンを自動でまとめる（数字の丸）
 
-    // 表示モード切替(ラジオ)の準備
-    setupModeSwitch();
-
     // 現在位置ボタンの準備（部品を渡す）
     setupLocateButton(AdvancedMarkerElement);
 
@@ -86,24 +80,12 @@ async function initMap() {
 // クリック時、モードに応じて表示
 // ピンをクリックしたときに呼ばれる
 function showSpot(spot, marker) {
+    if (reportMode) return;   // 報告モード中は既存ピンのタップを無効化
     // ピン画像を切り替え
-    selectMarker(marker);               // クリックしたピンを選択画像に切り替える
-    // InfoWindowモードなら
-    if (displayMode === "infowindow") {
-        closeBottomSheet();     // ボトムシートは閉じておく
-        // 吹き出しの中身を作る
-        infoWindow.setContent(`
-            <strong>${spot.title}</strong><br>
-            ${spot.description}<br>
-            <a href="${googleMapsDirUrl(spot)}" target="_blank" rel="noopener">ここへ行く（Googleマップ）</a>
-        `);
-        // そのピンに吹き出しを開く
-        infoWindow.open({ anchor: marker, map });
-    } else {    // ボトムシートモードなら
-        infoWindow.close();     // 吹き出しは閉じておく
-        openBottomSheet(spot);  // ボトムシートを開く
-    }
+    selectMarker(marker);   // クリックしたピンを選択画像に切り替える
+    openBottomSheet(spot);  // ボトムシートを開く
 }
+
 // クリックされたピンを選択画像に、前のピンは通常画像へ戻す
 function selectMarker(marker) {
     // 別のピンが選択中だったら
@@ -128,28 +110,24 @@ function clearSelectedMarker() {
 // ボトムシート
 // ボトムシートを開いて内容を入れる
 function openBottomSheet(spot) {
-    document.getElementById("bs-title").textContent = spot.title;       // タイトル欄に名前を入れる
-    document.getElementById("bs-desc").textContent = spot.description;  // 説明欄に説明を入れる
-    document.getElementById("bs-nav").href = googleMapsDirUrl(spot);    // GoogleMapへのリンクを入れる
-    document.getElementById("bottom-sheet").classList.add("open");      // openクラスを付けてせり上げる
+    document.getElementById("bs-title").textContent = spot.title;       // タイトル
+    // document.getElementById("bs-detail").href = `/reports/${spot.id}/`;            // タイトル横「詳細を見る」
+    document.getElementById("bs-date").textContent = spot.date;         // 投稿日時（有効化）
+
+    // 本文：載せると決めたら次の行を有効化（今は枠だけ）
+    // document.getElementById("bs-desc").textContent = spot.description;
+
+    document.getElementById("bs-nav").href = googleMapsDirUrl(spot);     // Googleマップ
+    document.getElementById("bottom-sheet").classList.add("open");       // せり上げて表示
+    document.getElementById("map").classList.add("sheet-open");         // 地図をシート高さぶん縮める → ロゴ・規約がシートの上に出て隠れない
+    map.setCenter({ lat: spot.lat, lng: spot.lng });                    // 縮んだ表示領域の中央に選択ピンを置く
 }
 // ボトムシートを閉じる
 function closeBottomSheet() {
     document.getElementById("bottom-sheet").classList.remove("open");   // openクラスを外して隠す
+    document.getElementById("map").classList.remove("sheet-open");    // 地図の高さを元に戻す
 }
 
-// モード切替（切り替えたら開いているものを閉じる）
-function setupModeSwitch() {
-    document.querySelectorAll('input[name="display-mode"]').forEach((r) => {
-        // 選択が変わったとき
-        r.addEventListener("change", (e) => {
-            displayMode = e.target.value;   // 今のモードを更新（infowindow/bottomsheet）
-            infoWindow.close();             // 開いていた吹き出しを閉じる
-            closeBottomSheet();             // 開いていたシートを閉じる
-            clearSelectedMarker();          // ピン画像を元に戻す
-        });
-    });
-}
 
 // 現在地ボタン：位置情報を取得して地図を移動し、現在地マーカーを置く
 // 部品(AdvancedMarkerElement)を受け取る
@@ -211,6 +189,40 @@ function setupLocateButton(AdvancedMarkerElement) {
 // そのスポットへの徒歩ルートをGoogleマップで開くURLを作る
 function googleMapsDirUrl(spot) {
     return `https://www.google.com/maps/dir/?api=1&destination=${spot.lat},${spot.lng}&travelmode=walking`;
+}
+
+// フッターのレポートボタンを横取りして、遷移せず報告モードに入る（ホームでだけ動く）
+const reportBtn = document.querySelector('.footer-menu a[href*="reports/create"]');
+if (reportBtn) {
+    reportBtn.addEventListener("click", (e) => {
+        e.preventDefault();     // 作成画面へは遷移しない
+        enterReportMode();
+    });
+}
+
+// 報告モードに入る
+function enterReportMode() {
+    reportMode = true;
+    document.getElementById("report-message").classList.add("show"); // 案内を表示
+    closeBottomSheet();     // 開いていれば閉じる
+    clearSelectedMarker();  // 選択中ピンを元に戻す
+}
+
+// フッターのホームボタン：ホームに居るときは再読み込みせず、表示を通常状態に戻す
+const homeBtn = document.querySelector('.footer-menu img[alt="ホーム"]')?.closest("a");
+if (homeBtn) {
+    homeBtn.addEventListener("click", (e) => {
+        e.preventDefault();     // 再読み込み（マップロード）をしない
+        resetHome();
+    });
+}
+
+// ホーム表示を通常状態に戻す（報告モード解除・シート閉じ）
+function resetHome() {
+    reportMode = false;
+    document.getElementById("report-message").classList.remove("show"); // 案内を消す
+    closeBottomSheet();     // シートを閉じる
+    clearSelectedMarker();  // 選択中ピンを戻す
 }
 
 // 最後に初期化を実行してページを立ち上げる

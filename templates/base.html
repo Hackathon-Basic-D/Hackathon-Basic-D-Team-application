@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ja">
-  <head>
+<head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <title>{% block title %}あやかしさんぽ{% endblock %}</title>
@@ -12,12 +12,12 @@
     <link rel="stylesheet" href="{{ static('css/base.css') }}">
 
     {% block page_css %}{% endblock %}
-  </head>
+</head>
 
 <body>
-    {% include 'header.html' %}
+    {% block header%}{% endblock%}
     {% block content %}{% endblock %}
-    {% include 'footer.html' %}
+    {% block footer%}{% endblock%}
 
     <!-- Optional JavaScript -->
     <!-- Bootstrap JS -->

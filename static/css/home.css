@@ -1,30 +1,110 @@
-/* 【重要】地図の要素には必ず高さを指定する */
-/* これが無いと高さ0になり、地図が「表示されない」 */
-html, body {
-    margin: 0;      /* ブラウザ既定の外側余白を0に（地図を端まで広げるため） */
-    padding: 0;     /* ブラウザ既定の内側余白を0に */
-    height: 100%;   /* html/bodyを画面の高さいっぱいに（子要素の%高さの基準になる） */
+/* === 高さの基準値（仮。実際の値はチームで調整） === */
+:root {
+    --header-h: 56px;   /* ヘッダーの高さ（仮） */
+    --footer-h: 90px;   /* フッターの高さ（仮。ホームにフッターが無ければ 0px） */
+    --sheet-h: 180px;   /* ボトムシートの固定高さ（仮） */
+}
+/* ヘッダー・フッターを強制的にサイズ変更（仮なので、base.cssに移すこと） */
+.header{
+    height: var(--header-h) ;
 }
 
+.footer {
+    height: var(--footer-h) ;
+}
+
+/* メッセージの見た目。通常は非表示、モード中だけ表示 */
+#report-message {
+    display: none;                        /* 通常は非表示 */
+    position: fixed;
+    top: calc(var(--header-h) + 12px);    /* ヘッダー下・地図の上部に重ねる */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 6;                           /* 地図より前面 */
+    background: rgba(255,255,255,0.95);
+    color: #8e24aa;
+    font-weight: bold;
+    padding: 8px 16px;
+    border: 1px solid #8e24aa;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    white-space: nowrap;
+}
+
+#report-message.show {
+    display: block;                       /* 報告モード中だけ表示 */
+}
+
+/* マップ表示 */
 #map {
     width: 100%;        /* 横幅を親いっぱいに */
-    height: 100dvh;     /* スマホ画面いっぱい。dvhはアドレスバーの伸縮に追従する単位 */
+    height: calc(100dvh - var(--header-h) - var(--footer-h));  /* 画面高 − ヘッダー − フッター */
+    transition: height 0.25s ease;           /* transform変化を0.25秒でなめらかに（スライド演出） */
 }
 
-/* 表示モード切替（地図の上に重ねる） */
-#mode-switch {
-    position: fixed;                            /* 画面に固定（スクロールしても動かない）。地図の上に重ねる基点 */
-    top: 12px;                                  /* 画面上端から12px */
-    left: 50%;                                  /* 左端を画面中央に置き… */
-    transform: translateX(-50%);                /* 自身の幅の半分だけ左へ戻して「中央揃え」にする */
-    z-index: 5;                                 /* 重なり順を地図より前に（数字が大きいほど前面） */
-    display: flex;                              /* 中の2つのラベルを横並びにする */
-    gap: 12px;                                  /* 横並びの間隔を12px */
-    background: rgba(255,255,255,0.95);         /* 半透明の白背景（地図が少し透ける） */
-    padding: 8px 14px;                          /* 内側の余白：上下8px・左右14px */
-    border-radius: 999px;                       /* 角を大きく丸めて丸薬型に */
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);      /* 影をつけて浮いて見せる */
-    font-size: 14px;                            /* 文字サイズ */
+/* シートを開いている間は、さらにシート高さぶん縮める。
+   → 地図の下端（Googleロゴ・規約）がシートの上に来て隠れない */
+#map.sheet-open {
+    height: calc(100dvh - var(--header-h) - var(--footer-h) - var(--sheet-h));
+}
+
+/* 現在地ボタン（地図の左下に浮かせる） */
+#locate-btn {
+    position: fixed;                            /* 画面に固定 */
+    left: 12px;                                 /* 左下に配置（左12・下24px） */
+    bottom: 180px;
+    background: none;           /* ボタン自体の背景・枠は無し */
+    border: none;                               /* 枠線なし */
+    padding: 0;                                 /* 余白を無くして画像を中央に */
+    cursor: pointer;
+    cursor: pointer;                            /* 指カーソル */
+    display: flex;                              /* 中の画像を中央寄せするため */
+    flex-direction: column;     /* ひし形の下にラベルを置く */
+    align-items: center;
+    gap: 4px;
+    z-index: 800;
+}
+
+/* ひし形の枠（正方形を45度回転） */
+#locate-diamond {
+    width: 40px;
+    height: 40px;
+    background: rgba(255,255,255,0.9);   /* 中の白 */
+    border: 2px solid #8e24aa;           /* 紫の枠（デザインに合わせて色を調整） */
+    transform: rotate(45deg);            /* 正方形 → ひし形 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+
+/* 中のアイコンは逆回転で水平に戻す */
+#locate-icon {
+    transform: rotate(-45deg);  /* ひし形の傾き(45deg)を打ち消して正しい向きに */
+    width: 20px;                /* 画像の幅を固定 */
+    height: 22px;               /* 画像の高さを固定 */
+    object-fit: contain;        /* 縦横比を保ったまま枠内に収める */
+    display: block;             /* 余白の原因になるインライン隙間を消す */
+}
+
+
+/* ラベル「現在地取得」 */
+#locate-label {
+    font-size: 11px;
+    color: #8e24aa;             /* 紫（デザインに合わせて調整） */
+    font-weight: bold;
+    white-space: nowrap;        /* 折り返さない */
+}
+
+/* 現在地マーカー（青い丸） */
+.current-dot {
+    width: 16px;                                /* 16px四方 */
+    height: 16px;
+    background: #4285f4;                        /* Googleブルー */
+    border: 2px solid #fff;                     /* 白い縁取り */
+    border-radius: 50%;                         /* 円形 */
+    box-shadow: 0 0 0 2px rgba(66,133,244,0.3); /* 周囲に薄青のリング */
 }
 
 /* ボトムシート（下からスライド） */
@@ -32,18 +112,19 @@ html, body {
     position: fixed;                            /* 画面に固定 */
     left: 0;                                    /* 左右いっぱいに広げる */
     right: 0;
-    bottom: 0;                                  /* 画面下端に貼り付ける */
-    z-index: 6;                                 /* モード切替(5)より前面に */
+    bottom: var(--footer-h);                    /* フッターの上に置く（フッターのナビは隠さない） */
+    height: var(--sheet-h);                       /* ボトムシートの高さ固定 */
+    z-index: 900;                              /* フッター(1000)より後ろにして隠す */
+    overflow-y: auto;               /* 入りきらない中身はシート内スクロール */
     background: #fff;                           /* 背景は白 */
     border-radius: 16px 16px 0 0;               /* 上の左右だけ角丸（シートらしい形） */
     box-shadow: 0 -2px 12px rgba(0,0,0,0.25);   /* 上方向に影 */
     padding: 12px 20px 28px;                    /* 内側余白：上12・左右20・下28px */
-    transform: translateY(100%);                /* 自身の高さ分だけ下へ＝画面外に隠す（初期状態） */
+    transform: translateY(100%);  /* 初期は画面外へ隠す */
     transition: transform 0.25s ease;           /* transform変化を0.25秒でなめらかに（スライド演出） */
 }
-
 #bottom-sheet.open {
-    transform: translateY(0);                   /* openクラスが付くと元位置に戻る＝せり上がって表示される */
+    transform: translateY(0);       /* せり上げて表示 */
 }
 /* ボトムシート */
 #bottom-sheet-handle {
@@ -62,29 +143,12 @@ html, body {
     font-size: 22px;                            /* ×を大きめに */
     cursor: pointer;                            /* マウスを乗せると指カーソルに（押せると分かる） */
 }
-
-/* 現在地ボタン（地図の左下に浮かせる） */
-#locate-btn {
-    position: fixed;                            /* 画面に固定 */
-    left: 12px;                                 /* 左下に配置（左12・下24px） */
-    bottom: 24px;
-    z-index: 5;                                 /* 地図より前面に */
-    width: 48px;                                /* 48px四方の大きさ */
-    height: 48px;
-    border-radius: 50%;                         /* 円形にする */
-    border: none;                               /* 枠線なし */
-    background: #fff;                           /* 白背景 */
-    cursor: pointer;                            /* 指カーソル */
-    font-size: 20px;                            /* 中のピンの大きさ */
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);      /* 影で浮かせる */
+/* タイトルと「詳細を見る」を横並びに */
+#bs-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 }
 
-/* 現在地マーカー（青い丸） */
-.current-dot {
-    width: 16px;                                /* 16px四方 */
-    height: 16px;
-    background: #4285f4;                        /* Googleブルー */
-    border: 2px solid #fff;                     /* 白い縁取り */
-    border-radius: 50%;                         /* 円形 */
-    box-shadow: 0 0 0 2px rgba(66,133,244,0.3); /* 周囲に薄青のリング */
-}
+
