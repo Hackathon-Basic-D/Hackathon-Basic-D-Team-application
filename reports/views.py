@@ -69,7 +69,7 @@ def report_edit(request, pk):
     else:
         form = ReportForm(instance=report)  # 既存の値が入ったフォームを表示
 
-    return render(request, 'reports/report_edit.html', {'report': report, 'form': form})
+    return render(request, 'reports/report_form.html', {'report': report, 'form': form})
 
 
 # レポート削除処理(画面は持たない）
