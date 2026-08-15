@@ -104,7 +104,7 @@ def setting(request):
     else:
         form = UserEditForm(instance=user)
 
-    return render(request, 'users/setting.html', {'form': form})
+    return render(request, 'users/settings.html', {'form': form})
     
         
 # 400エラー画面表示（不正なリクエスト時）
