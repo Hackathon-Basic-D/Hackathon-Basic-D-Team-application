@@ -1,73 +1,67 @@
-<!doctype html>
-<html lang="ja">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <title>ルート作成（記事作成）</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{% extends 'base.html' %}
+{% block title %}ルート一覧{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{{ static('css/route.css') }}">{% endblock %}
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <!-- CSSの読み込み-->
-    <link rel="stylesheet" href="/static/css/base.css">
+{% block header%}{% include 'header.html' %}{% endblock%}
+{% block content %}
+    <!-- 選択中のルート情報(スクロールできる) -->
+    <div class="selected_route">
+        <!-- 選択中の投稿の説明 -->
+        <p>以下の投稿を選択しています。</p>
 
-    
-  </head>
+        <!-- 選択した投稿の順番リスト（1つ目・2つ目…。並べ替える想定） -->
+        <ol>
+        <li>投稿タイトル1</li><!-- 1件（順番付きで繰り返し表示） -->
+        <li>投稿タイトル2</li>
+        <li>投稿タイトル3</li>
+        <li>投稿タイトル4</li>
+        <li>投稿タイトル5</li>
+        <li>投稿タイトル6</li>
+        <li>投稿タイトル7</li>
+        <li>投稿タイトル8</li>
+        <li>投稿タイトル9</li>
+        </ol>
 
-<body>
-<!-- ヘッダー -->
-<header class="header">
-</header>
-    
-<!-- 選択中の投稿の説明 -->
-<p>以下の投稿を選択しています。</p>
+        <!-- この順番でルートを確定（確定すると下に地図でルートが表示される） -->
+        <button type="button">この順番でルートを確定</button>
 
-<!-- 選択した投稿の順番リスト（1つ目・2つ目…。並べ替える想定） -->
-<ol>
-  <li>投稿タイトル</li><!-- 1件（順番付きで繰り返し表示） -->
-</ol>
+        <!-- 説明文 -->
+        <p>順番を確定すると下にルートが表示されます。</p>
 
-<!-- この順番でルートを確定（確定すると下に地図でルートが表示される） -->
-<button type="button">この順番でルートを確定</button>
-
-<!-- 説明文 -->
-<p>順番を確定すると下にルートが表示されます。</p>
-
-<!-- 確定後のルートを地図に表示 -->
-<div><!-- 地図（確定したルートのプレビュー） --></div>
-
-<!-- ルート情報の入力フォーム（送信先: ルート作成処理） -->
-<form method="post">
-    <!-- ルートタイトル -->
-<p>
-    <label>ルートタイトル
-        <input type="text" name="route_title">
-    </label>
-</p>
-
-    <!-- 本文 -->
-<p>
-    <label>本文
-        <textarea name="route_description"></textarea>
-    </label>
-</p>
-
-    <!-- タグ登録 -->
-<p>
-    <label>タグ登録
-        <input type="text" name="tags">
-    </label>
-</p>
-
-    <!-- 作成するボタン -->
-    <button type="submit">作成する</button>
-</form>
-
-<!-- フッター -->
-<footer class="footer">
-    <div class="container">
-        <p class="text-muted">© RareTECH Hackathon 2026 Summer D team. All rights reserved.</p>
+        <!-- 確定後のルートを地図に表示 -->
+        <div><!-- 地図（確定したルートのプレビュー） --></div>
     </div>
-</footer>
-</body>
-</html>
+
+
+    <!-- ルート情報の入力フォーム（送信先: ルート作成処理） -->
+    <div class="root_create_input_field">
+        <form method="post">
+                <!-- ルートタイトル -->
+            <p>
+                <label>ルートタイトル
+                    <input type="text" name="route_title">
+                </label>
+            </p>
+
+                <!-- 本文 -->
+            <p>
+                <label>本文
+                    <textarea name="route_description"></textarea>
+                </label>
+            </p>
+
+                <!-- タグ登録 -->
+            <p>
+                <label>タグ登録
+                    <input type="text" name="tags">
+                </label>
+            </p>
+
+                <!-- 作成するボタン -->
+                <button type="submit">作成する</button>
+        </form>
+    </div>
+
+
+{% endblock %}
+{% block footer%}{% include 'footer.html' %}{% endblock%}
