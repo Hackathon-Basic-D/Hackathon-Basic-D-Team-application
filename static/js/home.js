@@ -92,8 +92,9 @@ async function initMap() {
 // ピンをクリックしたときに呼ばれる
 function showSpot(spot, marker) {
     if (reportMode) return;   // 報告モード中は既存ピンのタップを無効化
-    // レポート詳細画面へ直接遷移
-    window.location.href = `/reports/${spot.id}/`;
+    // ピン画像を切り替え
+    selectMarker(marker);   // クリックしたピンを選択画像に切り替える
+    openBottomSheet(spot);  // ボトムシートを開く
 }
 
 // クリックされたピンを選択画像に、前のピンは通常画像へ戻す
@@ -121,7 +122,7 @@ function clearSelectedMarker() {
 // ボトムシートを開いて内容を入れる
 function openBottomSheet(spot) {
     document.getElementById("bs-title").textContent = spot.title;       // タイトル
-    // document.getElementById("bs-detail").href = `/reports/${spot.id}/`;            // タイトル横「詳細を見る」
+    document.getElementById("bs-detail").href = `/reports/${spot.id}/`;  // タイトル横「詳細を見る」→クリックしたスポットの詳細画面へ
     document.getElementById("bs-date").textContent = spot.date;         // 投稿日時（有効化）
 
     // 本文：載せると決めたら次の行を有効化（今は枠だけ）

@@ -16,9 +16,11 @@ class ReportForm(forms.ModelForm):
 
     class Meta:
         model = Report # models.pyのReportモデルを使用
-        fields = [# Reportモデルのこの2つのフィールドをフォームに表示してね
+        fields = [# Reportモデルのこのフィールドをフォームに表示してね
             "report_title",
-            "report_description",       
+            "report_description",
+            "latitude",       # 地図クリックで取得した緯度（hiddenで保持）
+            "longitude",      # 地図クリックで取得した経度（hiddenで保持）
         ]
         widgets = {# HTML側で {{ field }} や {{ form.report_title }} を表示したときの見た目を設定
             "report_title": forms.TextInput(attrs={
@@ -29,6 +31,8 @@ class ReportForm(forms.ModelForm):
                 "class": "form-control",
                 "placeholder": " レポート本文を入力"
             }),
+            "latitude": forms.HiddenInput(),
+            "longitude": forms.HiddenInput(),
         }
 
 #   レポートコメント作成フォーム
