@@ -40,7 +40,7 @@ class User(models.Model):
     user_name =  models.CharField(max_length=50, verbose_name='ユーザー名')
     email =      models.EmailField(max_length=255, unique=True, verbose_name='メールアドレス')
     password_hash = models.CharField(max_length=255, verbose_name='パスワードハッシュ')
-    main_area =  models.CharField(max_length=50, default='Tokyo', verbose_name='メインエリア')
+    main_area =  models.CharField(max_length=50, default='Osaka', verbose_name='メインエリア')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
     deleted_at = models.DateTimeField(null=True, blank=True, verbose_name='削除日時')
