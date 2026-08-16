@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.core.exceptions import ValidationError
 from .models import User
 from .forms import SignUpForm, LoginForm, UserEditForm
 
@@ -68,8 +69,9 @@ def setting(request):
     
     try:
         user = User.objects.get(id=request.session['user_id'])
-    except User.DoesNotExist:
-        # セッションは残っているがDB上にユーザーが存在しない場合（削除済みなど）、エラー画面へ
+    except (User.DoesNotExist, ValidationError):
+        # DB上にユーザーが存在しない場合、
+        # またはセッションのuser_idがUUIDとして不正な形式の場合、エラー画面へ
         return redirect('users:error404')
     
     if request.method == 'POST':
