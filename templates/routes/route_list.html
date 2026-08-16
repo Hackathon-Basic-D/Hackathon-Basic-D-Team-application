@@ -2,11 +2,8 @@
 {% block title %}ルート一覧{% endblock %}
 {% block page_css %}<link rel="stylesheet" href="{{ static('css/route.css') }}">{% endblock %}
 
-{% block header%}{% include 'header.html' %}{% endblock%}
+
 {% block content %}
-  <!-- ヘッダー -->
-  <header class="header">
-  </header>
 
   <!-- ルート一覧（1件ずつ繰り返し表示） -->
   <div class="route-list">
@@ -26,4 +23,4 @@
     <a href="{{ url('routes:route_create') }}"><img src="{{ static('image/writingpen.png') }}" alt="ルート">
   </div>
 {% endblock %}
-{% block footer%}{% include 'footer.html' %}{% endblock%}
+
