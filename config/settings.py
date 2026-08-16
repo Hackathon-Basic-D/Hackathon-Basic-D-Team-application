@@ -136,6 +136,13 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
+# 画像アップロード先のローカルストレージ設定
+# AWS構築後は STORAGE['default'] を S3Boto3Storage に切り替えるた想定のため、
+# アプリ側のコード（views.py）は変更不要になる
+# MEDIA_URLは画像URLの接頭辞を、MEDIA_ROOTは画像が保存されるディレクトリの絶対パスを示す
+MEDIA_URL = 'media/'    # ブラウザからアクセスする際のURLのプレフィックス(例：/media/reports/xxx.png）
+MEDIA_ROOT = BASE_DIR / 'media' # サーバー上で実際にファイルを保存するディレクトリの絶対パス
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

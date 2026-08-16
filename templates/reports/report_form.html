@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}あやかしさんぽreport{% endblock %}
 {% block page_css %}
-  <link rel="stylesheet" href="{% static 'css/reports.css' %}">
+  <link rel="stylesheet" href="{{ static('css/reports.css') }}">
 {% endblock %}
 {% block content %}
     
@@ -12,7 +12,7 @@
 
 <!-- 投稿フォーム -->
 <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
+    {{ csrf_input }}
 
     <!-- 地図クリックで取得した緯度・経度（非表示で保持） -->
     {{ form.latitude }}
