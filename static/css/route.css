@@ -10,7 +10,7 @@
     height: 60px;
 }
 
-.selected_route{
+.selected_reports_field{
    width: 300px;                /* 横幅を200pxに指定 */
    height: 200px;               /* 横幅を200pxに指定 */
    overflow-y: scroll;

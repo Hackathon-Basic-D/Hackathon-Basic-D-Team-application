@@ -15,12 +15,15 @@
         <!-- 詳細画面（route_detail）へのリンク -->
         <a href="{{ url('routes:route_detail', route.pk) }}">詳細を見る</a>
       </div>
+
     {% else %}
       <p>登録されているルートはまだありません。</p>
     {% endfor %}
   </div>
+
   <div class="route_create_btn">
-    <a href="{{ url('routes:route_create') }}"><img src="{{ static('image/writingpen.png') }}" alt="ルート">
+    <a href="{{ url('routes:route_select_reports') }}"><img src="{{ static('image/writingpen.png') }}" alt="ルート作成">
   </div>
+
 {% endblock %}
 

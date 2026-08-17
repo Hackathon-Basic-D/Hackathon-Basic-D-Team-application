@@ -5,60 +5,39 @@
 
 {% block content %}
     <!-- 選択中のルート情報(スクロールできる) -->
-    <div class="selected_route">
-        <!-- 選択中の投稿の説明 -->
-        <p>以下の投稿を選択しています。</p>
+    <div class="selected_reports_field">
+        {% if reports %}
+            <div class="selected_reports">
+                <h3>以下の投稿を選択しています。</h3>
+                <ol>
+                {% for report in reports %}
+                    <li>{{ report.title }}</li>
+                {% endfor %}
+                </ol>
+            </div>
+        {% endif %}
+            <!-- この順番でルートを確定（確定すると下に地図でルートが表示される） -->
+            <button type="button">この順番でルートを確定</button>
 
-        <!-- 選択した投稿の順番リスト（1つ目・2つ目…。並べ替える想定） -->
-        <ol>
-        <li>投稿タイトル1</li><!-- 1件（順番付きで繰り返し表示） -->
-        <li>投稿タイトル2</li>
-        <li>投稿タイトル3</li>
-        <li>投稿タイトル4</li>
-        <li>投稿タイトル5</li>
-        <li>投稿タイトル6</li>
-        <li>投稿タイトル7</li>
-        <li>投稿タイトル8</li>
-        <li>投稿タイトル9</li>
-        </ol>
+            <!-- 説明文 -->
+            <p>順番を確定すると下にルートが表示されます。</p>
 
-        <!-- この順番でルートを確定（確定すると下に地図でルートが表示される） -->
-        <button type="button">この順番でルートを確定</button>
-
-        <!-- 説明文 -->
-        <p>順番を確定すると下にルートが表示されます。</p>
-
-        <!-- 確定後のルートを地図に表示 -->
-        <div><!-- 地図（確定したルートのプレビュー） --></div>
+            <!-- 確定後のルートを地図に表示 -->
+            <div><!-- 地図（確定したルートのプレビュー） --></div>
     </div>
-
 
     <!-- ルート情報の入力フォーム（送信先: ルート作成処理） -->
     <div class="root_create_input_field">
-        <form method="post">
-                <!-- ルートタイトル -->
-            <p>
-                <label>ルートタイトル
-                    <input type="text" name="route_title">
-                </label>
-            </p>
+        <form method="post" action="{{ url('routes:route_create') }}">
+            <!-- セキュリティ対策（CSRFトークン） -->
+            {{ csrf_input }}
 
-                <!-- 本文 -->
-            <p>
-                <label>本文
-                    <textarea name="route_description"></textarea>
-                </label>
-            </p>
+            <!-- forms.py で定義した入力項目（route_title, route_description）をpタグで表示(form.as_p()) -->
+            <div class="form_fields">
+                {{ form.as_p() }}
+            </div>
 
-                <!-- タグ登録 -->
-            <p>
-                <label>タグ登録
-                    <input type="text" name="tags">
-                </label>
-            </p>
-
-                <!-- 作成するボタン -->
-                <button type="submit">作成する</button>
+            <button type="submit" class="btn-submit">ルートを保存する</button>
         </form>
     </div>
 
