@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base_main.html' %}
 {% block title %}あやかしさんぽhome{% endblock %}
 {% block page_css %}
     <!-- CSS -->
@@ -22,7 +22,7 @@
 {% block header%}{% include 'header.html' %}{% endblock%}
 {% block footer%}{% include 'footer.html' %}{% endblock%}
 {% block content %}
-    <!-- 報告モードの案内（初期は非表示。JSで show クラスを付けて表示） -->
+    <!-- レポート位置選択モードの案内（初期は非表示。JSで show クラスを付けて表示） -->
     <div id="report-message">報告する場所を選択してください。</div>
 
     <!-- 地図はこの要素の中に描画される -->
@@ -35,7 +35,7 @@
         </span>
         <span id="locate-label">現在地取得</span>
     </button>
-    
+
     <!-- ボトムシート -->
     <!-- 下から出るパネル。初期はCSSで画面外に隠している -->
     <div id="bottom-sheet">
@@ -47,12 +47,24 @@
             <!-- タイトル -->
             <h2 id="bs-title"></h2>
             <!-- 詳細画面へ -->
-            <a id="bs-detail" href="{{ url('reports:report_detail_preview') }}">詳細を見る</a>
+            <a class="btn-purple" id="bs-detail" href="{{ url('reports:report_detail_preview') }}">詳細</a>
         </div>
         <p id="bs-desc"></p>
         <!-- 投稿日時 -->
         <p id="bs-date"></p>
         <!-- Googleマップへ（徒歩ルート） -->
-        <a id="bs-nav" href="#" target="_blank" rel="noopener">ここへ行く（Googleマップ）</a>
+        <a class="btn-purple" id="bs-nav" href="#" target="_blank" rel="noopener">ここへ行く（Googleマップ）</a>
+    </div>
+    <!-- レポート位置選択モードでのみ使用（初期は非表示） -->
+    <div id="report-reticle">＋</div>
+    <label id="report-method"><input type="checkbox" id="tap-mode"> タップで場所を選ぶ</label>
+    <button id="report-confirm" type="button">この位置で報告</button>
+    <!-- 位置選択確認メッセージ（初期は非表示。確定ボタン押下でJSが show を付ける） -->
+    <div id="report-check">
+        <p id="report-check-text">ここでいいですか？</p>
+        <div id="report-check-actions">
+            <button id="report-check-yes" class="btn-purple" type="button">はい</button>
+            <button id="report-check-back" type="button">戻る</button>
+        </div>
     </div>
 {% endblock %}
