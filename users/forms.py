@@ -104,6 +104,29 @@ class SignUpForm(forms.ModelForm):
             }),
         }
 
+    # メールアドレスの重複チェック(退会済みユーザーも含めて判定）
+    # 一度退会すると、同じメールアドレスで新規登録できない
+    # clean_email(self)は、Djangoが「emailフィールド専用」の入力チェックとして自動的に呼び出す関数
+    def clean_email(self):
+        # フォームに入力されたメールアドレスを取り出す
+        email = self.cleaned_data.get("email")
+        # all_object によって退会済みユーザーも検索対象に含める
+        # 通常のUser.objectsだと退会済みユーザーが除外され、
+        # 重複チェックをすり抜けてしまDB保存エラーになってしまう
+        qs = User.all_objects.filter(email=email)
+        # 編集画面（UserEditForm）で使用された場合、
+        # 　self.instance.pkには編集対象ユーザー自身のIDが入っている
+        # 新規登録（SignUpForm）の場合は instance が未保存のため pk は None になる
+        if self.instance.pk:
+            # 自分自身のレコードは重複チェックの対象から除外する
+            # でないと、自分のメールアドレスを毎回重複エラーにしてしまう
+            qs = qs.exclude(pk=self.instance.pk)
+        # 自分以外に同じメールアドレスをもつユーザー（退会済み含む）が存在すれば、エラーにする
+        if qs.exists():
+            raise forms.ValidationError("このメールアドレスは既に使用されています。")
+        # 問題なければ、そのままcleaned_dataとして返す
+        return email
+
     # パスワード一致チェック
     def clean(self):# clean(self)はDjangoの入力チェック関数
         cleaned_data = super().clean()
