@@ -18,9 +18,11 @@
 .btn-purple {
     background-color: #800080;
     color: white;
+    width: 200px;
     border: none;
     padding: 10px;
     display: block;
+    text-align: center;
     border-radius: 6px;
 }
 
