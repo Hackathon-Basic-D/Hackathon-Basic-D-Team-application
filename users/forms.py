@@ -133,7 +133,8 @@ class SignUpForm(forms.ModelForm):
 
 # ログイン画面フォーム(Form:入力を受け取るだけ＝views.pyがDBと照合する)
 class LoginForm(forms.Form):
-    email = forms.CharField(
+    # EmailFieldにより、自動でバリデーションチェックしてくれる
+    email = forms.EmailField(
         widget=forms.EmailInput(attrs={
             "class": "form-control",
             "placeholder": "メールアドレスを入力"

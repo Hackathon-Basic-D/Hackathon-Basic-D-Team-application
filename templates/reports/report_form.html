@@ -18,7 +18,12 @@
 
 <!-- 投稿フォーム -->
 <form method="post" enctype="multipart/form-data">
-    {{ csrf_input }}
+    {% csrf_token %}
+
+    <!-- 地図クリックで取得した緯度・経度（非表示で保持） -->
+    {{ form.latitude }}
+    {{ form.longitude }}
+
     <!-- 投稿タイトル -->
     <label for="report_title" class="form-label">タイトル</label>
     <input type="text" class="form-control" id="report_title" placeholder="タイトル" name="report_title">

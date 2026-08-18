@@ -11,15 +11,18 @@ let AdvancedMarker = null;   // initMap で受け取って保持（タップマ�
 let tapLatLng = null;        // タップで選んだ座標
 let tapMarker = null;        // タップ地点のマーカー
 
-// 仮のスポットデータ（あとでDBに差し替え）。実際の大阪城・駅とは少しずらしています。
-// ピンを立てる場所の一覧（配列）
-const spots = [
-    { id: 1, title: "堀の近くスポット",   date: "2026年7月28日 14:30", description: "大阪城の堀付近（仮）",   lat: 34.68585, lng: 135.52360 },
-    { id: 2, title: "大阪城公園駅の近く", date: "2026年7月27日 21:30", description: "大阪城公園駅の付近（仮）", lat: 34.69080, lng: 135.53020 },
-    { id: 3, title: "森ノ宮駅の近く",     date: "2026年7月26日 10:00", description: "森ノ宮駅の付近（仮）",   lat: 34.68180, lng: 135.53050 },
-    { id: 4, title: "スポットA",         date: "2026年7月25日 09:15", description: "サンプル（仮）",         lat: 34.68700, lng: 135.52850 },
-    { id: 5, title: "スポットB",         date: "2026年7月24日 18:45", description: "サンプル（仮）",         lat: 34.68450, lng: 135.52700 },
+// 仮のスポットデータ（デモ表示用。idはDBのpkと絶対に被らないよう大きな値にしてある）
+const mockSpots = [
+    { id: 1000001, title: "堀の近くスポット",   date: "2026年7月28日 14:30", description: "大阪城の堀付近（仮）",   lat: 34.68585, lng: 135.52360 },
+    { id: 1000002, title: "大阪城公園駅の近く", date: "2026年7月27日 21:30", description: "大阪城公園駅の付近（仮）", lat: 34.69080, lng: 135.53020 },
+    { id: 1000003, title: "森ノ宮駅の近く",     date: "2026年7月26日 10:00", description: "森ノ宮駅の付近（仮）",   lat: 34.68180, lng: 135.53050 },
+    { id: 1000004, title: "スポットA",         date: "2026年7月25日 09:15", description: "サンプル（仮）",         lat: 34.68700, lng: 135.52850 },
+    { id: 1000005, title: "スポットB",         date: "2026年7月24日 18:45", description: "サンプル（仮）",         lat: 34.68450, lng: 135.52700 },
 ];
+
+// ピンを立てる場所の一覧（配列）。DB連携(window.REPORTS_DATA)はそのまま使い、
+// デモ表示用に仮データ5件も合わせて表示する
+const spots = [...(window.REPORTS_DATA || []), ...mockSpots];
 
 // 地図の初期化（公式推奨の importLibrary を使う）
 let map;                            // 地図オブジェクトを入れる箱（後で複数の関数から使う）
@@ -91,6 +94,14 @@ async function initMap() {
     // クラスタ表示
     new markerClusterer.MarkerClusterer({ map, markers });  // 近いピンを自動でまとめる（数字の丸）
 
+    // 報告モード中、地図上のクリックした地点をレポート作成画面へ引き継ぐ
+    map.addListener("click", (e) => {
+        if (!reportMode) return;   // 通常モード中は何もしない
+        const lat = e.latLng.lat();
+        const lng = e.latLng.lng();
+        window.location.href = `/reports/create/?lat=${lat}&lng=${lng}`;
+    });
+
     // 現在位置ボタンの準備（部品を渡す）
     setupLocateButton(AdvancedMarkerElement);
 
@@ -143,7 +154,7 @@ function clearSelectedMarker() {
 // ボトムシートを開いて内容を入れる
 function openBottomSheet(spot) {
     document.getElementById("bs-title").textContent = spot.title;       // タイトル
-    // document.getElementById("bs-detail").href = `/reports/${spot.id}/`;            // タイトル横「詳細を見る」
+    document.getElementById("bs-detail").href = `/reports/${spot.id}/`;  // タイトル横「詳細を見る」→クリックしたスポットの詳細画面へ
     document.getElementById("bs-date").textContent = spot.date;         // 投稿日時（有効化）
 
     // 本文：載せると決めたら次の行を有効化（今は枠だけ）
