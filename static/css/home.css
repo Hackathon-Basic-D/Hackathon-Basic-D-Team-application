@@ -1,16 +1,6 @@
 /* === 高さの基準値（仮。実際の値はチームで調整） === */
 :root {
-    --header-h: 56px;   /* ヘッダーの高さ（仮） */
-    --footer-h: 90px;   /* フッターの高さ（仮。ホームにフッターが無ければ 0px） */
     --sheet-h: 180px;   /* ボトムシートの固定高さ（仮） */
-}
-/* ヘッダー・フッターを強制的にサイズ変更（仮なので、base.cssに移すこと） */
-.header{
-    height: var(--header-h) ;
-}
-
-.footer {
-    height: var(--footer-h) ;
 }
 
 /* メッセージの見た目。通常は非表示、モード中だけ表示 */
@@ -116,7 +106,8 @@
     height: var(--sheet-h);                       /* ボトムシートの高さ固定 */
     z-index: 900;                              /* フッター(1000)より後ろにして隠す */
     overflow-y: auto;               /* 入りきらない中身はシート内スクロール */
-    background: #fff;                           /* 背景は白 */
+    background: #e5e6fa;                           /* 背景は白 */
+    border: 2px solid #800080;                 /* 紫の枠線 */
     border-radius: 16px 16px 0 0;               /* 上の左右だけ角丸（シートらしい形） */
     box-shadow: 0 -2px 12px rgba(0,0,0,0.25);   /* 上方向に影 */
     padding: 12px 20px 28px;                    /* 内側余白：上12・左右20・下28px */
@@ -150,5 +141,132 @@
     justify-content: space-between;
     gap: 12px;
 }
+/* ボトムシート内のスタイル（ルート作成スポット選択画面に合わせる） */
+#bs-title {
+    color: #800080;        /* マゼンタの見出し */
+    font-weight: bold;
+    font-size: 20px;
+    margin: 0;
+}
+#bs-date {
+    color: #800080;        /* 紫の日時 */
+    font-weight: bold;
+    text-align: right;
+    margin: 8px 0 0;
+}
+#bs-nav {
+    display: inline-block;
+    text-decoration:none
+}
+
+/* レポート位置選択モード用 */
+/* 中央照準（地図中央の十字） */
+#report-reticle { display:none; position:fixed; top:50%; left:50%;
+    transform:translate(-50%,-50%); z-index:6; font-size:32px; color:#8e24aa;
+    pointer-events:none; }                 /* 地図の操作を邪魔しない */
+#report-reticle.show { display:block; }
+
+/* 位置の選び方の切替 */
+#report-method { display:none; position:fixed; top:calc(var(--header-h) + 52px);
+    left:50%; transform:translateX(-50%); z-index:6; background:rgba(255,255,255,.95);
+    padding:4px 10px; border-radius:8px; font-size:13px; }
+#report-method.show { display:block; }
+
+/* 確定ボタン */
+#report-confirm { display:none; position:fixed; bottom:calc(var(--footer-h) + 16px);
+    left:50%; transform:translateX(-50%); z-index:6; background:#8e24aa; color:#fff;
+    border:none; border-radius:24px; padding:12px 24px; font-weight:bold;
+    box-shadow:0 2px 8px rgba(0,0,0,.3); cursor:pointer; }
+#report-confirm.show { display:block; }
+
+/* 報告モード中は現在地ボタンを隠す */
+#locate-btn.hide { display:none; }
 
 
+/* 選択中の炎ピンの演出 */
+/* 選択中の炎ピンの演出 */
+.fire-marker {
+    position: relative;
+    display: inline-block;
+    line-height: 0;
+}
+
+/* 炎画像 */
+.fire-marker-image {
+    position: relative;
+    z-index: 2;
+    display: block;
+}
+
+/* 火の玉の後ろに置く発光 */
+.fire-pulse {
+    position: absolute;
+
+    /* fire-v.png の火の玉付近 */
+    left: 50%;
+    top: 80%;
+
+    width: 36%;
+    aspect-ratio: 1;
+
+    border-radius: 50%;
+
+    background: rgba(170, 0, 255, 0.45);
+
+    box-shadow:
+        0 0 5px rgba(170, 0, 255, 0.75),
+        0 0 10px rgba(170, 0, 255, 0.45);
+
+    transform:
+        translate(-50%, -50%)
+        scale(0.85);
+
+    opacity: 0;
+
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* 選択された炎だけ鼓動 */
+.fire-marker.burning .fire-pulse {
+    animation: fire-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes fire-pulse {
+    0%, 100% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.55);
+        opacity: 0.3;
+    }
+    50% {
+        transform:
+            translate(-50%, -50%)
+            scale(1.35);
+        opacity: 0.8;
+    }
+}
+
+/* 位置選択確認メッセージ */
+#report-check {
+    display: none;                              /* 初期は非表示 */
+    position: fixed;
+    bottom: calc(var(--footer-h) + 72px);      /* 確定ボタンの少し上 */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 7;
+    background: rgba(255,255,255,.97);
+    border: 1px solid #8e24aa;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.3);
+    padding: 12px 16px;
+    text-align: center;
+}
+#report-check.show { display: block; }
+#report-check-text { margin: 0 0 8px; color: #8e24aa; font-weight: bold; }
+#report-check-actions { display: flex; gap: 8px; justify-content: center; }
+#report-check .btn-purple { display: inline-block; }   /* base.css の block を打ち消して横並びに */
+#report-check-back {
+    background: #fff; color: #8e24aa; border: 1px solid #8e24aa;
+    border-radius: 6px; padding: 8px 16px; font-weight: bold; cursor: pointer;
+}

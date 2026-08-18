@@ -1,11 +1,18 @@
 {% extends 'base.html' %}
 {% block title %}ユーザー登録{% endblock %}
 
+{% block page_css %}
+    <link rel="stylesheet" href="{{ static('css/auth.css') }}">
+{% endblock %}
+
 {% block content %}
+<img class="logo" src="{{ static('image/logo.png') }}" alt="あやかしさんぽ">
+    <img class="nueimg" src="{{ static('image/nue-b.png') }}" alt="鵺">
 <div class="row justify-content-center">
   <div class="col-md-5">
+    <!--
     <h2 class="mb-4">ユーザー登録</h2>
-
+    -->
     <form method="post">
       {{ csrf_input }}
       {% for field in form %}
@@ -25,10 +32,8 @@
       {% endfor %}
 
 
-      <button type="submit" class="btn btn-primary">登録する</button>
-      <a href="{{ url('users:login') }}" class="btn btn-outline-secondary"
-        >ログインへ</a
-      >
+      <button type="submit" class="btn btn-purple">登録する</button>
+      <a href="{{ url('users:login') }}" class="auth-link">ログインはこちら</a>
     </form>
   </div>
 </div>

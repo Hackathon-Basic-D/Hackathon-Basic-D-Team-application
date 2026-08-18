@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}あやかしさんぽ経路用レポート選択画面{% endblock %}
+{% block page_css %}
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ static('css/home.css') }}" />
+
+    <!-- キーだけテンプレートから渡す -->
+    <script>
+        window.GOOGLE_MAPS_API_KEY = "{{ GOOGLE_MAPS_API_KEY_FRONT }}";
+    </script>
+
+    <!-- クラスタリング用ライブラリ（home.jsより前に） -->
+    <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+
+    <!-- 共有ローダー（全ページ共通）。Google Maps APIを読み込むローダー -->
+    <script src="{{ static('js/mapAPI-loader.js') }}"></script>
+
+    <!-- そのページ固有の地図描画JS。type="module"なので他より後に実行される（ローダー準備後に動く）-->
+    <script type="module" src="{{ static('js/home.js') }}"></script>
+{% endblock %}
+
+{% block header%}{% include 'header.html' %}{% endblock%}
+{% block footer%}{% include 'footer.html' %}{% endblock%}
+{% block content %}
+    <!-- 報告モードの案内（初期は非表示。JSで show クラスを付けて表示） -->
+    <div id="report-message">報告する場所を選択してください。</div>
+
+    <!-- 地図はこの要素の中に描画される -->
+    <div id="map"></div>
+
+    <!-- 現在位置取得ボタン -->
+    <button id="locate-btn" type="button" aria-label="現在地へ移動">
+        <span id="locate-diamond">
+            <img id="locate-icon" src="{{ static('image/star-v.png') }}" alt="">
+        </span>
+        <span id="locate-label">現在地取得</span>
+    </button>
+    
+    <!-- ボトムシート -->
+    <!-- 下から出るパネル。初期はCSSで画面外に隠している -->
+    <div id="bottom-sheet">
+        <div id="bottom-sheet-handle"></div>
+        <!-- 閉じるボタン -->
+        <button id="bs-close" type="button" aria-label="閉じる">×</button>
+        <!-- タイトル ＋ 詳細へのリンク（横並び） -->
+        <div id="bs-header">
+            <!-- タイトル -->
+            <h2 id="bs-title"></h2>
+            <!-- 詳細画面へ -->
+            <a id="bs-detail" href="{{ url('reports:report_detail_preview') }}">詳細を見る</a>
+        </div>
+        <p id="bs-desc"></p>
+        <!-- 投稿日時 -->
+        <p id="bs-date"></p>
+        <!-- Googleマップへ（徒歩ルート） -->
+        <a id="bs-nav" href="#" target="_blank" rel="noopener">ここへ行く（Googleマップ）</a>
+    </div>
+{% endblock %}
+
