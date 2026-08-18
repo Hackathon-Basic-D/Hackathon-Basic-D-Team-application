@@ -40,3 +40,26 @@
     border-radius: 4px;
     background-color: #E6E6FA;
 }
+
+/* レポート作成画面：確認用の静的地図 */
+#report-static-map-wrap {
+    position: relative;   /* 中の「＋」を絶対配置する基準にする */
+    width: 100%;          /* 横幅は親要素いっぱいに */
+    max-width: 600px;     /* 大きくなりすぎないよう上限を設定 */
+}
+#report-static-map {
+    width: 100%;          /* ラッパー幅いっぱいに表示 */
+    height: auto;         /* 画像の縦横比を保つ */
+    display: block;       /* 画像下の余白を消す */
+}
+/* 選択地点を示す中央の「＋」（位置選択画面の照準と同じ見た目） */
+#report-static-reticle {
+    position: absolute;                 /* ラッパーを基準に配置 */
+    top: 50%;                           /* 縦中央 */
+    left: 50%;                          /* 横中央 */
+    transform: translate(-50%, -50%);   /* 自身の中心を地図中央に合わせる */
+    color: #8e24aa;                     /* 紫 */
+    font-size: 32px;                    /* ＋の大きさ */
+    font-weight: bold;
+    pointer-events: none;               /* 地図クリックの邪魔をしない */
+}
