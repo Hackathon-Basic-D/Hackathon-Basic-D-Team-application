@@ -1,0 +1,25 @@
+{% extends 'base_main.html' %}
+{% block title %}作成した経路一覧{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{{ static('css/reports.css') }}">{% endblock %}
+
+{% block content %}
+<div class="feed-tabs">
+    <a class="feed-tab" href="{{ url('reports:mypost') }}">作成したレポート</a>
+    <span class="feed-tab active">作成した経路</span>
+</div>
+<div class="feed-list">
+    {% for route in routes %}
+    <a class="feed-row" href="{{ url('routes:route_detail', route.pk) }}">
+        <div class="feed-thumb">
+            <img src="{{ static('image/fire-v.png') }}" alt="">
+        </div>
+        <div class="feed-body">
+            <div class="feed-title">{{ route.route_title }}</div>
+            <div class="feed-desc">{{ route.route_description }}</div>
+        </div>
+    </a>
+    {% else %}
+    <p class="feed-empty">作成した経路はまだありません。</p>
+    {% endfor %}
+</div>
+{% endblock %}
