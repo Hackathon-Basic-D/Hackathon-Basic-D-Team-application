@@ -20,8 +20,9 @@
 </head>
 
 <body>
+    <div class="background"></div>
     {% block header%}{% endblock%}
     {% block content %}{% endblock %}
-    {% include 'footer.html' %}
+    {% block footer%}{% endblock%}
 </body>
 </html>

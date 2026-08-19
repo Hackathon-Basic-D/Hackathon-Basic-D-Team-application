@@ -63,6 +63,14 @@ TEMPLATES = [
         'APP_DIRS': False,
         'OPTIONS': {
             'environment': 'config.jinja2.environment',
+            # テンプレートがrenderされる度に自動で呼ばれ、
+            # 戻り値のdictが全テンプレートのcontextに自動マージ。
+            # 'request'  : requestオブジェクト自体をテンプレートで使えるようにする
+            # config/jinja2.pyの'auth_status': 上で追加した、ログイン状態(logged_in)を配る処理
+            'context_processors':[
+                'django.template.context_processors.request',
+                'config.jinja2.auth_status'
+            ]
         },
     },
     {
