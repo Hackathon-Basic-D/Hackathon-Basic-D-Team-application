@@ -1,36 +1,53 @@
 {% extends 'base.html' %}
 {% block title %}ルート一覧{% endblock %}
-{% block page_css %}<link rel="stylesheet" href="{{ static('css/route.css') }}">{% endblock %}
-
+{% block page_css %}
+<link rel="stylesheet" href="{{ static('css/routes.css') }}">
+<script>
+    window.GOOGLE_MAPS_API_KEY = "{{ GOOGLE_MAPS_API_KEY_FRONT }}";
+</script>
+<script src="{{ static('js/mapAPI-loader.js') }}"></script>
+<script type="module" src="{{ static('js/route_create.js') }}"></script>
+{% endblock %}
 
 {% block content %}
-    <!-- 選択中のルート情報(スクロールできる) -->
+    <!-- 選択中のレポート（スクロールできる） -->
     <div class="selected_reports_field">
         {% if reports %}
             <div class="selected_reports">
                 <h3>以下の投稿を選択しています。</h3>
-                <ol>
+                <ul id="reorder-list" class="reorder-list">
                 {% for report in reports %}
-                    <li>{{ report.title }}</li>
+                    <li class="reorder-item" data-report-id="{{ report.pk }}"
+                        data-lat="{{ report.latitude }}" data-lng="{{ report.longitude }}">
+                        <span class="reorder-index"></span>
+                        <span class="reorder-title">{{ report.report_title }}</span>
+                        <button type="button" class="reorder-up" aria-label="上へ移動">↑</button>
+                        <button type="button" class="reorder-down" aria-label="下へ移動">↓</button>
+                    </li>
                 {% endfor %}
-                </ol>
+                </ul>
             </div>
         {% endif %}
-            <!-- この順番でルートを確定（確定すると下に地図でルートが表示される） -->
-            <button type="button">この順番でルートを確定</button>
-
-            <!-- 説明文 -->
-            <p>順番を確定すると下にルートが表示されます。</p>
-
-            <!-- 確定後のルートを地図に表示 -->
-            <div><!-- 地図（確定したルートのプレビュー） --></div>
     </div>
+
+    <!-- この順番でルートを確定（確定すると下に地図でルートが表示される） -->
+    <button type="button" id="route-confirm-btn">この順番でルートを確定</button>
+
+    <!-- 説明文 -->
+    <p>順番を確定すると下にルートが表示されます。</p>
+
+    <!-- 確定後のルートのプレビュー（地図＋距離・時間・注意書き） -->
+    <div id="route-preview-map"></div>
+    <div id="route-preview-info"></div>
 
     <!-- ルート情報の入力フォーム（送信先: ルート作成処理） -->
     <div class="root_create_input_field">
         <form method="post" action="{{ url('routes:route_create') }}">
             <!-- セキュリティ対策（CSRFトークン） -->
             {{ csrf_input }}
+
+            <!-- 並び替えた順番を送る hidden input（JSが reorder-list の順に生成する） -->
+            <div id="route-ids-container"></div>
 
             <!-- forms.py で定義した入力項目（route_title, route_description）をpタグで表示(form.as_p()) -->
             <div class="form_fields">
