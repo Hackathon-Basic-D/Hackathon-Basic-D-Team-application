@@ -270,3 +270,39 @@
     background: #fff; color: #8e24aa; border: 1px solid #8e24aa;
     border-radius: 6px; padding: 8px 16px; font-weight: bold; cursor: pointer;
 }
+
+/* ルート用レポート選択画面：作成ボタン（地図の下部中央に浮かせる） */
+#route-next-btn {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(var(--footer-h) + 16px);   /* フッターの少し上 */
+    z-index: 5;                              /* 地図より前面（メッセージ6・シート900より後ろ） */
+    background-color: #800080;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    cursor: pointer;
+}
+
+/* ルート選択画面：操作の警告メッセージ（作成ボタンの少し上に浮かせる） */
+#route-alert {
+    display: none;                          /* 通常は非表示 */
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(var(--footer-h) + 80px);   /* 作成ボタンの少し上 */
+    z-index: 1100;                          /* ボトムシート(900)・フッター(1000)より前面に出す */
+    background: rgba(220, 53, 69, 0.95);   /* 警告色（赤系。紫にしたい等あれば調整します） */
+    color: #fff;
+    font-weight: bold;
+    padding: 10px 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    max-width: 90%;
+    text-align: center;
+}
+#route-alert.show { display: block; }       /* JSで show を付けた時だけ表示 */

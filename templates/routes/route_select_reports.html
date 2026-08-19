@@ -16,15 +16,16 @@
     <script src="{{ static('js/mapAPI-loader.js') }}"></script>
 
     <!-- そのページ固有の地図描画JS。type="module"なので他より後に実行される（ローダー準備後に動く）-->
-    <script type="module" src="{{ static('js/home.js') }}"></script>
+    <script type="module" src="{{ static('js/route_select.js') }}"></script>
 {% endblock %}
 
 {% block header%}{% include 'header.html' %}{% endblock%}
 {% block footer%}{% include 'footer.html' %}{% endblock%}
 {% block content %}
     <!-- 報告モードの案内（初期は非表示。JSで show クラスを付けて表示） -->
-    <div id="report-message">報告する場所を選択してください。</div>
-
+    <div id="report-message">ルートに追加するポイントを選択してください。</div>
+    <!-- 操作の警告メッセージ（初期は非表示。JSで show を付けて数秒表示） -->
+    <div id="route-alert"></div>
     <!-- 地図はこの要素の中に描画される -->
     <div id="map"></div>
 
@@ -49,11 +50,22 @@
             <!-- 詳細画面へ -->
             <a id="bs-detail" href="{{ url('reports:report_detail_preview') }}">詳細を見る</a>
         </div>
+        <!-- 本文 -->
         <p id="bs-desc"></p>
         <!-- 投稿日時 -->
         <p id="bs-date"></p>
-        <!-- Googleマップへ（徒歩ルート） -->
-        <a id="bs-nav" href="#" target="_blank" rel="noopener">ここへ行く（Googleマップ）</a>
+        <!-- ルートに追加ボタン -->
+        <button id="bs-add" type="button" class="btn-purple">ルートに追加</button>
     </div>
+    <!-- 選択した投稿を送信するフォーム（送信前にJSが report_ids を詰める） -->
+    <form id="route-next-form" method="post" action="{{ url('routes:route_select_reports') }}">
+        {{ csrf_input }}
+        <!-- 選択IDを入れる場所（JSがhidden inputを差し込む） -->
+        <div id="route-ids-container"></div>
+        <!-- 選択件数＋作成ボタン -->
+        <button id="route-next-btn" type="submit">
+            選択した投稿でルート作成する（<span id="route-count">0</span>）
+        </button>
+    </form>
 {% endblock %}
 
