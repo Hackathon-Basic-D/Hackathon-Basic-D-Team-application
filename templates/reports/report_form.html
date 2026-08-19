@@ -21,7 +21,7 @@
 
 <!-- 投稿フォーム -->
 <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
+    {{ csrf_input }}
 
     <!-- 地図クリックで取得した緯度・経度（非表示で保持） -->
     {{ form.latitude }}
