@@ -1,13 +1,22 @@
-{% extends 'base.html' %} {% block title %}ログイン{% endblock %} {% block
-content %}
+{% extends 'base_auth.html' %}
+{% block title %}ログイン{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="{{ static('css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<img class="logo" src="{{ static('image/logo.png') }}" alt="あやかしさんぽ">
+    <img class="catimg" src="{{ static('image/cat-b.png') }}" alt="化け猫">
 <div class="row justify-content-center">
   <div class="col-md-5">
+    <!--
     <h2 class="mb-4">ログイン</h2>
-
+    -->
     <form method="post">
       {{ csrf_input }} {% if form.errors %}
       <div class="alert alert-danger">
-        ユーザー名またはパスワードが正しくありません。
+        メールアドレスまたはパスワードが正しくありません。
       </div>
       {% endif %}
 
@@ -25,10 +34,8 @@ content %}
         {{ form.password }}
       </div>
 
-      <button type="submit" class="btn btn-primary">ログイン</button>
-      <a href="{{ url('users:signup') }}" class="btn btn-outline-secondary"
-        >新規登録</a
-      >
+      <button type="submit" class="btn btn-purple">ログイン</button>
+      <a href="{{ url('users:signup') }}" class="auth-link">新規ユーザー登録はこちら</a>
     </form>
   </div>
 </div>

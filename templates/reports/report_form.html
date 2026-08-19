@@ -6,7 +6,10 @@
     <script defer src="{{ static('js/report_form.js') }}"></script>
 {% endblock %}
 {% block content %}
+
+<div class="report-page">
 <!-- 投稿位置を示す地図（確認用・静的地図）。選択地点は中央の「＋」で示す -->
+<span class="form-label">位置</span>
 <div id="report-static-map-wrap">
     <!-- 静的地図の画像。src は report_form.js が付与する -->
     <img id="report-static-map" data-map-key="{{ GOOGLE_MAPS_API_KEY_FRONT }}" alt="投稿位置">
@@ -14,7 +17,7 @@
     <span id="report-static-reticle">＋</span>
 </div>
 <!-- 投稿位置の説明文 -->
-<p>この位置に投稿しようとしています</p>
+<p class="report-note">この位置に投稿しようとしています</p>
 
 <!-- 投稿フォーム -->
 <form method="post" enctype="multipart/form-data">
@@ -44,8 +47,5 @@
     <button type="submit" class="btn btn-purple mt-3">報告する</button>
 
 </form>
-
+</div>
 {% endblock %}
-
-{% block header%}{% include 'header.html' %}{% endblock%}
-{% block footer%}{% include 'footer.html' %}{% endblock%}

@@ -1,3 +1,10 @@
+/* ヘッダー・フッターの高さ（全ページ共通・固定値） */
+:root {
+    --header-h: 0px;    /* ヘッダーはバーなし（☰を地図の上に浮かせる） */
+    --footer-h: 126px;   /* フッター固定高さ（仮値。実物に合わせて要調整） */
+}
+
+/* 全ページ共通の背景（白地＋金雲）。金雲は透過PNGなので白の上に重なる */
 .background {
     position: fixed;
     top: 0;
@@ -7,8 +14,9 @@
     z-index: -1;
     background-size: cover;
     background-position: center;
+    background-image: url('/static/image/background.png');
+    background-color: #fff;
 }
-
 
 .logo {
     width: 200px;
@@ -31,19 +39,51 @@
     color: white;
 }
 
-.header .nav-link {
-    background-color: #800080 !important;
-    color: white !important;
-    padding: 10px;
-    display: block;
+/* ===== ヘッダー（ハンバーガー＋Offcanvas） ===== */
+
+.header {
+    height: var(--header-h);
 }
 
-.header ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 15px;
+/* ハンバーガーボタン（右上に固定） */
+.hamburger {
+    position: fixed;
+    top: 10px;
+    right: 12px;
+    z-index: 1040;               /* 開いたメニュー(1045)より後ろ＝開くと隠れる */
+    width: 44px;
+    height: 44px;
+    display: flex;               /* ☰を中央寄せ */
+    align-items: center;
+    justify-content: center;
+    background: #fff;            /* 白背景で地図の上でも見やすく */
+    border: 2px solid #800080;   /* 紫の枠（フッターと同系） */
+    border-radius: 50%;          /* 円形（フッターのボタンに合わせる） */
+    color: #800080;              /* ☰の色 */
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+/* Offcanvasを全画面幅に（既定の狭いドロワーを上書き。背景はBootstrap既定の白＝不透明） */
+.menu-offcanvas {
+    --bs-offcanvas-width: 100%;   /* Bootstrap既定の幅(400px)を上書き＝画面幅に関わらず常に全幅 */
+}
+
+/* 「メニュー」見出し */
+.menu-offcanvas .menu-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* メニュー項目 */
+.menu-offcanvas .menu-list a {
+    display: block;
+    padding: 16px 4px;
+    color: #333;
+    text-decoration: none;          /* 下線なし */
+    border-bottom: 1px solid #ccc;  /* 区切り線 */
+    font-size: 16px;
 }
 
 .footer {
@@ -53,6 +93,7 @@
     padding: 10px 0;
     position: fixed;
     bottom: 0;
+    height: var(--footer-h);
     width: 100%;
     z-index: 1000;
 }
@@ -60,19 +101,38 @@
 
 .footer-menu {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-around;   /* 3項目を横に均等配置 */
     align-items: center;
     margin-bottom: 5px;
 }
 
 
 .footer-menu img {
-    width: 40px;
-    height: 40px;
+    width: 56px;
+    height: 56px;
+    background: #fff;
+    border-radius: 50%;
 }
 
+/* ナビのラベル文字 */
+.footer-menu span {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* ナビのリンク＝アイコンの下にラベルを縦並び */
+.footer-menu a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    text-decoration: none;   /* ラベルの下線を消す */
+    color: #fff;             /* ラベルの文字色 */
+}
+
+/* コピーライト */
 .text-muted {
     font-size: 8px;
 }
 
-
+/* 入力中はフッターを隠す（キーボードとの重なり回避） */
