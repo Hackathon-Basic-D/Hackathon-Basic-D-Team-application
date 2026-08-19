@@ -8,20 +8,21 @@ const PIN_SIZE = "40px";           // 通常時のピン高さ
 const PIN_SIZE_SELECTED = "64px";  // タップ時のピン高さ
 
 // ===== 段階1用ダミーデータ（直書き。段階2で実データへ差し替え）=====
-const spots = [
-    { id: 1000001, title: "堀の近くスポット",   date: "2026年7月28日 14:30", description: "大阪城の堀付近（仮）",   lat: 34.68585, lng: 135.52360, description:"テストテストテストテストテストテストテストテストテストテストテストテストテストテストテスト"},
-    { id: 1000002, title: "大阪城公園駅の近く", date: "2026年7月27日 21:30", description: "大阪城公園駅の付近（仮）", lat: 34.69080, lng: 135.53020 , description:"テスト"},
-    { id: 1000003, title: "森ノ宮駅の近く",     date: "2026年7月26日 10:00", description: "森ノ宮駅の付近（仮）",   lat: 34.68180, lng: 135.53050 , description:"テスト"},
-    { id: 1000004, title: "スポットA",          date: "2026年7月25日 09:15", description: "サンプル（仮）",          lat: 34.68700, lng: 135.52850 , description:"テスト"},
-    { id: 1000005, title: "スポットB",          date: "2026年7月24日 18:45", description: "サンプル（仮）",          lat: 34.68450, lng: 135.52700 , description:"テスト"},
-    { id: 1000006, title: "スポットC", date: "2026年7月23日 12:00", description: "サンプル（仮）", lat: 34.69300, lng: 135.52000 },
-    { id: 1000007, title: "スポットD", date: "2026年7月22日 15:20", description: "サンプル（仮）", lat: 34.68000, lng: 135.51500 },
-    { id: 1000008, title: "スポットE", date: "2026年7月21日 08:40", description: "サンプル（仮）", lat: 34.69500, lng: 135.53500 },
-    { id: 1000009, title: "スポットF", date: "2026年7月20日 19:10", description: "サンプル（仮）", lat: 34.67800, lng: 135.53500 },
-    { id: 1000010, title: "スポットG", date: "2026年7月19日 11:05", description: "サンプル（仮）", lat: 34.69100, lng: 135.51200 },
-    { id: 1000011, title: "スポットH", date: "2026年7月18日 16:30", description: "サンプル（仮）", lat: 34.67600, lng: 135.52200 },
-    { id: 1000012, title: "スポットI", date: "2026年7月17日 07:50", description: "サンプル（仮）", lat: 34.69700, lng: 135.52600 },
-];
+// const spots = [
+//     { id: 1000001, title: "堀の近くスポット",   date: "2026年7月28日 14:30", description: "大阪城の堀付近（仮）",   lat: 34.68585, lng: 135.52360, description:"テストテストテストテストテストテストテストテストテストテストテストテストテストテストテスト"},
+//     { id: 1000002, title: "大阪城公園駅の近く", date: "2026年7月27日 21:30", description: "大阪城公園駅の付近（仮）", lat: 34.69080, lng: 135.53020 , description:"テスト"},
+//     { id: 1000003, title: "森ノ宮駅の近く",     date: "2026年7月26日 10:00", description: "森ノ宮駅の付近（仮）",   lat: 34.68180, lng: 135.53050 , description:"テスト"},
+//     { id: 1000004, title: "スポットA",          date: "2026年7月25日 09:15", description: "サンプル（仮）",          lat: 34.68700, lng: 135.52850 , description:"テスト"},
+//     { id: 1000005, title: "スポットB",          date: "2026年7月24日 18:45", description: "サンプル（仮）",          lat: 34.68450, lng: 135.52700 , description:"テスト"},
+//     { id: 1000006, title: "スポットC", date: "2026年7月23日 12:00", description: "サンプル（仮）", lat: 34.69300, lng: 135.52000 },
+//     { id: 1000007, title: "スポットD", date: "2026年7月22日 15:20", description: "サンプル（仮）", lat: 34.68000, lng: 135.51500 },
+//     { id: 1000008, title: "スポットE", date: "2026年7月21日 08:40", description: "サンプル（仮）", lat: 34.69500, lng: 135.53500 },
+//     { id: 1000009, title: "スポットF", date: "2026年7月20日 19:10", description: "サンプル（仮）", lat: 34.67800, lng: 135.53500 },
+//     { id: 1000010, title: "スポットG", date: "2026年7月19日 11:05", description: "サンプル（仮）", lat: 34.69100, lng: 135.51200 },
+//     { id: 1000011, title: "スポットH", date: "2026年7月18日 16:30", description: "サンプル（仮）", lat: 34.67600, lng: 135.52200 },
+//     { id: 1000012, title: "スポットI", date: "2026年7月17日 07:50", description: "サンプル（仮）", lat: 34.69700, lng: 135.52600 },
+// ];
+const spots = window.REPORTS_DATA || [];
 
 // ===== この画面で選んだスポットの状態 =====
 const MAX_SPOTS = 9;      // 最大9件
@@ -297,3 +298,4 @@ function onSubmitRoute(e) {
 
 // 初期化実行
 initMap();
+

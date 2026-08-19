@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-svhmxr1n0n@%2wujd4!wz5=4q^)br&(fh=_z3o2bd-^r6x&18a'
 # GoogleMapのAPIキーを取得（# .envファイル⇒docker-compose.yml⇒ここ）
 GOOGLE_MAPS_API_KEY_FRONT = os.environ.get('GOOGLE_MAPS_API_KEY_FRONT', '') 
-
+GOOGLE_MAPS_API_KEY_BACK = os.environ.get('GOOGLE_MAPS_API_KEY_BACK', '')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
