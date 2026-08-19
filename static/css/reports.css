@@ -1,3 +1,10 @@
+/* レポート作成画面：中身を中央寄せの列にし、上下に余白を確保 */
+.report-page {
+    max-width: 600px;
+    margin: 0 auto;            /* 中央寄せ（全体の左寄りを解消） */
+    padding: 64px 16px 140px;  /* 上:ハンバーガー分 / 左右:16 / 下:フッター分(126px)＋余白 */
+}
+
 .reportimg {
     width: 200px;
 }
@@ -16,11 +23,12 @@
     color: white;
 }
 
-.offcanvas {
-    background-color: #EFC5DB;
-    border-top: 1px solid #800080;
-    padding: 10px;
-    height: 150px;
+/* 報告ボタン：中央寄せ・内容幅（全幅をやめる） */
+.report-page button[type="submit"] {
+    display: block;
+    width: fit-content;      /* 内容の幅にする */
+    margin: 16px auto 0;     /* 中央寄せ＋上に余白 */
+    padding: 10px 32px;      /* 横に広め */
 }
 
 .form-label {
@@ -28,15 +36,50 @@
     color: white;
     width: 150px;
     font-weight: bold;
-    margin-bottom: 5px;
+    padding: 4px 12px;          /* 文字まわりに余白 */
+    margin-bottom: 6px;
     display: block;
 }
 
 .form-control {
-    width: 80%;
-    padding: 5px;
-    margin-bottom: 10px;
+    width: 100%;
+    padding: 8px 10px;          /* 入力しやすい余白 */
+    margin-bottom: 16px;        /* 項目ごとの間隔 */
     border: 1px solid #ccc;
     border-radius: 4px;
     background-color: #E6E6FA;
 }
+
+/* レポート作成画面：確認用の静的地図 */
+#report-static-map-wrap {
+    position: relative;   /* 中の「＋」を絶対配置する基準にする */
+    width: 100%;          /* 横幅は親要素いっぱいに */
+    max-width: 600px;     /* 大きくなりすぎないよう上限を設定 */
+}
+#report-static-map {
+    width: 100%;          /* ラッパー幅いっぱいに表示 */
+    height: auto;         /* 画像の縦横比を保つ */
+    display: block;       /* 画像下の余白を消す */
+    border: 1px solid #999;   /* 白背景との境界を出す */
+    border-radius: 8px;       /* 角丸（任意） */
+}
+/* 選択地点を示す中央の「＋」（位置選択画面の照準と同じ見た目） */
+#report-static-reticle {
+    position: absolute;                 /* ラッパーを基準に配置 */
+    top: 50%;                           /* 縦中央 */
+    left: 50%;                          /* 横中央 */
+    transform: translate(-50%, -50%);   /* 自身の中心を地図中央に合わせる */
+    color: #8e24aa;                     /* 紫 */
+    font-size: 32px;                    /* ＋の大きさ */
+    font-weight: bold;
+    pointer-events: none;               /* 地図クリックの邪魔をしない */
+}
+
+/* 「この位置に投稿しようとしています」のスタイル */
+.report-note {
+    color: #800080;
+    font-weight: bold;
+    text-align: center;
+    margin: 8px 0 16px;
+}
+

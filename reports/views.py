@@ -2,6 +2,12 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Report, ReportComment
 from .forms import ReportForm
 
+# default_storage: Djangoが提供するファイル保存の抽象化API
+# 今はFileSystemStorage（ローカル保存）を使用
+# 後でsettings.pyのSTORAGES設定をS3Boto3Storageに変えるだけで
+# ここのコードは変更せずにS3保存に切り替え可能
+from django.core.files.storage import default_storage
+
 
 # ログイン済みかどうかチェック
 def check_login(request):
@@ -26,16 +32,34 @@ def report_create(request):
             return redirect('users:login')
     
     if request.method == 'POST':
-        form = ReportForm(request.POST)
+        # request.FILESを渡さないとアップロードされた画像を受け取れない
+        form = ReportForm(request.POST, request.FILES)
         if form.is_valid():
             # commit=Falseで一旦DB保存せず、投稿者(user_id)をセットしてから保存する
             report = form.save(commit=False)
             report.user_id = request.session.get('user_id')
+
+            # Reportモデルには画像URL文字列のカラム（report_image_url）しかないため、
+            # ここで変換する必要がある
+            uploaded_image = form.cleaned_data.get('report_image') # 写真そのものを取り出す
+            if uploaded_image:
+                # 保存先パスに"reports/"プレフィックスを付け、他用途のファイルと混ざらないようにする
+                # save()は同名ファイルが既にあれば自動でユニークな名前にリネームしてくれる
+                # 写真を実際に保存する
+                saved_path = default_storage.save(f'reports/{uploaded_image.name}', uploaded_image)
+                # 保存先パスからブラウザがアクセスできるURLを取得し、DBに保存するURLとして使う
+                report.report_image_url = default_storage.url(saved_path)
+
             report.save()
             return redirect('reports:report_detail', pk=report.pk)
         # form.is_valid()がFalseの場合、何もせずに下のrenderに進む
     else:
-        form = ReportForm() # GETなら空のフォームを表示
+        initial = {
+            'latitude': request.GET.get('lat'),
+            'longitude': request.GET.get('lng'),
+        }
+        # GETならURLのlat/lngを初期値にしてフォームを表示
+        form = ReportForm(initial=initial)
 
     return render(request, 'reports/report_form.html', {'form': form})
 
@@ -44,7 +68,11 @@ def report_detail(request, pk):
     report = get_object_or_404(Report, pk=pk)   # 存在しないpkなら404エラー
     # テンプレート側でループ処理できるように、紐づくコメントも一緒に返す
     comments = ReportComment.objects.filter(report=report)
-    return render(request, 'reports/report_detail.html', {'report': report, 'comments': comments})
+    return render(request, 'reports/report_detail.html', {
+        'report': report,
+        'comments': comments,
+        'user_id': request.session.get('user_id'),
+    })
 
 
 # レポート編集画面
@@ -62,14 +90,22 @@ def report_edit(request, pk):
     
     if request.method == 'POST':
         # instance=reportを渡すことで「既存レコードの更新」として扱う
-        form = ReportForm(request.POST, instance=report)
+        form = ReportForm(request.POST, request.FILES, instance=report)
         if form.is_valid():
-            form.save()
+            report = form.save(commit=False)
+
+            # 新しい画像が選択された場合のみ保存・URLを更新する
+            uploaded_image = form.cleaned_data.get('report_image')
+            if uploaded_image:
+                saved_path = default_storage.save(f'reports/{uploaded_image.name}', uploaded_image)
+                report.report_image_url = default_storage.url(saved_path)
+
+            report.save()
             return redirect('reports:report_detail', pk=report.pk)
     else:
         form = ReportForm(instance=report)  # 既存の値が入ったフォームを表示
 
-    return render(request, 'reports/report_edit.html', {'report': report, 'form': form})
+    return render(request, 'reports/report_form.html', {'report': report, 'form': form})
 
 
 # レポート削除処理(画面は持たない）

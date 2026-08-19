@@ -16,7 +16,7 @@ class RouteForm(forms.ModelForm):
                 "class": "form-control",
                 "placeholder": "ルートタイトルを入力"
             }),
-            "route_description": forms.TextInput(attrs={
+            "route_description": forms.Textarea(attrs={
                 "class": "form-control",
                 "placeholder": "ルート本文を入力"
             }),

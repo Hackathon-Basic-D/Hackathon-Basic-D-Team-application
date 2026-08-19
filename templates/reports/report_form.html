@@ -1,19 +1,32 @@
-{% extends 'base.html' %}
+{% extends 'base_main.html' %}
 {% block title %}あやかしさんぽreport{% endblock %}
 {% block page_css %}
-  <link rel="stylesheet" href="{% static 'css/reports.css' %}">
+    <link rel="stylesheet" href="{{ static('css/reports.css') }}">
+    <!-- 確認用の静的地図を描画するJS（deferでDOM構築後に実行される） -->
+    <script defer src="{{ static('js/report_form.js') }}"></script>
 {% endblock %}
 {% block content %}
-    
-<!-- 投稿位置を示す地図（JSで描画する要素） -->
-<div><!-- 地図（投稿する位置の確認） --></div>
+
+<div class="report-page">
+<!-- 投稿位置を示す地図（確認用・静的地図）。選択地点は中央の「＋」で示す -->
+<span class="form-label">位置</span>
+<div id="report-static-map-wrap">
+    <!-- 静的地図の画像。src は report_form.js が付与する -->
+    <img id="report-static-map" data-map-key="{{ GOOGLE_MAPS_API_KEY_FRONT }}" alt="投稿位置">
+    <!-- 中央の照準（＋）。地図の中心＝選択座標なので、画像中央に重ねて位置を示す -->
+    <span id="report-static-reticle">＋</span>
+</div>
 <!-- 投稿位置の説明文 -->
-<p>この位置に投稿しようとしています</p>
+<p class="report-note">この位置に投稿しようとしています</p>
 
 <!-- 投稿フォーム -->
 <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-  
+    {{ csrf_input }}
+
+    <!-- 地図クリックで取得した緯度・経度（非表示で保持） -->
+    {{ form.latitude }}
+    {{ form.longitude }}
+
     <!-- 投稿タイトル -->
     <label for="report_title" class="form-label">タイトル</label>
     <input type="text" class="form-control" id="report_title" placeholder="タイトル" name="report_title">
@@ -34,7 +47,5 @@
     <button type="submit" class="btn btn-purple mt-3">報告する</button>
 
 </form>
-
+</div>
 {% endblock %}
-
-{% block footer%}{% include 'footer.html' %}{% endblock%}

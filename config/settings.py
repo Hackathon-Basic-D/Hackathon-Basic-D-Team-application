@@ -63,6 +63,14 @@ TEMPLATES = [
         'APP_DIRS': False,
         'OPTIONS': {
             'environment': 'config.jinja2.environment',
+            # テンプレートがrenderされる度に自動で呼ばれ、
+            # 戻り値のdictが全テンプレートのcontextに自動マージ。
+            # 'request'  : requestオブジェクト自体をテンプレートで使えるようにする
+            # config/jinja2.pyの'auth_status': 上で追加した、ログイン状態(logged_in)を配る処理
+            'context_processors':[
+                'django.template.context_processors.request',
+                'config.jinja2.auth_status'
+            ]
         },
     },
     {
@@ -135,6 +143,13 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# 画像アップロード先のローカルストレージ設定
+# AWS構築後は STORAGE['default'] を S3Boto3Storage に切り替えるた想定のため、
+# アプリ側のコード（views.py）は変更不要になる
+# MEDIA_URLは画像URLの接頭辞を、MEDIA_ROOTは画像が保存されるディレクトリの絶対パスを示す
+MEDIA_URL = 'media/'    # ブラウザからアクセスする際のURLのプレフィックス(例：/media/reports/xxx.png）
+MEDIA_ROOT = BASE_DIR / 'media' # サーバー上で実際にファイルを保存するディレクトリの絶対パス
 
 
 # Default primary key field type

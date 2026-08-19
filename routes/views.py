@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from reports.models import Report
 from .models import Route, RouteReport
 from .forms import RouteForm
-
+import json
 
 # ログイン済みかどうかチェック
 def check_login(request):
@@ -42,7 +42,8 @@ def route_select_reports(request):
 
     # 全てのレポートから選択
     reports = Report.objects.all()
-    return render(request, 'routes/route_edit.html', {'reports': reports})
+    # return render(request, 'routes/route_edit.html', {'reports': reports})
+    return render(request, 'routes/route_select_reports.html', {'reports': reports})
 
 
 # ルート作成画面

@@ -3,6 +3,9 @@ from django.core.exceptions import ValidationError
 from .models import User
 from .forms import SignUpForm, LoginForm, UserEditForm
 
+import json                         # Reportのリストをjsonに変換
+from reports.models import Report   # レポート一覧を取得するためインポート
+
 
 # アプリを開いて最初に表示されるページ
 # ログイン or 新規登録をクリックしてログイン画面・新規登録画面へ遷移
@@ -55,8 +58,29 @@ def logout_view(request):
 # ホーム画面
 # 未ログインでも表示可能
 def home(request):
-    return render(request, 'users/home.html')
+    # 論理削除されていないレポートを全件取得
+    # Report.objects は SoftDeletemanager なので、deleted_at が入っていものは自動で除外
+    reports = Report.objects.all()
 
+    # 地図用JSに渡すため、必要な項目のみを辞書リストに整形してからJSON文字列化
+    reports_json = json.dumps([
+        {
+            "id": r.pk,                                 # /reports/<id>/へ遷移するための主キー
+            "title": r.report_title,                    # レポートのタイトル
+            "description": r.report_description,        # 本文
+            "lat": float(r.latitude),                   # JSONに変換するため、DecimalFieldをfloatに変換
+            "lng": float(r.longitude),                  # 上記に同じ
+            "date": r.created_at.strftime("%Y年%m月%d日 %H:%M"),    # 投稿日時
+        }
+        for r in reports
+    ])
+    # report_title / report_description はユーザー入力のため、"</script>"などで
+    # scriptタグを閉じられないよう "</" をエスケープしてからテンプレートへ渡す
+    # スクリプトインジェクション対策
+    reports_json = reports_json.replace('</', '<\\/')
+
+    # テンプレートに reports_jsonを渡す。home.html側で、window.REPORTS_DATAに埋め込み
+    return render(request, 'users/home.html', {'reports_json': reports_json})
 
 # 設定画面
 # 未ログイン　→　ログイン画面へ遷移
@@ -82,7 +106,7 @@ def setting(request):
     else:
         form = UserEditForm(instance=user)
 
-    return render(request, 'users/setting.html', {'form': form})
+    return render(request, '/users/settings.html', {'form': form})
     
         
 # 400エラー画面表示（不正なリクエスト時）

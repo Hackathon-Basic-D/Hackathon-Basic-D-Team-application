@@ -1,11 +1,30 @@
+<!-- 全ページ共通フッター（下部ナビ） -->
 <footer class="footer">
-    <!-- 各アイコンリンクは未入力-->
+    <!-- 3つの円形ナビ -->
     <div class="footer-menu">
-        <div><a href="{{ url('routes:route_list') }}"><img src="{{ static('image/vehicle-v-icon.png') }}" alt="ルート"></a></div>
-        <div><a href="{{ url('users:home') }}"><img src="{{ static('image/home-icon.png') }}" alt="ホーム"></a></div>
-        <div><a href="{{ url('reports:report_create') }}"><img src="{{ static('image/report-icon.png') }}" alt="レポート"></a></div>
+        <!-- ルート一覧へ -->
+        <div class="footer-item">
+            <a href="{{ url('routes:route_list') }}">
+                <img src="{{ static('image/vehicle-v-icon.png') }}" alt="ルート">
+                <span>ルート</span>
+            </a>
+        </div>
+        <!-- ホームへ -->
+        <div class="footer-item">
+            <a href="{{ url('users:home') }}">
+                <img src="{{ static('image/home-icon.png') }}" alt="ホーム">
+                <span>ホーム</span>
+            </a>
+        </div>
+        <!-- レポート作成へz -->
+        <div class="footer-item">
+            <a href="{{ url('reports:report_create') }}">
+                <img src="{{ static('image/report-icon.png') }}" alt="レポート">
+                <span>レポート</span>
+            </a>
+        </div>
     </div>
-
+    <!-- コピーライト表記 -->
     <div class="container">
         <p class="text-muted">© RareTECH Hackathon 2026 Summer D team. All rights reserved.</p>
     </div>

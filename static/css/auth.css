@@ -1,0 +1,82 @@
+/* =======================================================================
+   ログイン前の3画面（ウェルカム / ログイン / 新規登録）共通スタイル
+   PDF根拠：ウェルカム=p2 / 新規登録=p4 / ログイン=p5
+   背景（金雲）は base.html の .background で表示されるためここでは扱わない
+   ======================================================================= */
+
+/* ロゴ・妖怪イラスト：中央寄せ＋サイズ調整 */
+/* ロゴ：PDFに合わせて大きめ＋上に余白（現状は上端に接するため） */
+.logo {
+    display: block;
+    width: 350px;       /* 既定200pxの約1.5倍 */
+    max-width: 80%;     /* 狭い画面ではみ出さないように */
+    margin: 48px auto 0;     /* 左右autoで中央寄せ＋上に24pxの余白 */
+}
+.nueimg, .catimg {
+    display: block;
+    margin: 0 auto;
+    width: 260px;      /* 原寸で大きくなりすぎないように */
+    height: auto;
+}
+.nueimg {
+    transform: scaleX(-1);
+}
+
+/* キャッチコピー（紫・太字） */
+.welcome-copy {
+    color: #800080;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+/* 下部の導線リンク（紫・太字・下線なし。縦並び） */
+.auth-link {
+    display: block;
+    margin: 6px 0;
+    color: #800080;
+    text-decoration: none;
+    font-weight: bold;
+    text-align: center;
+    font-size: 24px;
+}
+
+/* 紫ラベル（PDFの紫背景・白文字のピル） */
+.form-label {
+    display: block;             /* 固定幅を効かせる */
+    width: 180px;               /* 全ラベル共通の固定幅 */
+    background-color: #800080;
+    color: #fff;
+    font-weight: bold;
+    font-size: 18px;            /* 文字サイズ18px */
+    padding: 6px 12px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    text-align: center;         /* ラベル文字を中央に（PDF準拠） */
+}
+
+/* 薄紫の入力欄（テキスト・都道府県セレクト共通）。項目間の余白は既存の .mb-3 が担当 */
+.form-control, .form-select {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 18px;
+    border: 1px solid #b39ddb;
+    border-radius: 4px;
+    background-color: #E6E6FA;
+}
+
+/* ウェルカム画面のメインボタン */
+a.btn-purple {
+    font-size: 32px;     /* 文字を大きく */
+    font-weight: bold;
+    padding: 24px 0;     /* 高さを増やす */
+}
+
+/* 送信ボタンは中央寄せの紫ボタンに（button要素のみ＝ウェルカムの<a>ボタンには影響させない） */
+button.btn-purple {
+    display: block;
+    width: fit-content;
+    margin: 16px auto 0;
+    padding: 10px 40px;
+    font-weight: bold;
+}
+
