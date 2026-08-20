@@ -1,16 +1,36 @@
-{% extends 'base.html' %} {% block title %}設定{% endblock %} {% block content
-%}
-<!-- ===== 設定画面 ===== -->
-<div class="container">
-  <h1>設定</h1>
+{% extends 'base_main.html' %}   {# ヘッダー・フッター付きの共通ベース #}
+{% block title %}設定{% endblock %}
+{% block page_css %}
+    {# フォームの紫ラベル・入力欄・ボタンのスタイル #}
+    <link rel="stylesheet" href="{{ static('css/reports.css') }}">
+{% endblock %}
 
-  <!-- 設定項目の一覧 -->
-  <ul class="list-group">
-    <li class="list-group-item"><!-- メインエリアの変更など -->メインエリア</li>
-    <li class="list-group-item"><!-- アカウント情報 -->アカウント情報</li>
-    <li class="list-group-item">
-      <a href="#"><!-- ログアウト処理 -->ログアウト</a>
-    </li>
-  </ul>
+{% block content %}
+{# 中央寄せの入力フォーム領域（レポート作成と同じ .report-page を流用） #}
+<div class="report-page">
+    <form method="post">
+        {{ csrf_input }}   {# CSRF対策トークン #}
+
+        {# フォームの各項目（ユーザー名・メール・メインエリア・パスワード・確認）を順に表示 #}
+        {% for field in form %}
+        <div class="mb-3">
+            {# 項目名（紫ラベル） #}
+            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+            {# 入力欄本体（フォーム側で widget・class 指定済み） #}
+            {{ field }}
+            {# その項目のエラー（あれば表示） #}
+            {% for error in field.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+        {# 項目に紐づかないエラー（例：パスワード不一致）。Jinja2ではメソッドなので () で呼ぶ #}
+        {% for error in form.non_field_errors() %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+
+        <button type="submit" class="btn-purple">変更する</button>   {# 送信＝更新 #}
+    </form>
 </div>
 {% endblock %}

@@ -1,0 +1,6 @@
+[
+  { "id": 1, "region": "福岡", "title": "旧・犬鳴トンネル", "description": "夜な夜な聞こえる女性の声と怨念。噂の噂。", "tags": ["心霊", "トンネル"], "lat": null, "lng": null },
+  { "id": 2, "region": "山梨", "title": "青木ヶ原樹海", "description": "迷い込むと戻れないという自殺の名所。", "tags": ["樹海"], "lat": null, "lng": null },
+  { "id": 3, "region": "東京", "title": "将門の首塚", "description": "動かすと必ず祟りがあると恐れられる場所。", "tags": ["祟り"], "lat": null, "lng": null },
+  { "id": 4, "region": "岩手", "title": "緑風荘", "description": "幸運を呼ぶ座敷童子の宿と伝わる。", "tags": ["座敷童"], "lat": null, "lng": null }
+]

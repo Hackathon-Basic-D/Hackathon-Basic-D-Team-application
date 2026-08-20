@@ -87,6 +87,7 @@
 /* 一覧（フィード）行リスト：作成済みレポート/ルート一覧・スポット一覧で共通利用 */
 .feed-list {
     padding: 0 0 140px;                 /* 下:フッター分（上は見出しが余白を持つ） */
+    border-top: 4px solid #800080;      /* 一覧の一番上の区切り線 */
 }
 
 /* 一覧の見出し（作成したレポート一覧 など）：紫のラベル調・使い回し可 */
@@ -107,10 +108,7 @@
     padding: 12px 16px;
     text-decoration: none;
     color: #333;
-    border-top: 4px solid #800080;      /* 紫の区切り線 */
-}
-.feed-list .feed-row:last-child {
-    border-bottom: 4px solid #800080;   /* 最終行の下にも線 */
+    border-bottom: 4px solid #800080;   /* 各行の下に区切り線（最終行にも必ず付く） */
 }
 
 .feed-thumb {
@@ -177,4 +175,98 @@
 .feed-tab:not(.active) {
     background-color: #E6E6FA;      /* 非アクティブ：薄い紫（押すと切り替わる） */
     color: #800080;
+}
+
+
+/* スポット一覧：検索・地域フィルタ */
+.spot-filter {
+    padding: 54px 16px 8px;             /* 上:ハンバーガー分 */
+}
+.pill-label {
+    display: inline-block;
+    background-color: #800080;
+    color: #fff;
+    font-weight: bold;
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+}
+.spot-search-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+#spot-search {
+    flex: 1 1 auto;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #E6E6FA;
+}
+#spot-search-btn {
+    background-color: #800080;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0 16px;
+    font-weight: bold;
+}
+#spot-region {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #E6E6FA;
+}
+
+/* スポット行の右端の矢印 */
+.feed-chevron {
+    flex: 0 0 auto;
+    color: #800080;
+    font-size: 22px;
+    font-weight: bold;
+    padding-left: 8px;
+}
+
+
+/* 詳細画面（スポット／将来のレポート詳細で共通利用） */
+.detail-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 64px 16px 160px;      /* 上:ハンバーガー / 下:フッター */
+}
+.detail-image {
+    display: block;
+    width: 60%;
+    max-width: 240px;
+    height: auto;
+    margin: 0 auto 16px;
+}
+.detail-title {
+    color: #800080;
+    font-weight: bold;
+    font-size: 20px;
+    margin: 0 0 8px;
+}
+.detail-tags {
+    text-align: right;
+    color: #800080;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+.detail-desc {
+    font-weight: bold;
+    white-space: pre-wrap;         /* 本文の改行を活かす */
+    margin-bottom: 20px;
+}
+.detail-nav {
+    display: block;
+    width: fit-content;
+    margin: 0 auto;
+    background-color: #800080;
+    color: #fff;
+    font-weight: bold;
+    padding: 10px 24px;
+    border-radius: 6px;
+    text-decoration: none;
+    text-align: center;
 }

@@ -8,6 +8,7 @@ urlpatterns = [
     path('', include('users.urls')),
     path('reports/', include('reports.urls')),
     path('routes/', include('routes.urls')),
+    path('spots/', include('spots.urls')),      # スポット一覧
 ]
 
 # DEBUG=True（開発環境）のときだけ、アップロードされた画像をDjangoに配信させる
