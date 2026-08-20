@@ -173,4 +173,23 @@ class LoginForm(forms.Form):
 
 # ユーザー情報編集画面フォーム(SignUpFormを継承) 
 class UserEditForm(SignUpForm):
-    pass# SignUpFormをそのまま使います。追加なしです。passは空の処理を意味する。
+    # pass# SignUpFormをそのまま使います。追加なしです。passは空の処理を意味する。
+    # 設定画面：新規登録と同じ項目を編集する。パスワードは任意（空欄なら変更しない）。
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # パスワードは必須を解除（空欄なら変更しない）
+        self.fields["password"].required = False
+        self.fields["password_confirm"].required = False
+        self.fields["password"].widget.attrs["placeholder"] = "変更する場合のみ入力"
+        self.fields["password_confirm"].widget.attrs["placeholder"] = "変更する場合のみ入力"
+
+    def save(self, commit=True):
+        # SignUpForm.save は必ず set_password するため、ここでは ModelForm.save を直接呼び、
+        # パスワードは入力があったときだけ変更する（空欄なら現状維持）
+        user = super(SignUpForm, self).save(commit=False)
+        new_password = self.cleaned_data.get("password")
+        if new_password:
+            user.set_password(new_password)
+        if commit:
+            user.save()
+        return user

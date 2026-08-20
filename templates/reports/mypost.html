@@ -1,0 +1,30 @@
+{% extends 'base_main.html' %}
+{% block title %}作成したレポート一覧{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{{ static('css/reports.css') }}">{% endblock %}
+
+{% block content %}
+<div class="feed-tabs">
+    <span class="feed-tab active">作成したレポート</span>
+    <a class="feed-tab" href="{{ url('routes:myroute') }}">作成した経路</a>
+</div>
+<div class="feed-list">
+    {% for report in reports %}
+    <a class="feed-row" href="{{ url('reports:report_detail', report.pk) }}">
+        <div class="feed-thumb">
+            {% if report.report_image_url %}
+                <img src="{{ report.report_image_url }}" alt="">
+            {% else %}
+                <img src="{{ static('image/fire-v.png') }}" alt="">
+            {% endif %}
+        </div>
+        <div class="feed-body">
+            <div class="feed-date">{{ report.created_at.strftime('%Y年%m月%d日%H:%M') }}</div>
+            <div class="feed-title">{{ report.report_title }}</div>
+            <div class="feed-desc">{{ report.report_description }}</div>
+        </div>
+    </a>
+    {% else %}
+    <p class="feed-empty">作成したレポートはまだありません。</p>
+    {% endfor %}
+</div>
+{% endblock %}
