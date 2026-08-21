@@ -24,5 +24,7 @@
     {% block header%}{% endblock%}
     {% block content %}{% endblock %}
     {% block footer%}{% endblock%}
+    <!-- 未ログイン時、ログインが必要な操作のタップを止めて案内を出す -->
+    <script src="{{ static('js/login_hint.js') }}"></script>
 </body>
 </html>

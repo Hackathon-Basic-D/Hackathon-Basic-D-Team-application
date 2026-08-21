@@ -9,6 +9,10 @@ from django.conf import settings
 from django.http import JsonResponse
 import logging
 
+from users.models import User
+from users.areas import get_area_center, DEFAULT_CENTER
+from django.core.exceptions import ValidationError
+
 # 失敗をログに残す
 logger = logging.getLogger(__name__)
 
@@ -133,7 +137,15 @@ def route_select_reports(request):
     # </script> でHTMLが壊れるのを防ぐため < をエスケープ
     reports_json = json.dumps(reports_data, ensure_ascii=False).replace("<", "\\u003c")
 
-    return render(request, 'routes/route_select_reports.html', {'reports': reports, 'reports_json': reports_json})
+    # 地図の初期位置：ログイン中ユーザーのメインエリア（未ログインは来ないが念のため大阪）
+    center = DEFAULT_CENTER
+    try:
+        user = User.objects.get(id=request.session.get('user_id'))
+        center = get_area_center(user.main_area)
+    except (User.DoesNotExist, ValidationError):
+        pass
+
+    return render(request, 'routes/route_select_reports.html', {'reports': reports, 'reports_json': reports_json, 'map_lat': center[0], 'map_lng': center[1], })
 
 # 作成画面プレビュー用：保存前に report_ids（並び替え後の順番）から徒歩ルートを計算して返す
 def route_preview(request):

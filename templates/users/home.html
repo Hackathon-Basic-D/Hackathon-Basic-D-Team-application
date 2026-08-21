@@ -7,7 +7,8 @@
     <!-- キーだけテンプレートから渡す -->
     <script>
         window.GOOGLE_MAPS_API_KEY = "{{ GOOGLE_MAPS_API_KEY_FRONT }}";
-        // views.pyのhome()が渡したJSON文字列をJSのグローバル変数として埋め込み
+        window.MAP_CENTER = { lat: {{ map_lat }}, lng: {{ map_lng }} };
+        // views.pyが渡したJSON文字列をJSのグローバル変数として埋め込み
         // jinja2は autoescape=ONなので、事前にエスケープ済みの文字列を |safe で通す
         window.REPORTS_DATA = {{ reports_json|safe }};
     </script>

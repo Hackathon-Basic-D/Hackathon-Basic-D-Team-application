@@ -5,7 +5,8 @@ from .forms import SignUpForm, LoginForm, UserEditForm
 
 import json                         # Reportのリストをjsonに変換
 from reports.models import Report   # レポート一覧を取得するためインポート
-
+from .areas import get_area_center, DEFAULT_CENTER
+from django.urls import reverse
 
 # アプリを開いて最初に表示されるページ
 # ログイン or 新規登録をクリックしてログイン画面・新規登録画面へ遷移
@@ -79,8 +80,17 @@ def home(request):
     # スクリプトインジェクション対策
     reports_json = reports_json.replace('</', '<\\/')
 
-    # テンプレートに reports_jsonを渡す。home.html側で、window.REPORTS_DATAに埋め込み
-    return render(request, 'users/home.html', {'reports_json': reports_json})
+    # 地図の初期位置：ログイン中はユーザーのメインエリア、未ログインは大阪
+    center = DEFAULT_CENTER
+    user_id = request.session.get('user_id')
+    if user_id:
+        try:
+            user = User.objects.get(id=user_id)
+            center = get_area_center(user.main_area)
+        except (User.DoesNotExist, ValidationError):
+            pass
+
+    return render(request, 'users/home.html', {'reports_json': reports_json, 'map_lat': center[0], 'map_lng': center[1], })
 
 # 設定画面
 # 未ログイン　→　ログイン画面へ遷移
@@ -102,11 +112,14 @@ def setting(request):
         form = UserEditForm(request.POST, instance=user)
         if form.is_valid():
             form.save()
-            return redirect('users:setting')
+            # 保存成功を知らせるため ?saved=1 を付けてリダイレクト（二重送信防止のためリダイレクトは維持）
+            return redirect(f"{reverse('users:setting')}?saved=1")
     else:
         form = UserEditForm(instance=user)
 
-    return render(request, 'users/settings.html', {'form': form})
+    # ?saved=1 で戻ってきたときだけ成功メッセージを出す
+    saved = request.GET.get('saved') == '1'
+    return render(request, 'users/settings.html', {'form': form, 'saved': saved})
     
         
 # 400エラー画面表示（不正なリクエスト時）

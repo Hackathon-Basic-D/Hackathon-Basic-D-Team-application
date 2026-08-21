@@ -3,7 +3,8 @@
 // ===== 設定（home と同じ値）=====
 const PIN_IMAGE_URL = "/static/image/fire-v.png";        // ピン画像
 const MAP_ID = "ea195c40733b8f571251ff61";               // 地図ID（AdvancedMarker必須）
-const DEFAULT_CENTER = { lat: 34.6873, lng: 135.5259 };  // 初期中心（大阪城）
+// 初期中心：テンプレートが渡したメインエリア（window.MAP_CENTER）。無ければ大阪
+const DEFAULT_CENTER = window.MAP_CENTER || { lat: 34.6873, lng: 135.5259 };
 const PIN_SIZE = "40px";           // 通常時のピン高さ
 const PIN_SIZE_SELECTED = "64px";  // タップ時のピン高さ
 

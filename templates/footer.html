@@ -16,12 +16,19 @@
                 <span>ホーム</span>
             </a>
         </div>
-        <!-- レポート作成へz -->
+        <!-- レポート作成へ（未ログイン時はグレー＋タップで案内、遷移しない） -->
         <div class="footer-item">
+            {% if logged_in %}
             <a href="{{ url('reports:report_create') }}">
                 <img src="{{ static('image/report-icon.png') }}" alt="レポート">
                 <span>レポート</span>
             </a>
+            {% else %}
+                <a href="#" class="needs-login" data-login-msg="レポート作成">
+                <img src="{{ static('image/report-icon.png') }}" alt="レポート">
+                <span>レポート</span>
+            </a>
+            {% endif %}
         </div>
     </div>
     <!-- コピーライト表記 -->
