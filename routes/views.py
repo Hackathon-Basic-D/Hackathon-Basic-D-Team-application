@@ -115,9 +115,7 @@ def route_select_reports(request):
         return redirect('routes:route_create')
 
     # 全てのレポートから選択
-    reports = Report.objects.all()
     # return render(request, 'routes/route_edit.html', {'reports': reports})
-    # 全てのレポートから選択
     reports = Report.objects.all()
 
     # 地図JS(route_select.js)に渡すため、必要な項目だけJSON化する
@@ -186,8 +184,17 @@ def route_create(request):
     else:
         form = RouteForm()
 
-    # 選択済みのレポートの中身を画面に表示するために取得
+    # 選択済みのレポートをDBから取得
     reports = Report.objects.filter(pk__in=report_ids)
+    # IDからReportを取り出せるようにする
+    reports_dict = {str(report.pk): report for report in reports}
+    # セッションのID順にReportを並べ直す
+    reports = [
+        reports_dict[str(report_id)]
+        for report_id in report_ids
+        if str(report_id) in reports_dict
+    ]
+
     return render(request, 'routes/route_create.html', {'reports': reports, 'form': form})
 
 
