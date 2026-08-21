@@ -1,3 +1,18 @@
+/* ルート一覧・作成画面：中身を中央寄せの列にし、上下に余白を確保 */
+.route-page {
+    max-width: 600px;
+    margin: 0 auto;            /* 中央寄せ（全体の左寄りを解消） */
+    padding: 64px 16px 140px;  /* 上:ハンバーガー分 / 左右:16 / 下:フッター分(126px)＋余白 */
+}
+
+/* ルート一覧画面：ルート記事一つ一つの区切り線を追加 */
+.route-card{
+    /*コレ*/border-top: 3px solid #800080;
+    /*コレ*/border-bottom: 3px solid #800080;
+    padding: 10px;
+}
+
+/* ルート一覧画面：ルート作成ボタンを右下に固定 */
 .route_create_btn {
       position: fixed;
       bottom: 20%;
@@ -10,10 +25,44 @@
     height: 60px;
 }
 
+/* ルート記事作成画面：スマホ幅に合わせ、スクロールできるように設定 */
 .selected_reports_field{
-   width: 300px;                /* 横幅を200pxに指定 */
-   height: 200px;               /* 横幅を200pxに指定 */
+   width: 100%;
+   height: 250px;
+   border: 1px solid #000;/*内容がない時にわかりやすいように枠表示用*/
    overflow-y: scroll;
+}
+
+/* 紫ラベル（PDFの紫背景・白文字のピル） */
+.form-label {
+    display: block;             /* 固定幅を効かせる */
+    width: 180px;               /* 全ラベル共通の固定幅 */
+    background-color: #800080;
+    color: #fff;
+    font-weight: bold;
+    font-size: 18px;            /* 文字サイズ18px */
+    padding: 6px 12px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    text-align: center;         /* ラベル文字を中央に（PDF準拠） */
+}
+
+/* 薄紫の入力欄（テキスト・都道府県セレクト共通）。 */
+.form-control, .form-select{
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 18px;
+    border: 1px solid #b39ddb;
+    border-radius: 4px;
+    background-color: #E6E6FA;
+}
+
+/* 報告ボタン：中央寄せ・内容幅（全幅をやめる） */
+.route-page button{
+    display: block;
+    width: fit-content;      /* 内容の幅にする */
+    margin: 16px auto 0;     /* 中央寄せ＋上に余白 */
+    padding: 10px 32px;      /* 横に広め */
 }
 
 /* ルート詳細画面：中身を中央寄せ＋余白（ハンバーガー/フッター分を確保） */
@@ -43,3 +92,5 @@
 #route-preview-info {
     font-size: 14px;
 }
+
+
