@@ -56,6 +56,13 @@
           </div>
         {% endfor %}
       </div>
-  </div>
-
+    <div class="offcanvas-footer p-2">
+      <form method=""POST" action="{{ url(repors:comment_create, pk=report.id) }}"
+        <div class="input-group">
+          <input type="text" class="form-control mb-2" name="report_comment" placeholder="コメントを入力">
+          <button type="button" class="btn btn-outline-secondary">送信</button>
+        /div>
+      </form>
+    </div>
+</div>
 {% endblock %}
