@@ -35,7 +35,7 @@
     <!-- 現在位置取得ボタン -->
     <button id="locate-btn" type="button" aria-label="現在地へ移動">
         <span id="locate-diamond">
-            <img id="locate-icon" src="{{ static('image/star-v.png') }}" alt="">
+            <img id="locate-icon" src="{{ static('image/candle-b.png') }}" alt="">
         </span>
         <span id="locate-label">現在地取得</span>
     </button>
@@ -51,8 +51,10 @@
             <!-- タイトル -->
             <h2 id="bs-title"></h2>
             <!-- 詳細画面へ -->
-            <a class="btn-purple" id="bs-detail" href="{{ url('reports:report_detail_preview') }}">詳細</a>
+            <a id="bs-detail" href="{{ url('reports:report_detail_preview') }}">【詳細を見る】</a>
         </div>
+        <!-- タグ表示エリア（ここに #タグ を入れる置き場） -->
+        <div id="bs-tags" class="bs-tags"></div>
         <p id="bs-desc"></p>
         <!-- 投稿日時 -->
         <p id="bs-date"></p>
@@ -61,7 +63,6 @@
     </div>
     <!-- レポート位置選択モードでのみ使用（初期は非表示） -->
     <div id="report-reticle">＋</div>
-    <label id="report-method"><input type="checkbox" id="tap-mode"> タップで場所を選ぶ</label>
     <button id="report-confirm" type="button">この位置で報告</button>
     <!-- 位置選択確認メッセージ（初期は非表示。確定ボタン押下でJSが show を付ける） -->
     <div id="report-check">

@@ -8,22 +8,10 @@ const PIN_SIZE = "40px";                                    // ピンの通常�
 const PIN_SIZE_SELECTED = "64px";                           // ピンのクリック時のサイズ高さ
 
 let reportMode = false;                                     // レポートモードの状態（true の間は既存ピンの選択を無効化）
-let AdvancedMarker = null;   // initMap で受け取って保持（タップマーカー用）
-let tapLatLng = null;        // タップで選んだ座標
-let tapMarker = null;        // タップ地点のマーカー
-
-// 仮のスポットデータ（デモ表示用。idはDBのpkと絶対に被らないよう大きな値にしてある）
-const mockSpots = [
-    { id: 1000001, title: "堀の近くスポット",   date: "2026年7月28日 14:30", description: "大阪城の堀付近（仮）",   lat: 34.68585, lng: 135.52360 },
-    { id: 1000002, title: "大阪城公園駅の近く", date: "2026年7月27日 21:30", description: "大阪城公園駅の付近（仮）", lat: 34.69080, lng: 135.53020 },
-    { id: 1000003, title: "森ノ宮駅の近く",     date: "2026年7月26日 10:00", description: "森ノ宮駅の付近（仮）",   lat: 34.68180, lng: 135.53050 },
-    { id: 1000004, title: "スポットA",         date: "2026年7月25日 09:15", description: "サンプル（仮）",         lat: 34.68700, lng: 135.52850 },
-    { id: 1000005, title: "スポットB",         date: "2026年7月24日 18:45", description: "サンプル（仮）",         lat: 34.68450, lng: 135.52700 },
-];
 
 // ピンを立てる場所の一覧（配列）。DB連携(window.REPORTS_DATA)はそのまま使い、
 // デモ表示用に仮データ5件も合わせて表示する
-const spots = [...(window.REPORTS_DATA || []), ...mockSpots];
+const spots = window.REPORTS_DATA || [];
 
 // 地図の初期化（公式推奨の importLibrary を使う）
 let map;                            // 地図オブジェクトを入れる箱（後で複数の関数から使う）
@@ -35,24 +23,17 @@ async function initMap() {
     // "maps" ライブラリ、"AdvancedMarkerElement"ライブラリを実行時に読み込む
     const { Map } = await google.maps.importLibrary("maps");            // 地図と吹き出しの部品を取り出す
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");    // 高度なマーカーの部品を取り出す
-    AdvancedMarker = AdvancedMarkerElement;   // 後で使えるよう保持
 
     // id="map"の要素に地図を作る
     map = new Map(document.getElementById("map"), {
         center: DEFAULT_CENTER,     // 初期の中心座標（大阪城）
         zoom: 14,                   // 初期ズーム値（数字が大きいほど拡大）
         mapId: MAP_ID,              // 地図ID（AdvancedMarkerElementを使うのに必須）
+        clickableIcons: false,      // GoogleのPOI(大阪城など)クリックを無効化し、位置選択が吸われないようにする
         streetViewControl: false,   // 右下の人マーク（ペグマン）を非表示
         zoomControl: false,         // ＋/− ズームボタンを非表示
         fullscreenControl: false,   // 全画面ボタンを非表示
         mapTypeControl: false,      // 地図/航空写真の切替を非表示
-    });
-
-    // 報告モード関係
-    map.addListener("click", (e) => {
-        if (!reportMode) return;                                   // 報告モード外は無視
-        if (!document.getElementById("tap-mode").checked) return;  // タップ方式のときだけ
-        setTapPoint(e.latLng);
     });
 
     // マーカー作成（mapは付けず、クラスタラーに任せる）
@@ -94,14 +75,6 @@ async function initMap() {
 
     // クラスタ表示
     new markerClusterer.MarkerClusterer({ map, markers });  // 近いピンを自動でまとめる（数字の丸）
-
-    // 報告モード中、地図上のクリックした地点をレポート作成画面へ引き継ぐ
-    map.addListener("click", (e) => {
-        if (!reportMode) return;   // 通常モード中は何もしない
-        const lat = e.latLng.lat();
-        const lng = e.latLng.lng();
-        window.location.href = `/reports/create/?lat=${lat}&lng=${lng}`;
-    });
 
     // 現在位置ボタンの準備（部品を渡す）
     setupLocateButton(AdvancedMarkerElement);
@@ -248,10 +221,9 @@ if (reportBtn) {
 function enterReportMode() {
     reportMode = true;
     document.getElementById("report-message").classList.add("show");
-    document.getElementById("report-method").classList.add("show");
     document.getElementById("report-confirm").classList.add("show");
+    document.getElementById("report-reticle").classList.add("show");    // 十字（中央照準）を常に表示
     document.getElementById("locate-btn").classList.add("hide");
-    updateSelectMethod();
     closeBottomSheet();
     clearSelectedMarker();
 }
@@ -269,18 +241,14 @@ if (homeBtn) {
 function resetHome() {
     reportMode = false;
     document.getElementById("report-message").classList.remove("show");
-    document.getElementById("report-method").classList.remove("show");
     document.getElementById("report-confirm").classList.remove("show");
     document.getElementById("report-reticle").classList.remove("show");
     document.getElementById("report-check").classList.remove("show");   // 確認も閉じる
+    map.setOptions({ gestureHandling: "auto" });   // 確認中に閉じた場合に備え、地図操作を戻す
     document.getElementById("locate-btn").classList.remove("hide");
-    clearTapPoint();
     closeBottomSheet();
     clearSelectedMarker();
 }
-
-// 位置の選び方の切替（チェックでタップ方式へ）
-document.getElementById("tap-mode").addEventListener("change", updateSelectMethod);
 
 // 「この位置で報告」：確認ダイアログを出す
 let pendingPos = null;
@@ -289,6 +257,7 @@ document.getElementById("report-confirm").addEventListener("click", () => {
     if (!pos) { alert("報告する場所を選択してください。"); return; }
     pendingPos = pos;
     document.getElementById("report-check").classList.add("show");
+    map.setOptions({ gestureHandling: "none" });   // 確認中は地図を動かせないように（中心＝選択位置がズレないため）
 });
 
 // 「はい」：選んだ座標をクエリに付けて作成画面へ遷移
@@ -302,32 +271,11 @@ document.getElementById("report-check-yes").addEventListener("click", () => {
 document.getElementById("report-check-back").addEventListener("click", () => {
     document.getElementById("report-check").classList.remove("show");
     pendingPos = null;
+    map.setOptions({ gestureHandling: "auto" });   // 地図操作を元に戻す
 });
 
-// チェック状態に合わせて中央照準/タップの表示を切り替える
-function updateSelectMethod() {
-    const tap = document.getElementById("tap-mode").checked;
-    const reticle = document.getElementById("report-reticle");
-    if (tap) { reticle.classList.remove("show"); }        // タップ方式：十字を隠す
-    else { reticle.classList.add("show"); clearTapPoint(); } // 中央照準方式：十字を出す
-}
-
-// タップ地点にマーカーを置き、座標を保持
-function setTapPoint(latLng) {
-    tapLatLng = { lat: latLng.lat(), lng: latLng.lng() };
-    if (!tapMarker) { tapMarker = new AdvancedMarker({ map, position: latLng }); }
-    else { tapMarker.position = latLng; }
-}
-
-// タップ地点をクリア
-function clearTapPoint() {
-    tapLatLng = null;
-    if (tapMarker) { tapMarker.map = null; tapMarker = null; }
-}
-
-// いま選ばれている座標を返す（タップ方式で未選択なら null）
+// いま選ばれている座標を返す
 function getSelectedPosition() {
-    if (document.getElementById("tap-mode").checked) return tapLatLng;
     const c = map.getCenter();
     return { lat: c.lat(), lng: c.lng() };
 }

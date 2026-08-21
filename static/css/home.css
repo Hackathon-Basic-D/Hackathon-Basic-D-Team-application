@@ -7,7 +7,7 @@
 #report-message {
     display: none;                        /* 通常は非表示 */
     position: fixed;
-    top: calc(var(--header-h) + 12px);    /* ヘッダー下・地図の上部に重ねる */
+    top: calc(var(--header-h) + 48px);    /* ヘッダー下・地図の上部に重ねる */
     left: 50%;
     transform: translateX(-50%);
     z-index: 6;                           /* 地図より前面 */
@@ -72,8 +72,8 @@
 /* 中のアイコンは逆回転で水平に戻す */
 #locate-icon {
     transform: rotate(-45deg);  /* ひし形の傾き(45deg)を打ち消して正しい向きに */
-    width: 20px;                /* 画像の幅を固定 */
-    height: 22px;               /* 画像の高さを固定 */
+    width: 50px;                /* 画像の幅を固定 */
+    height: 50px;               /* 画像の高さを固定 */
     object-fit: contain;        /* 縦横比を保ったまま枠内に収める */
     display: block;             /* 余白の原因になるインライン隙間を消す */
 }
@@ -131,22 +131,33 @@
     right: 14px;                                /* 親の右端から14px（右上に置く） */
     border: none;                               /* 枠線なし */
     background: none;                           /* 背景なし（×の文字だけ） */
-    font-size: 22px;                            /* ×を大きめに */
+    font-size: 30px;                            /* ×を大きめに */
     cursor: pointer;                            /* マウスを乗せると指カーソルに（押せると分かる） */
 }
 /* タイトルと「詳細を見る」を横並びに */
 #bs-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+    display: block;
+    padding-right: 40px;   /* 右上の×ボタンと詳細ボタンの重なりを防ぐ */
 }
 /* ボトムシート内のスタイル（ルート作成スポット選択画面に合わせる） */
 #bs-title {
+    display: inline;        /* 詳細ボタンをタイトル末尾に続けて置くため */
     color: #800080;        /* マゼンタの見出し */
     font-weight: bold;
     font-size: 20px;
     margin: 0;
+}
+/* 詳細ボタンは .btn-purple の width:200px を打ち消して内容幅に */
+#bs-detail {
+    display: inline-block;
+    vertical-align: middle;   /* タイトル文字と縦位置を合わせる */
+    margin-left: 8px;         /* タイトルとの間隔 */
+    color: #800080;        /* 紫の文字 */
+    font-size: 13px;
+    font-weight: bold;
+    text-decoration: none;
+    white-space: nowrap;   /* 「詳細」を折り返さない */
+    text-decoration:underline;
 }
 #bs-date {
     color: #800080;        /* 紫の日時 */
@@ -155,29 +166,57 @@
     margin: 8px 0 0;
 }
 #bs-nav {
-    display: inline-block;
-    text-decoration:none
+    display: block;
+    width: fit-content;      /* 内容の幅に合わせる（200px固定を解除） */
+    margin: 12px auto 0;     /* 中央寄せ＋上に余白 */
+    padding: 8px 16px;
+    font-size: 14px;
+    text-decoration: none;
 }
-
+/* タグ表示エリア */
+.bs-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0 0;
+}
 /* レポート位置選択モード用 */
 /* 中央照準（地図中央の十字） */
-#report-reticle { display:none; position:fixed; top:50%; left:50%;
-    transform:translate(-50%,-50%); z-index:6; font-size:32px; color:#8e24aa;
-    pointer-events:none; }                 /* 地図の操作を邪魔しない */
+#report-reticle {
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    z-index:6;
+    font-size:48px;
+    color:#8e24aa;
+    text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff;  /* ピンと重なっても見えるよう白フチ */
+    pointer-events:none;
+}
+/* 地図の操作を邪魔しない */
 #report-reticle.show { display:block; }
 
-/* 位置の選び方の切替 */
-#report-method { display:none; position:fixed; top:calc(var(--header-h) + 52px);
-    left:50%; transform:translateX(-50%); z-index:6; background:rgba(255,255,255,.95);
-    padding:4px 10px; border-radius:8px; font-size:13px; }
-#report-method.show { display:block; }
-
 /* 確定ボタン */
-#report-confirm { display:none; position:fixed; bottom:calc(var(--footer-h) + 16px);
-    left:50%; transform:translateX(-50%); z-index:6; background:#8e24aa; color:#fff;
-    border:none; border-radius:24px; padding:12px 24px; font-weight:bold;
-    box-shadow:0 2px 8px rgba(0,0,0,.3); cursor:pointer; }
-#report-confirm.show { display:block; }
+#report-confirm {
+    display:none;
+    position:fixed;
+    bottom:calc(var(--footer-h) + 72px);
+    left:50%;
+    transform:translateX(-50%);
+    z-index:6;
+    background:#8e24aa;
+    color:#fff;
+    border:none;
+    border-radius:24px;
+    padding:12px 24px;
+    font-weight:bold;
+    box-shadow:0 2px 8px rgba(0,0,0,.3);
+    cursor:pointer;
+}
+#report-confirm.show {
+    display:block;
+}
 
 /* 報告モード中は現在地ボタンを隠す */
 #locate-btn.hide { display:none; }
@@ -263,12 +302,33 @@
     text-align: center;
 }
 #report-check.show { display: block; }
-#report-check-text { margin: 0 0 8px; color: #8e24aa; font-weight: bold; }
-#report-check-actions { display: flex; gap: 8px; justify-content: center; }
-#report-check .btn-purple { display: inline-block; }   /* base.css の block を打ち消して横並びに */
+#report-check-text {
+    margin: 0 0 8px;
+    color: #8e24aa;
+    font-weight: bold;
+}
+#report-check-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+#report-check-actions > button {
+    flex: 1;            /* 2つを均等幅に（btn-purple の width:200px 固定も無効化される） */
+    padding: 10px 0;    /* 上下余白を揃えて高さも合わせる */
+}
+
+#report-check .btn-purple {
+    display: inline-block;
+}
+/* base.css の block を打ち消して横並びに */
 #report-check-back {
-    background: #fff; color: #8e24aa; border: 1px solid #8e24aa;
-    border-radius: 6px; padding: 8px 16px; font-weight: bold; cursor: pointer;
+    background: #fff;
+    color: #8e24aa;
+    border: 1px solid #8e24aa;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 /* ルート用レポート選択画面：作成ボタン（地図の下部中央に浮かせる） */
