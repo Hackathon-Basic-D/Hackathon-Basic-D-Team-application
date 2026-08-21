@@ -135,4 +135,69 @@
     font-size: 8px;
 }
 
-/* 入力中はフッターを隠す（キーボードとの重なり回避） */
+/* ハンバーガーメニュー：ロゴを上部中央、項目を下寄せ（スマホで親指が届きやすいように） */
+.menu-logo-link {
+    display: block;
+    text-align: center;          /* ロゴを中央に */
+    margin-top: 4px;
+}
+.menu-logo {
+    width: 240px;                /* ロゴの大きさ（お好みで調整） */
+    height: auto;
+}
+
+.menu-offcanvas .menu-title {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    margin: 28px 0 16px;     /* 上の余白でロゴから離す（数値で調整可） */
+    letter-spacing: 2px;      /* 少し字間を空けて見出しらしく（任意） */
+}
+
+/* ハンバーガーメニューの閉じるボタンを右上に（メニューは右から開くため） */
+.menu-offcanvas .offcanvas-header {
+    justify-content: flex-end;
+    padding-right: 28px;      /* 閉じるボタンを画面端から内側へ（数値で調整可） */
+}
+
+
+/* ログインが必要な操作（未ログイン時）：グレーにして押せない雰囲気に */
+.needs-login {
+    filter: grayscale(1);
+    opacity: 0.55;
+}
+
+/* ログイン案内のトースト（画面下部に一時表示） */
+.login-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 150px;                 /* フッターの少し上 */
+    transform: translateX(-50%);
+    max-width: 90%;
+    background: #333;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+    z-index: 1100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+.login-toast.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+.login-toast a {
+    color: #ffd54a;                /* リンクは目立つ色に */
+    font-weight: bold;
+}
+
+/* ハンバーガーメニューのログイン注記 */
+.menu-note {
+    margin-top: 12px;
+    padding: 0 4px;
+    font-size: 12px;
+    color: #666;
+}

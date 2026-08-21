@@ -21,8 +21,12 @@
     {% endfor %}
   </div>
 
-  <div class="route_create_btn">
-    <a href="{{ url('routes:route_select_reports') }}"><img src="{{ static('image/writingpen.png') }}" alt="ルート作成">
-  </div>
+<div class="route_create_btn">
+    {% if logged_in %}
+    <a href="{{ url('routes:route_select_reports') }}"><img src="{{ static('image/writingpen.png') }}" alt="ルート作成"></a>
+    {% else %}
+    <a href="#" class="needs-login" data-login-msg="ルート作成"><img src="{{ static('image/writingpen.png') }}" alt="ルート作成"></a>
+    {% endif %}
+</div>
 
 {% endblock %}

@@ -1,49 +1,56 @@
 <!-- 全ページ共通ヘッダー（ハンバーガー＋Offcanvasメニュー） -->
 <header class="header">
-  <!-- ハンバーガー：Offcanvasを開く -->
-  <button
+<!-- ハンバーガー：Offcanvasを開く -->
+<button
     class="hamburger"
     type="button"
     data-bs-toggle="offcanvas"
     data-bs-target="#menu-offcanvas"
     aria-label="メニューを開く"
-  >
-    ☰
-  </button>
+>
+☰
+</button>
 
-  <!-- オーバーレイメニュー（Bootstrap Offcanvas。膜なし・全画面はCSSで上書き） -->
-  <div
+<!-- オーバーレイメニュー（Bootstrap Offcanvas。膜なし・全画面はCSSで上書き） -->
+<div
     class="offcanvas offcanvas-end menu-offcanvas"
     tabindex="-1"
     id="menu-offcanvas"
     data-bs-backdrop="false"
     aria-labelledby="menu-title"
-  >
+>
     <div class="offcanvas-header">
-      <h2 class="offcanvas-title menu-title" id="menu-title">メニュー</h2>
-      <!-- 閉じるボタン（Bootstrapが閉じる） -->
-      <button
-        class="btn-close"
-        type="button"
-        data-bs-dismiss="offcanvas"
-        aria-label="閉じる"
-      ></button>
+        <!-- 閉じるボタン（Bootstrapが閉じる） -->
+        <button
+            class="btn-close"
+            type="button"
+            data-bs-dismiss="offcanvas"
+            aria-label="閉じる"
+        ></button>
     </div>
     <div class="offcanvas-body">
-      <nav class="menu-list">
-        {% if logged_in %}
-        {# ログイン中のみ表示：本人のデータ・設定 #}
-        <a href="{{ url('reports:mypost') }}">作成したレポート一覧</a>   {# 自分が投稿したレポート一覧 #}
-        <a href="{{ url('routes:myroute') }}">作成したルート一覧</a>     {# 自分が作成したルート一覧 #}
-        <a href="{{ url('spots:spot_list') }}">スポット一覧</a>          {# 有名スポット一覧（公開） #}
-        <a href="{{ url('users:setting') }}">設定</a>                    {# アカウント設定 #}
-        <a href="{{ url('users:logout') }}">ログアウト</a>
-        {% else %}
-        {# 未ログイン時：公開ページとログインのみ #}
-        <a href="{{ url('spots:spot_list') }}">スポット一覧</a>          {# スポット一覧は公開なので未ログインでも表示 #}
-        <a href="{{ url('users:login') }}">ログイン</a>
-        {% endif %}
-      </nav>
+        <!-- ロゴ（上部・中央。クリックでウェルカム画面へ） -->
+        <a href="{{ url('users:welcome') }}" class="menu-logo-link">
+            <img src="{{ static('image/logo.png') }}" alt="あやかしさんぽ" class="menu-logo">
+        </a>
+        <!-- 「メニュー」見出し（ロゴの下） -->
+        {# <h2 class="offcanvas-title menu-title" id="menu-title">メニュー</h2> #}
+        <!-- メニュー項目 -->
+        <nav class="menu-list">
+            {% if logged_in %}
+            {# ログイン中のみ表示：本人のデータ・設定 #}
+            <a href="{{ url('reports:mypost') }}">作成したレポート一覧</a>   {# 自分が投稿したレポート一覧 #}
+            <a href="{{ url('routes:myroute') }}">作成したルート一覧</a>     {# 自分が作成したルート一覧 #}
+            <a href="{{ url('spots:spot_list') }}">スポット一覧</a>          {# 有名スポット一覧（公開） #}
+            <a href="{{ url('users:setting') }}">設定</a>                    {# アカウント設定 #}
+            <a href="{{ url('users:logout') }}">ログアウト</a>
+            {% else %}
+            {# 未ログイン時：公開ページとログインのみ #}
+            <a href="{{ url('spots:spot_list') }}">スポット一覧</a>
+            <a href="{{ url('users:login') }}">ログイン</a>
+            <p class="menu-note">※ レポート作成・ルート作成にはログインが必要です</p>
+            {% endif %}
+        </nav>
     </div>
-  </div>
+</div>
 </header>

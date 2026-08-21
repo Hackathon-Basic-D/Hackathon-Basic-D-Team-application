@@ -2,7 +2,8 @@
 const PIN_IMAGE_URL = "/static/image/fire-v.png";           // 通常時のピン画像のパス
 const PIN_IMAGE_SELECTED_URL = "/static/image/fire-v.png";  // クリックで選択中のときのピン画像
 const MAP_ID = "ea195c40733b8f571251ff61";                  // Google Cloudで作った地図ID（AdvancedMarker必須）
-const DEFAULT_CENTER = { lat: 34.6873, lng: 135.5259 };     // 地図の初期中心（大阪城）
+// 地図の初期中心：テンプレートが渡したメインエリア（window.MAP_CENTER）。無ければ大阪
+const DEFAULT_CENTER = window.MAP_CENTER || { lat: 34.6873, lng: 135.5259 };
 const PIN_SIZE = "40px";                                    // ピンの通常サイズ高さ
 const PIN_SIZE_SELECTED = "64px";                           // ピンのクリック時のサイズ高さ
 

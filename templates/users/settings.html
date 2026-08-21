@@ -8,6 +8,11 @@
 {% block content %}
 {# 中央寄せの入力フォーム領域（レポート作成と同じ .report-page を流用） #}
 <div class="report-page">
+    {# 保存成功のメッセージ（?saved=1 のときだけ表示） #}
+    {% if saved %}
+    <div class="alert alert-success">変更を保存しました。</div>
+    {% endif %}
+
     <form method="post">
         {{ csrf_input }}   {# CSRF対策トークン #}
 
