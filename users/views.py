@@ -1,5 +1,9 @@
 from django.shortcuts import render, redirect
 from django.core.exceptions import ValidationError
+# next に渡されたURLが安全なURLかどうかを確認するための関数
+# （外部サイトへ誘導される「オープンリダイレクト」対策として使用）
+from django.utils.http import url_has_allowed_host_and_scheme
+
 from .models import User
 from .forms import SignUpForm, LoginForm, UserEditForm
 
@@ -32,6 +36,13 @@ def signup_view(request):
 # GET:ログイン画面を表示
 # POST:認証成功　→　ホーム画面へ遷移 / 認証失敗　→　ログイン画面を再表示
 def login_view(request):
+    # ログイン画面に「次にどこへ行くべきか」を next という名前で持ち回す。
+    # 受け取り方は経由してきたルートによって変わる：
+    # ・report_create等からリダイレクトした直後（GET） → クエリパラメータに入っている
+    # ・ログインフォームを送信した直後（POST) → hidden input 'next' として送られてくる
+    # 両方 or で拾うことで、GET・POSTどちらの経路でも next を取りこぼさない
+    next_url = request.POST.get('next') or request.GET.get('next')
+
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -40,12 +51,31 @@ def login_view(request):
             user = User.objects.filter(email=email).first()
             if user and user.check_password(password):
                 request.session['user_id'] = str(user.id)
+
+
+                # next をそのまま signal 通りに redirect() へ渡すのは危険。
+                # 悪意あるユーザーが next=https://evil.example.com/ のような
+                # 外部URLを仕込んでログインさせ、認証後にそこへ誘導する
+                # 「オープンリダイレクト」攻撃を許してしまう。
+                # url_has_allowed_host_and_scheme() で「このサイト自身のURLか」を
+                # 確認できた場合のみ next へ飛ばし、それ以外は無視してホームへ通す。
+                if next_url and url_has_allowed_host_and_scheme(
+                    next_url,
+                    allowed_hosts={request.get_host()},
+                    require_https=request.is_secure(),
+                ):
+                    return redirect(next_url)   # 元々行おうとしていた操作に戻る
+                # next がない（通常ログイン）の場合は、ホーム画面へ
                 return redirect('users:home')   # ここでホーム画面へ遷移
             form.add_error(None, 'メールアドレスまたはパスワードが正しくありません')
     else:
         form = LoginForm()  # 認証失敗なら、ログイン画面を再表示
 
-    return render(request, 'users/login.html', {'form': form})  # GETならログインフォームを表示
+    # ここでの next_url は「まだ安全確認前の生の値」。
+    # GET時（初回表示）・認証失敗時（フォーム再表示）のどちらでも next をテンプレートへ渡し、
+    # login.html 側で hidden input として埋め込むことで、
+    # 再送信（次のPOST）でも next を失わずに引き継げるようにする。
+    return render(request, 'users/login.html', {'form': form, 'next':next_url})
 
 
 # ログアウト

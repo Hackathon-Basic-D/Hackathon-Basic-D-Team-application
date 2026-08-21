@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Report, ReportComment
 from .forms import ReportForm
+from django.urls import reverse     # URL名から実際にパスを逆引き
+from django.utils.http import urlencode # nextの値を正しくURLエンコードするのに必要
 
 # default_storage: Djangoが提供するファイル保存の抽象化API
 # 今はFileSystemStorage（ローカル保存）を使用
@@ -29,7 +31,17 @@ def mypost(request):
 # POST:保存処理
 def report_create(request):
     if not check_login(request):
-            return redirect('users:login')
+        # 未ログインならログイン画面へ。ただし今の画面(lat/lng付き)を覚えておかないと、
+        # ログイン後にこの位置情報が失われてしまう。
+        # そこで「ログイン後にどこへ戻るか」を next パラメータとしてログインURLに持たせる。
+        login_url = reverse('users:login')
+
+        # request.get_full_path() は「/reports/create/?lat=..&lng=..」のように
+        # 今のURL（クエリ文字列込み）を返す。
+
+        # next= に付けてログイン画面へ渡すことで、
+        # ログイン後に「もともと選択していた場所」へ戻れるようにする。
+        return redirect(f"{login_url}?{urlencode({'next':request.get_full_path()})}")
     
     if request.method == 'POST':
         # request.FILESを渡さないとアップロードされた画像を受け取れない
