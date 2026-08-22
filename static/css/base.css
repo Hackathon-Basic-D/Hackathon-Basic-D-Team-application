@@ -1,203 +1,36 @@
-/* ヘッダー・フッターの高さ（全ページ共通・固定値） */
+/* ===== 全ページ共通の基礎（変数・背景） ===== */
+
+/* CSS変数：ヘッダー/フッターの高さ。各ページの余白計算(calc)で使い回す */
 :root {
-    --header-h: 0px;    /* ヘッダーはバーなし（☰を地図の上に浮かせる） */
-    --footer-h: 126px;   /* フッター固定高さ（仮値。実物に合わせて要調整） */
+    --header-h: 0px;        /* ヘッダーはバー無し（☰を地図に浮かせる）ので高さ0 */
+    --footer-h: 146px;      /* 固定フッターの高さ。中身の下余白の確保に使う */
+    --sheet-h: 180px;       /* ボトムシートの高さ。地図の縮小量(#map.sheet-open)にも使う */
 }
 
 /* 全ページ共通の背景（白地＋金雲）。金雲は透過PNGなので白の上に重なる */
 .background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    z-index: -1;
-    background-size: cover;
-    background-position: center;
-    background-image: url('/static/image/background.png');
-    background-color: #fff;
+    position: fixed;                 /* スクロールしても背景を画面に固定 */
+    top: 0;                          /* 画面上端に合わせる */
+    left: 0;                         /* 画面左端に合わせる */
+    width: 100%;                     /* 横幅を画面いっぱいに */
+    height: 100vh;                   /* 高さを画面の高さいっぱいに */
+    z-index: -1;                     /* 全要素より後ろ（コンテンツの背面）に置く */
+    background-size: cover;          /* 切れても全面を覆うように画像を拡大 */
+    background-position: center;     /* 画像を中央基準で配置 */
+    background-image: url('/static/image/background.png');  /* 背景の金雲画像 */
+    background-color: #fff;          /* 画像が透過/未読込でも白地を保証 */
 }
 
-.logo {
-    width: 200px;
-    height: auto;
+/* 中央カラム型ページの共通枠（フォーム・詳細で共用。一覧やマップは対象外）
+   中央寄せ＋最大幅＋ヘッダー(上)/フッター(下)/左右の余白 */
+.content-column {
+    max-width: 600px;          /* 読みやすい列幅の上限 */
+    margin: 0 auto;            /* 左右中央寄せ */
+    padding: 64px 16px calc(var(--footer-h) + 24px);  /* 上：ハンバーガー / 左右16 / 下：フッター */
 }
 
-.btn-purple {
-    background-color: #800080;
-    color: white;
-    width: 200px;
-    border: none;
-    padding: 10px;
-    display: block;
-    text-align: center;
-    border-radius: 6px;
-}
-
-.btn-purple:hover {
-    background-color: #9a00a0;
-    color: white;
-}
-
-/* ===== ヘッダー（ハンバーガー＋Offcanvas） ===== */
-
-.header {
-    height: var(--header-h);
-}
-
-/* ハンバーガーボタン（右上に固定） */
-.hamburger {
-    position: fixed;
-    top: 10px;
-    right: 12px;
-    z-index: 1040;               /* 開いたメニュー(1045)より後ろ＝開くと隠れる */
-    width: 44px;
-    height: 44px;
-    display: flex;               /* ☰を中央寄せ */
-    align-items: center;
-    justify-content: center;
-    background: #fff;            /* 白背景で地図の上でも見やすく */
-    border: 2px solid #800080;   /* 紫の枠（フッターと同系） */
-    border-radius: 50%;          /* 円形（フッターのボタンに合わせる） */
-    color: #800080;              /* ☰の色 */
-    font-size: 22px;
-    line-height: 1;
-    cursor: pointer;
-}
-
-/* Offcanvasを全画面幅に（既定の狭いドロワーを上書き。背景はBootstrap既定の白＝不透明） */
-.menu-offcanvas {
-    --bs-offcanvas-width: 100%;   /* Bootstrap既定の幅(400px)を上書き＝画面幅に関わらず常に全幅 */
-}
-
-/* 「メニュー」見出し */
-.menu-offcanvas .menu-title {
-    font-size: 20px;
-    font-weight: bold;
-}
-
-/* メニュー項目 */
-.menu-offcanvas .menu-list a {
-    display: block;
-    padding: 16px 4px;
-    color: #333;
-    text-decoration: none;          /* 下線なし */
-    border-bottom: 1px solid #ccc;  /* 区切り線 */
-    font-size: 16px;
-}
-
-.footer {
-    background-color: #800080;
-    color: white;
-    text-align: center;
-    padding: 10px 0;
-    position: fixed;
-    bottom: 0;
-    height: var(--footer-h);
-    width: 100%;
-    z-index: 1000;
-}
-
-
-.footer-menu {
-    display: flex;
-    justify-content: space-around;   /* 3項目を横に均等配置 */
-    align-items: center;
-    margin-bottom: 5px;
-}
-
-
-.footer-menu img {
-    width: 56px;
-    height: 56px;
-    background: #fff;
-    border-radius: 50%;
-}
-
-/* ナビのラベル文字 */
-.footer-menu span {
-    font-size: 12px;
-    font-weight: bold;
-}
-
-/* ナビのリンク＝アイコンの下にラベルを縦並び */
-.footer-menu a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    text-decoration: none;   /* ラベルの下線を消す */
-    color: #fff;             /* ラベルの文字色 */
-}
-
-/* コピーライト */
-.text-muted {
-    font-size: 8px;
-}
-
-/* ハンバーガーメニュー：ロゴを上部中央、項目を下寄せ（スマホで親指が届きやすいように） */
-.menu-logo-link {
-    display: block;
-    text-align: center;          /* ロゴを中央に */
-    margin-top: 4px;
-}
-.menu-logo {
-    width: 240px;                /* ロゴの大きさ（お好みで調整） */
-    height: auto;
-}
-
-.menu-offcanvas .menu-title {
-    font-size: 32px;
-    font-weight: bold;
-    text-align: center;
-    margin: 28px 0 16px;     /* 上の余白でロゴから離す（数値で調整可） */
-    letter-spacing: 2px;      /* 少し字間を空けて見出しらしく（任意） */
-}
-
-/* ハンバーガーメニューの閉じるボタンを右上に（メニューは右から開くため） */
-.menu-offcanvas .offcanvas-header {
-    justify-content: flex-end;
-    padding-right: 28px;      /* 閉じるボタンを画面端から内側へ（数値で調整可） */
-}
-
-
-/* ログインが必要な操作（未ログイン時）：グレーにして押せない雰囲気に */
-.needs-login {
-    filter: grayscale(1);
-    opacity: 0.55;
-}
-
-/* ログイン案内のトースト（画面下部に一時表示） */
-.login-toast {
-    position: fixed;
-    left: 50%;
-    bottom: 150px;                 /* フッターの少し上 */
-    transform: translateX(-50%);
-    max-width: 90%;
-    background: #333;
-    color: #fff;
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    text-align: center;
-    z-index: 1100;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-}
-.login-toast.show {
-    opacity: 1;
-    pointer-events: auto;
-}
-.login-toast a {
-    color: #ffd54a;                /* リンクは目立つ色に */
-    font-weight: bold;
-}
-
-/* ハンバーガーメニューのログイン注記 */
-.menu-note {
-    margin-top: 12px;
-    padding: 0 4px;
-    font-size: 12px;
-    color: #666;
+/* ヘッダー/フッターが無い画面（ログイン前）用：上下の逃げを外す */
+.content-column.flush {
+    padding-top: 24px;         /* 上の余白（お好みで） */
+    padding-bottom: 24px;      /* 下の余白（お好みで） */
 }

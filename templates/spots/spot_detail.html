@@ -1,10 +1,12 @@
 {% extends 'base_main.html' %}   {# ヘッダー・フッター付きの共通ベース #}
 {% block title %}{{ spot.title }}｜スポット{% endblock %}
-{% block page_css %}<link rel="stylesheet" href="{{ static('css/reports.css') }}">{% endblock %}   {# detail-* のスタイル #}
+{% block page_css %}
+    <link rel="stylesheet" href="{{ static('css/detail.css') }}">
+    <link rel="stylesheet" href="{{ static('css/spots.css') }}">
+{% endblock %}
 
 {% block content %}
-{# 詳細表示領域（レポート詳細と共通の .detail-* を使用） #}
-<div class="detail-page">
+<div class="content-column">
     {# スポットに画像フィールドが無いため共通アイコン #}
     <img class="detail-image" src="{{ static('image/fire-v.png') }}" alt="">
     {# タイトル（【地域】名） #}
@@ -15,5 +17,23 @@
     </div>
     {# 本文 #}
     <p class="detail-desc">{{ spot.description }}</p>
+    {# 出典（成果物の sources を表示） #}
+    {% if spot.sources %}
+    <div class="spot-sources">
+        <p class="spot-sources-title">出典</p>
+        <ul>
+            {% for src in spot.sources %}
+            <li>
+                {% if src.url %}
+                <a href="{{ src.url }}" target="_blank" rel="noopener">{{ src.title }}</a>
+                {% else %}
+                {{ src.title }}
+                {% endif %}
+                {% if src.publisher %}（{{ src.publisher }}）{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

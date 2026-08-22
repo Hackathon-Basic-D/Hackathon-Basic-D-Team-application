@@ -1,0 +1,137 @@
+/* ===== 地図まわりの共通UI（ホーム / ルート選択で共用） ===== */
+
+/* 地図本体：画面の残り高さいっぱいに表示 */
+#map {
+    width: 100%;                                               /* 横幅いっぱい */
+    height: calc(100dvh - var(--header-h) - var(--footer-h));  /* 画面高 −ヘッダー −フッター */
+    transition: height 0.25s ease;                            /* 高さ変化をなめらかに */
+}
+
+/* シートを開いている間は、その高さぶん地図を縮める（Googleロゴが隠れない） */
+#map.sheet-open {
+    height: calc(100dvh - var(--header-h) - var(--footer-h) - var(--sheet-h));  /* さらにシート分を引く */
+}
+
+/* 地図上部に重ねる案内メッセージ（JSで .show 切替） */
+#report-message {
+    display: none;                          /* 通常は非表示 */
+    position: fixed;                        /* 画面に固定 */
+    top: calc(var(--header-h) + 48px);      /* ヘッダー下・地図上部に重ねる */
+    left: 50%;                              /* 中央へ（transformと併用） */
+    transform: translateX(-50%);           /* 自分の半分だけ左へ＝中央 */
+    z-index: 6;                            /* 地図より前面 */
+    background: rgba(255,255,255,0.95);    /* 半透明の白 */
+    color: #8e24aa;                        /* 紫の文字 */
+    font-weight: bold;                     /* 太字 */
+    padding: 8px 16px;                     /* 内側の余白 */
+    border: 1px solid #8e24aa;             /* 紫の枠 */
+    border-radius: 8px;                    /* 角丸 */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2); /* 影で浮かせる */
+    white-space: nowrap;                   /* 折り返さない */
+}
+#report-message.show {
+    display: block;                        /* 表示状態 */
+}
+
+/* 現在地ボタン（地図左下に浮かせる。ひし形＋ラベル） */
+#locate-btn {
+    position: fixed;         /* 画面に固定 */
+    left: 12px;             /* 左下に配置 */
+    bottom: 180px;         /* フッターより上 */
+    background: none;      /* 背景なし */
+    border: none;         /* 枠なし */
+    padding: 0;          /* 余白なし */
+    cursor: pointer;    /* 指カーソル */
+    display: flex;      /* 中身を並べる */
+    flex-direction: column;  /* ひし形の下にラベル */
+    align-items: center;     /* 中央そろえ */
+    gap: 4px;               /* ひし形とラベルの間隔 */
+    z-index: 800;          /* 地図より前面 */
+}
+
+/* 現在地ボタンのひし形枠（正方形を45度回転） */
+#locate-diamond {
+    width: 40px;                        /* 幅 */
+    height: 40px;                       /* 高さ（正方形） */
+    background: rgba(255,255,255,0.9);  /* 中は白 */
+    border: 2px solid #8e24aa;          /* 紫の枠 */
+    transform: rotate(45deg);           /* 正方形→ひし形 */
+    display: flex;                      /* 中のアイコンを中央に */
+    align-items: center;                /* 縦中央 */
+    justify-content: center;            /* 横中央 */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);  /* 影 */
+}
+
+/* ひし形の中のアイコン（逆回転で水平に戻す） */
+#locate-icon {
+    transform: rotate(-45deg);  /* ひし形の傾きを打ち消す */
+    width: 50px;               /* 幅 */
+    height: 50px;              /* 高さ */
+    object-fit: contain;      /* 枠内に収める */
+    display: block;           /* 余白の隙間を消す */
+}
+
+/* 現在地ボタンのラベル「現在地取得」 */
+#locate-label {
+    font-size: 11px;      /* 小さめ */
+    color: #8e24aa;       /* 紫 */
+    font-weight: bold;    /* 太字 */
+    white-space: nowrap;  /* 折り返さない */
+}
+
+/* 現在地マーカー（地図上の青い丸） */
+.current-dot {
+    width: 16px;                                 /* 幅 */
+    height: 16px;                                /* 高さ */
+    background: #4285f4;                         /* Googleブルー */
+    border: 2px solid #fff;                      /* 白い縁取り */
+    border-radius: 50%;                          /* 円形 */
+    box-shadow: 0 0 0 2px rgba(66,133,244,0.3);  /* 周囲に薄青リング */
+}
+
+/* 選択中の炎ピンの演出（マーカーの入れ物） */
+.fire-marker {
+    position: relative;      /* 中の発光の基準 */
+    display: inline-block;   /* 画像サイズに合わせる */
+    line-height: 0;          /* 余分な行高を消す */
+}
+
+/* 炎の画像（発光より前面） */
+.fire-marker-image {
+    position: relative;  /* z-indexを効かせる */
+    z-index: 2;          /* 発光より前 */
+    display: block;      /* 隙間を消す */
+}
+
+/* 火の玉の後ろの発光 */
+.fire-pulse {
+    position: absolute;                /* 画像に重ねる */
+    left: 50%;                        /* 火の玉付近に合わせる（横） */
+    top: 80%;                         /* 火の玉付近に合わせる（縦） */
+    width: 36%;                       /* 画像幅に対する比率 */
+    aspect-ratio: 1;                  /* 正円 */
+    border-radius: 50%;               /* 円形 */
+    background: rgba(170,0,255,0.45);  /* 紫の光 */
+    box-shadow: 0 0 5px rgba(170,0,255,0.75), 0 0 10px rgba(170,0,255,0.45);  /* にじみ */
+    transform: translate(-50%,-50%) scale(0.85);  /* 中心そろえ＋縮小 */
+    opacity: 0;                       /* 通常は消えている */
+    z-index: 1;                       /* 画像の後ろ */
+    pointer-events: none;             /* 操作を邪魔しない */
+}
+
+/* 選択された炎だけ鼓動アニメ */
+.fire-marker.burning .fire-pulse {
+    animation: fire-pulse 1.4s ease-in-out infinite;  /* 拡縮を繰り返す */
+}
+
+/* 発光の鼓動アニメ定義 */
+@keyframes fire-pulse {
+    0%, 100% {
+        transform: translate(-50%,-50%) scale(0.55);  /* 小さく */
+        opacity: 0.3;                                 /* 薄く */
+    }
+    50% {
+        transform: translate(-50%,-50%) scale(1.35);  /* 大きく */
+        opacity: 0.8;                                 /* 濃く */
+    }
+}

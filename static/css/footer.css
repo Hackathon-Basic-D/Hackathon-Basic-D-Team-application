@@ -1,0 +1,52 @@
+/* ===== 全ページ共通フッター（下部ナビ＋コピーライト） ===== */
+
+/* フッター本体：画面下部に固定するバー */
+.footer {
+    background-color: #800080;   /* テーマの紫 */
+    color: white;                /* 文字色は白 */
+    text-align: center;          /* 中の文字を中央寄せ */
+    padding: 10px 0;             /* 上下に10pxの内側余白 */
+    position: fixed;             /* スクロールしても画面下に固定 */
+    bottom: 0;                   /* 画面下端に密着 */
+    height: var(--footer-h);     /* 高さは共通変数(146px)を使用 */
+    width: 100%;                 /* 横幅を画面いっぱいに */
+    z-index: 1000;               /* 地図やシートより前面に出す */
+}
+
+/* 3つの円形ナビを横並びにする入れ物 */
+.footer-menu {
+    display: flex;                   /* 子(ルート/ホーム/レポート)を横並びに */
+    justify-content: space-around;   /* 3項目を横に均等配置 */
+    align-items: center;             /* 縦位置を中央にそろえる */
+    margin-bottom: 5px;              /* 下のコピーライトとの間隔 */
+}
+
+/* ナビのリンク＝アイコンの下にラベルを縦並び（親→子の順で記載） */
+.footer-menu a {
+    display: flex;               /* 中のアイコンとラベルを並べる */
+    flex-direction: column;      /* アイコンの下にラベル（縦並び） */
+    align-items: center;         /* 横方向中央にそろえる */
+    gap: 2px;                    /* アイコンとラベルの間隔 */
+    text-decoration: none;       /* ラベルの下線を消す */
+    color: #fff;                 /* ラベルの文字色（白） */
+}
+
+/* ナビのアイコン画像：白い丸に統一 */
+.footer-menu img {
+    width: 56px;                 /* アイコンの幅 */
+    height: 56px;                /* アイコンの高さ（正方形） */
+    background: #fff;            /* 背景を白く（透過アイコンでも丸が出る） */
+    border-radius: 50%;          /* 円形にする */
+}
+
+/* ナビのラベル文字 */
+.footer-menu span {
+    font-size: 12px;             /* ラベルは小さめ */
+    font-weight: bold;           /* 太字で読みやすく */
+}
+
+/* コピーライト表記（フッター最下部）
+   ※Bootstrapの .text-muted を上書き（全体に効く。今回は現状維持） */
+.text-muted {
+    font-size: 8px;              /* ごく小さく表示 */
+}

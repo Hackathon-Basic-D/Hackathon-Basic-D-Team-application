@@ -1,68 +1,96 @@
-{% extends 'base.html' %}
+{% extends 'base_main.html' %}  {# ヘッダーフッター付きに変更 #} 
 {% block title %}あやかしさんぽreport{% endblock %}
 {% block page_css %}
-  <link rel="stylesheet" href="{{ static('css/reports.css') }}">
+    <link rel="stylesheet" href="{{ static('css/detail.css') }}">
+    <link rel="stylesheet" href="{{ static('css/comment.css') }}">
+    <link rel="stylesheet" href="{{ static('css/form.css') }}">
+    <script src="{{ static('js/comment.js') }}"></script>
 {% endblock %}
 {% block content %}
 
-<!-- 操作結果メッセージ（投稿成功など） -->
+<div class="content-column">
 
+    <!-- 操作結果メッセージ（投稿成功など） -->
+{% if created %}
+    <div class="alert alert-success">成功！操作が正常に完了しました。</div>
+{% endif %}
 
 <!-- レポート画像 -->
-<img class="reportimg" src="{{ report.report_image_url }}" alt="レポート画像">
+<img class="detail-image" src="{{ report.report_image_url or static('image/no-image.png') }}" alt="レポート画像">
 
 <!-- レポートタイトル -->
-<h1>{{ report.report_title }}</h1>
+<h1 class="detail-title">{{ report.report_title }}</h1>
+
+<!-- タグ -->
+<div class="detail-tags" id="detail-tags"></div>
 
 <!-- 本文 -->
-<p>{{ report.report_description }}</p>
+<p class="detail-desc">{{ report.report_description }}</p>
 
 <!-- 投稿日時 -->
-<time>{{ report.created_at }}</time>
+<time class="detail-date">{{ report.created_at.strftime('%Y年%m月%d日 %H:%M') }}</time>
+
+<!-- コメント -->
+<a class="detail-comment-link" data-bs-toggle="offcanvas" href="#offcanvasBottom" role="button" aria-controls="offcanvasBottom">
+    コメント
+</a>
 
 <!-- 行き方を調べる（Googleマップへ遷移）※ホームで実装した経路リンクと同じ仕組み -->
-<a id="bs-nav" href="#" target="_blank" rel="noopener">ここへ行く（Googleマップ）</a>
+<a class="detail-nav" href="https://www.google.com/maps/dir/?api=1&destination={{ report.latitude }},{{ report.longitude }}&travelmode=walking" target="_blank" rel="noopener">行き方を調べる<br>（Googlemapへ遷移）</a>
+
 
 <!-- ここから下は「自分のレポート」のときだけ表示する想定 -->
-{% if user_id == report.user_id %}
-  <!-- 編集（遷移先: reports:edit ＝ report_form.html） -->
-  <button type="button" class="btn btn-purple mx-auto d-block btn-sm">編集</button>
-  <!-- 削除（レポート削除処理） -->
-  <button type="button" class="btn btn-purple mx-auto d-block btn-sm">削除</button>
+{% if is_owner %}
+<div class="detail-actions">
+    <a href="{{ url('reports:report_edit', report.pk) }}" class="btn btn-purple btn-sm">編集</a>
+    <form method="post" action="{{ url('reports:report_delete', report.pk) }}" data-confirm="このレポートを削除しますか？" style="display:inline;">
+        {{ csrf_input }}
+        <button type="submit" class="btn btn-purple btn-sm">削除</button>
+    </form>
+</div>
 {% endif %}
 
 <!-- ===== コメント ===== -->
 <!-- オフキャンバス表示 -->
-<a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasBottom" role="button" aria-controls="offcanvasBottom">
-  コメント
-</a>
 <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
     <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="offcanvasBottomLabel">コメント</h5>
-      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        <h5 class="offcanvas-title" id="offcanvasBottomLabel">コメント</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-      <div class="offcanvas-body small">
+    <div class="offcanvas-body">
         <!-- レポートについているコメントをすべて表示 -->
         {% for comment in comments %}
-          <div class="p-2 border-bottom">
+        <div class="comment-item">
             <!-- コメント本文 -->
-              <p>{{ comment.report_comment }}</p>     
-              
-              <!-- 自分のコメントの場合のみ編集・削除 -->
-              {% if user_id == comment.user_id %}
-                <button type="button" class="btn btn-purple mx-auto d-block btn-sm">編集</button>
-                <button type="button" class="btn btn-purple mx-auto d-block btn-sm">削除</button>
-              {% endif %}
-          </div>
+            <p class="comment-text">{{ comment.report_comment }}</p>
+            <p class="comment-date">{{ comment.created_at.strftime('%Y年%m月%d日 %H:%M') }}</p>
+            <!-- 自分のコメントの場合のみ編集・削除 -->
+            {% if comment.is_owner %}
+            <div class="comment-actions">
+                <!-- 編集 -->
+                <button type="button" class="comment-action" onclick="this.closest('.comment-item').querySelector('.comment-edit').style.display='block';">編集</button>
+                <!-- 削除 -->
+                <form method="post" action="{{ url('reports:comment_delete', comment.id) }}" class="comment-delete" style="display:inline;">
+                    {{ csrf_input }}
+                    <button type="submit" class="comment-action del">削除</button>
+                </form>
+            </div>
+            <form method="post" action="{{ url('reports:comment_edit', comment.id) }}" class="comment-edit" style="display:none; margin-top:6px;">
+            {{ csrf_input }}
+            <input type="text" name="report_comment" value="{{ comment.report_comment }}" class="form-control form-control-sm mb-1">
+            <button type="submit" class="comment-send">保存</button>
+            </form>
+            {% endif %}
+        </div>
         {% endfor %}
-      </div>
-    <div class="offcanvas-footer p-2">
-      <form method=""POST" action="{{ url(repors:comment_create, pk=report.id) }}"
-        <div class="input-group">
-          <input type="text" class="form-control mb-2" name="report_comment" placeholder="コメントを入力">
-          <button type="button" class="btn btn-outline-secondary">送信</button>
-        /div>
-      </form>
     </div>
+    <div class="comment-footer">
+    <form method="post" action="{{ url('reports:comment_create', report.id) }}" class="comment-form">
+        {{ csrf_input }}
+        <input type="text" class="form-control" name="report_comment" placeholder="コメントを入力">
+        <button type="submit" class="comment-send">送信</button>
+    </form>
+    </div>
+</div>
 </div>
 {% endblock %}

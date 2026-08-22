@@ -1,0 +1,40 @@
+/* ===== フォーム部品（ラベル・入力欄。共通パーツ） ===== */
+
+/* 紫ラベル（紫背景・白文字のピル） */
+.form-label {
+    display: block;            /* 幅を効かせるためブロックに */
+    width: 180px;              /* ラベル共通の固定幅 */
+    background-color: #800080; /* 紫の背景 */
+    color: #fff;               /* 白文字 */
+    font-weight: bold;         /* 太字 */
+    font-size: 18px;           /* 文字サイズ */
+    padding: 6px 12px;         /* 内側の余白 */
+    border-radius: 4px;        /* 角丸 */
+    margin-bottom: 6px;        /* ラベルと入力欄の間隔 */
+    text-align: center;        /* ラベル文字を中央に */
+}
+
+/* 薄紫の入力欄（テキスト・都道府県セレクト共通） */
+.form-control,
+.form-select {
+    width: 100%;               /* 横幅いっぱい */
+    padding: 8px 10px;         /* 入力しやすい余白 */
+    font-size: 18px;           /* 文字サイズ */
+    border: 1px solid #b39ddb; /* 薄紫の枠 */
+    border-radius: 4px;        /* 角丸 */
+    background-color: #E6E6FA; /* 薄紫の背景 */
+    margin-bottom: 16px;       /* 項目ごとの縦間隔（reports版の間隔をここへ集約） */
+}
+
+/* 必須マーク（ラベルの「*」） */
+.required {
+    color: #fff;         /* 赤 */
+    margin-left: 2px;    /* ラベル文字との間隔 */
+}
+
+/* フォーム下部の注記（「* は必須項目です」など） */
+.form-note {
+    font-size: 13px;     /* 小さめ */
+    color: #666;         /* 目立ちすぎないグレー */
+    margin: 4px 0 0;     /* ボタンとの間隔 */
+}

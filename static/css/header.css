@@ -1,0 +1,80 @@
+/* ===== ヘッダー・ハンバーガーメニュー ===== */
+
+/* ヘッダー領域：バーは出さず高さ0（☰だけを地図の上に浮かせる） */
+.header {
+    height: var(--header-h);     /* 共通変数(0px)。バー無しレイアウト */
+}
+
+/* ハンバーガーボタン（右上に固定） */
+.hamburger {
+    position: fixed;             /* スクロールしても右上に固定 */
+    top: 10px;                  /* 画面上端から10px */
+    right: 12px;                /* 画面右端から12px */
+    z-index: 1040;              /* 開いたメニュー(1045)より後ろ＝開くと隠れる */
+    width: 44px;               /* ボタンの幅（タップしやすい大きさ） */
+    height: 44px;              /* ボタンの高さ */
+    display: flex;             /* 中の☰を中央寄せするため */
+    align-items: center;       /* ☰を縦中央に */
+    justify-content: center;   /* ☰を横中央に */
+    background: #fff;          /* 白背景で地図の上でも見やすく */
+    border: 2px solid #800080; /* 紫の枠（フッターと同系色） */
+    border-radius: 50%;        /* 円形（フッターのボタンに合わせる） */
+    color: #800080;            /* ☰の文字色（紫） */
+    font-size: 22px;           /* ☰の大きさ */
+    line-height: 1;            /* 縦の余白を詰めて中央にそろえる */
+    cursor: pointer;           /* 押せると分かるよう指カーソル */
+}
+
+/* メニュー本体（Bootstrap Offcanvas）を全画面幅に上書き */
+.menu-offcanvas {
+    --bs-offcanvas-width: 100%;  /* Bootstrap既定の幅(400px)を上書き＝常に全幅 */
+}
+
+/* メニュー上部の帯：閉じる(×)ボタンを右上へ。メニューは右から開くため */
+.menu-offcanvas .offcanvas-header {
+    justify-content: flex-end;   /* ×ボタンを右端へ */
+    padding-right: 28px;         /* ×を画面端から少し内側へ */
+}
+
+
+/* 「メニュー」見出し */
+.menu-offcanvas .menu-title {
+    font-size: 32px;            /* 見出しらしく大きく */
+    font-weight: bold;          /* 太字 */
+    text-align: center;         /* 中央寄せ */
+    margin: 28px 0 16px;        /* 上に余白でロゴから離す・下に16px */
+    letter-spacing: 2px;        /* 字間を空けて見出しらしく */
+}
+
+
+/* ロゴのリンク：上部中央に配置 */
+.menu-logo-link {
+    display: block;              /* 幅を持たせて中央寄せを効かせる */
+    text-align: center;          /* ロゴを中央に */
+    margin-top: 4px;             /* 帯との間隔 */
+}
+
+/* ロゴ画像の大きさ */
+.menu-logo {
+    width: 240px;                /* ロゴの幅（お好みで調整） */
+    height: auto;                /* 縦横比を保つ */
+}
+
+
+/* メニュー項目（各リンク）：縦に並ぶ行 */
+.menu-offcanvas .menu-list a {
+    display: block;                 /* 1項目1行（幅いっぱいのタップ領域） */
+    padding: 16px 4px;              /* 行の上下を広げてタップしやすく */
+    color: #333;                    /* 文字色（濃いグレー） */
+    text-decoration: none;          /* 下線なし */
+    border-bottom: 1px solid #ccc;  /* 項目間の区切り線 */
+    font-size: 16px;                /* 文字サイズ */
+}
+
+/* 未ログイン時のメニュー内注記（「ログインが必要です」等） */
+.menu-note {
+    margin-top: 12px;           /* 上のメニュー項目との間隔 */
+    padding: 0 4px;             /* 左右のわずかな余白（項目と字下げをそろえる） */
+    font-size: 12px;            /* 小さめの注記 */
+    color: #666;                /* 目立ちすぎないグレー */
+}

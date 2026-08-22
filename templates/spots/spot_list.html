@@ -1,7 +1,8 @@
 {% extends 'base_main.html' %}   {# base＋ヘッダー(ハンバーガー)＋フッターの共通ベース #}
 {% block title %}スポット一覧{% endblock %}
 {% block page_css %}
-<link rel="stylesheet" href="{{ static('css/reports.css') }}">   {# 一覧(feed-*)・検索UIのスタイル #}
+<link rel="stylesheet" href="{{ static('css/list.css') }}">   {# 一覧(feed-*) #}
+<link rel="stylesheet" href="{{ static('css/spots.css') }}">  {# 検索・地域フィルタ(spot-*) #}
 <script defer src="{{ static('js/spot_filter.js') }}"></script>  {# 検索・地域の絞り込みJS（deferでDOM生成後に実行） #}
 {% endblock %}
 
@@ -9,14 +10,14 @@
 {# 検索・地域フィルタ #}
 <div class="spot-filter">
     <div class="spot-search">
-        <span class="pill-label">スポット検索</span>              {# 紫ラベル #}
+        <span class="spot-label">スポット検索</span>              {# 紫ラベル #}
         <div class="spot-search-row">
             <input type="text" id="spot-search" placeholder="キーワード">   {# 検索文字（JSが監視） #}
             <button type="button" id="spot-search-btn" aria-label="検索">検索</button>
         </div>
     </div>
     <div class="spot-region">
-        <span class="pill-label">地域</span>
+        <span class="spot-label">地域</span>
         <select id="spot-region">                                 {# 地域フィルタ（JSが監視） #}
             <option value="">すべて</option>                       {# 空＝地域で絞らない #}
             {% for region in regions %}                            {# ビューが渡した地域を選択肢に #}
@@ -42,7 +43,7 @@
             <div class="feed-title">【{{ spot.region }}】{{ spot.title }}</div>   {# 【地域】タイトル #}
             <div class="feed-desc">{{ spot.description }}</div>
         </div>
-        <span class="feed-chevron">›</span>                  {# 右端の矢印 #}
+        <span class="spot-chevron">›</span>                  {# 右端の矢印 #}
     </a>
     {% else %}
     <p class="feed-empty">スポットがありません。</p>          {# データが1件も無いとき #}

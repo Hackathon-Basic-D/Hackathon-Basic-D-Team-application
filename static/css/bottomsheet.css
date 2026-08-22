@@ -1,0 +1,95 @@
+/* ===== ボトムシート（地図下からせり上がる情報パネル。home / route選択で共用） ===== */
+
+/* シート本体（フッターの上に固定。JSで .open を付けてせり上げる） */
+#bottom-sheet {
+    position: fixed;                   /* 画面に固定 */
+    left: 0;                          /* 左端 */
+    right: 0;                         /* 右端（横いっぱい） */
+    bottom: var(--footer-h);         /* フッターの上に置く */
+    height: var(--sheet-h);          /* 固定の高さ（変数は base.css） */
+    z-index: 900;                    /* フッター(1000)より後ろ＝閉時は隠れる */
+    overflow-y: auto;                /* 入りきらない分はシート内スクロール */
+    background: #e5e6fa;             /* 薄紫の背景 */
+    border: 2px solid #800080;       /* 紫の枠 */
+    border-radius: 16px 16px 0 0;    /* 上の左右だけ角丸 */
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.25);  /* 上方向の影 */
+    padding: 12px 20px 28px;         /* 内側の余白 */
+    transform: translateY(100%);     /* 初期は画面外へ隠す */
+    transition: transform 0.25s ease;  /* スライドをなめらかに */
+}
+#bottom-sheet.open {
+    transform: translateY(0);        /* せり上げて表示 */
+}
+
+/* シート上部のつまみ（横棒） */
+#bottom-sheet-handle {
+    width: 40px;              /* 幅 */
+    height: 4px;             /* 高さ（細い棒） */
+    background: #ccc;        /* 灰色 */
+    border-radius: 2px;     /* 角を軽く丸める */
+    margin: 4px auto 12px;  /* 中央寄せ＋上下余白 */
+}
+
+/* シートの閉じる(×)ボタン（右上） */
+#bs-close {
+    position: absolute;  /* シートを基準に配置 */
+    top: 8px;           /* 上から8px */
+    right: 14px;        /* 右から14px */
+    border: none;       /* 枠なし */
+    background: none;   /* 背景なし */
+    font-size: 30px;    /* ×を大きめに */
+    cursor: pointer;    /* 指カーソル */
+}
+
+/* タイトル行（詳細リンクをタイトル末尾に続けるための入れ物） */
+#bs-header {
+    display: block;        /* ブロック */
+    padding-right: 40px;   /* 右上の×との重なりを防ぐ */
+}
+
+/* シート内タイトル */
+#bs-title {
+    display: inline;    /* 詳細リンクを末尾に続けるためインライン */
+    color: #800080;     /* 紫 */
+    font-weight: bold;  /* 太字 */
+    font-size: 20px;    /* 見出しサイズ */
+    margin: 0;          /* 余白リセット */
+}
+
+/* タイトル末尾の「詳細」リンク */
+#bs-detail {
+    display: inline-block;       /* インラインブロック */
+    vertical-align: middle;      /* タイトルと縦位置を合わせる */
+    margin-left: 8px;            /* タイトルとの間隔 */
+    color: #800080;              /* 紫 */
+    font-size: 13px;             /* 小さめ */
+    font-weight: bold;           /* 太字 */
+    white-space: nowrap;         /* 折り返さない */
+    text-decoration: underline;  /* 下線付きのリンク */
+}
+
+/* シート内の日時（右寄せ） */
+#bs-date {
+    color: #800080;      /* 紫 */
+    font-weight: bold;   /* 太字 */
+    text-align: right;   /* 右寄せ */
+    margin: 8px 0 0;     /* 上に余白 */
+}
+
+/* シート内「ここへ行く（Googleマップ）」ボタン（home のスポット表示時。内容幅・中央） */
+#bs-nav {
+    display: block;         /* 単独ブロック */
+    width: fit-content;     /* 内容の幅（.btn-purpleの200px固定を解除） */
+    margin: 12px auto 0;    /* 中央寄せ＋上に余白 */
+    padding: 8px 16px;      /* 内側の余白 */
+    font-size: 14px;        /* 文字サイズ */
+    text-decoration: none;  /* 下線なし */
+}
+
+/* シート内のタグ表示エリア（home のスポット表示時） */
+.bs-tags {
+    display: flex;      /* タグを横並び */
+    flex-wrap: wrap;    /* 収まらなければ折り返す */
+    gap: 6px;           /* タグ間の間隔 */
+    margin: 8px 0 0;    /* 上に余白 */
+}

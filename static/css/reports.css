@@ -1,54 +1,4 @@
-/* レポート作成画面：中身を中央寄せの列にし、上下に余白を確保 */
-.report-page {
-    max-width: 600px;
-    margin: 0 auto;            /* 中央寄せ（全体の左寄りを解消） */
-    padding: 64px 16px 140px;  /* 上:ハンバーガー分 / 左右:16 / 下:フッター分(126px)＋余白 */
-}
-
-.reportimg {
-    width: 200px;
-}
-
-.btn-purple {
-    background-color: #800080;
-    color: white;
-    border: none;
-    padding: 10px;
-    display: block;
-    border-radius: 6px;
-}
-
-.btn-purple:hover {
-    background-color: #9a00a0;
-    color: white;
-}
-
-/* 報告ボタン：中央寄せ・内容幅（全幅をやめる） */
-.report-page button[type="submit"] {
-    display: block;
-    width: fit-content;      /* 内容の幅にする */
-    margin: 16px auto 0;     /* 中央寄せ＋上に余白 */
-    padding: 10px 32px;      /* 横に広め */
-}
-
-.form-label {
-    background-color: #800080;
-    color: white;
-    width: 150px;
-    font-weight: bold;
-    padding: 4px 12px;          /* 文字まわりに余白 */
-    margin-bottom: 6px;
-    display: block;
-}
-
-.form-control {
-    width: 100%;
-    padding: 8px 10px;          /* 入力しやすい余白 */
-    margin-bottom: 16px;        /* 項目ごとの間隔 */
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #E6E6FA;
-}
+/* ===== レポート作成画面（report_form）。※settings も .report-page を共用 ===== */
 
 /* レポート作成画面：確認用の静的地図 */
 #report-static-map-wrap {
@@ -56,6 +6,7 @@
     width: 100%;          /* 横幅は親要素いっぱいに */
     max-width: 600px;     /* 大きくなりすぎないよう上限を設定 */
 }
+
 #report-static-map {
     width: 100%;          /* ラッパー幅いっぱいに表示 */
     height: auto;         /* 画像の縦横比を保つ */
@@ -63,6 +14,7 @@
     border: 1px solid #999;   /* 白背景との境界を出す */
     border-radius: 8px;       /* 角丸（任意） */
 }
+
 /* 選択地点を示す中央の「＋」（位置選択画面の照準と同じ見た目） */
 #report-static-reticle {
     position: absolute;                 /* ラッパーを基準に配置 */
@@ -70,203 +22,34 @@
     left: 50%;                          /* 横中央 */
     transform: translate(-50%, -50%);   /* 自身の中心を地図中央に合わせる */
     color: #8e24aa;                     /* 紫 */
-    font-size: 32px;                    /* ＋の大きさ */
-    font-weight: bold;
+    font-size: 48px;                  /* 十字の大きさ */
+    font-weight: bold;                  /* 太字 */
     pointer-events: none;               /* 地図クリックの邪魔をしない */
+    text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff;  /* 白フチで見やすく */
 }
 
-/* 「この位置に投稿しようとしています」のスタイル */
+/* 「この位置に投稿しようとしています」の注記 */
 .report-note {
-    color: #800080;
-    font-weight: bold;
-    text-align: center;
-    margin: 8px 0 16px;
+    color: #800080;        /* 紫 */
+    font-weight: bold;     /* 太字 */
+    text-align: center;    /* 中央寄せ */
+    margin: 8px 0 16px;    /* 上下の余白 */
 }
 
-
-/* 一覧（フィード）行リスト：作成済みレポート/ルート一覧・スポット一覧で共通利用 */
-.feed-list {
-    padding: 0 0 140px;                 /* 下:フッター分（上は見出しが余白を持つ） */
-    border-top: 4px solid #800080;      /* 一覧の一番上の区切り線 */
+/* 送信ボタン（報告する / 変更する）：中央寄せ・内容幅（全幅をやめる） */
+.report-page button[type="submit"] {
+    display: block;        /* 単独ブロック */
+    width: fit-content;    /* 内容の幅 */
+    margin: 16px auto 0;   /* 中央寄せ＋上に余白 */
+    padding: 10px 32px;    /* 横に広め */
 }
 
-/* 一覧の見出し（作成したレポート一覧 など）：紫のラベル調・使い回し可 */
-.feed-heading {
-    margin: 54px 0 8px;                 /* 上:ハンバーガー分 / 下:一覧との区切りの余白 */
-    padding: 10px 16px;
-    background-color: #800080;
-    color: #fff;
-    font-size: 18px;
-    font-weight: bold;
-    text-align: center;                 /* 中央ぞろえ */
-}
-
-.feed-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    text-decoration: none;
-    color: #333;
-    border-bottom: 4px solid #800080;   /* 各行の下に区切り線（最終行にも必ず付く） */
-}
-
-.feed-thumb {
-    flex: 0 0 auto;
-    width: 56px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.feed-thumb img {
-    max-width: 56px;
-    max-height: 56px;
-    object-fit: contain;
-}
-
-.feed-body {
-    flex: 1 1 auto;
-    min-width: 0;                        /* 省略表示のため必要 */
-}
-.feed-date {
-    font-size: 11px;
-    font-weight: bold;
-    text-align: right;                  /* 日付は右上 */
-}
-.feed-title {
-    font-weight: bold;
-    font-size: 16px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;            /* タイトルは1行で省略 */
-}
-.feed-desc {
-    font-size: 12px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;              /* 説明は2行で省略 */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-.feed-empty {
-    padding: 80px 16px;
-    text-align: center;
-}
-
-
-/* 一覧の切り替えタブ（作成したレポート / 作成した経路） */
-.feed-tabs {
-    display: flex;
-    margin: 54px 0 8px;             /* 上:ハンバーガー分 / 下:一覧との余白（見出しと同じ） */
-}
-.feed-tab {
-    flex: 1 1 0;
-    text-align: center;
-    padding: 16px 8px;               /* 上下を広げて高さを確保（詰まり解消） */
-    font-size: 16px;
-    font-weight: bold;
-    text-decoration: none;
-    border-radius: 10px 10px 0 0;    /* 上側だけ角丸にしてタブらしく（四角すぎを緩和） */
-}
-.feed-tab.active {
-    background-color: #800080;      /* アクティブ：濃い紫 */
-    color: #fff;
-}
-.feed-tab:not(.active) {
-    background-color: #E6E6FA;      /* 非アクティブ：薄い紫（押すと切り替わる） */
-    color: #800080;
-}
-
-
-/* スポット一覧：検索・地域フィルタ */
-.spot-filter {
-    padding: 54px 16px 8px;             /* 上:ハンバーガー分 */
-}
-.pill-label {
-    display: inline-block;
-    background-color: #800080;
-    color: #fff;
-    font-weight: bold;
-    padding: 4px 12px;
-    border-radius: 4px;
-    margin-bottom: 6px;
-}
-.spot-search-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-#spot-search {
-    flex: 1 1 auto;
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #E6E6FA;
-}
-#spot-search-btn {
-    background-color: #800080;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 0 16px;
-    font-weight: bold;
-}
-#spot-region {
-    padding: 6px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #E6E6FA;
-}
-
-/* スポット行の右端の矢印 */
-.feed-chevron {
-    flex: 0 0 auto;
-    color: #800080;
-    font-size: 22px;
-    font-weight: bold;
-    padding-left: 8px;
-}
-
-
-/* 詳細画面（スポット／将来のレポート詳細で共通利用） */
-.detail-page {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 64px 16px 160px;      /* 上:ハンバーガー / 下:フッター */
-}
-.detail-image {
-    display: block;
-    width: 60%;
-    max-width: 240px;
-    height: auto;
-    margin: 0 auto 16px;
-}
-.detail-title {
-    color: #800080;
-    font-weight: bold;
-    font-size: 20px;
-    margin: 0 0 8px;
-}
-.detail-tags {
-    text-align: right;
-    color: #800080;
-    font-weight: bold;
-    margin-bottom: 12px;
-}
-.detail-desc {
-    font-weight: bold;
-    white-space: pre-wrap;         /* 本文の改行を活かす */
-    margin-bottom: 20px;
-}
-.detail-nav {
-    display: block;
-    width: fit-content;
-    margin: 0 auto;
-    background-color: #800080;
-    color: #fff;
-    font-weight: bold;
-    padding: 10px 24px;
-    border-radius: 6px;
-    text-decoration: none;
-    text-align: center;
+/* 画像プレビュー（作成の選択画像／編集の既存画像を表示） */
+.report-image-preview {
+    display: block;         /* 単独ブロック */
+    max-width: 100%;        /* はみ出さない */
+    height: auto;           /* 縦横比を保つ */
+    border: 1px solid #999;  /* 枠（境界を分かりやすく。static地図と同じ色） */
+    margin: 8px 0 16px;     /* 上下の余白 */
+    border-radius: 8px;     /* 角丸 */
 }

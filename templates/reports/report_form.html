@@ -1,51 +1,86 @@
 {% extends 'base_main.html' %}
 {% block title %}あやかしさんぽreport{% endblock %}
 {% block page_css %}
+    <!-- css -->
     <link rel="stylesheet" href="{{ static('css/reports.css') }}">
+    <link rel="stylesheet" href="{{ static('css/form.css') }}">
+
     <!-- 確認用の静的地図を描画するJS（deferでDOM構築後に実行される） -->
     <script defer src="{{ static('js/report_form.js') }}"></script>
 {% endblock %}
+
 {% block content %}
+<div class="content-column report-page">
+    <!-- 投稿位置を示す地図（確認用・静的地図）。選択地点は中央の「＋」で示す -->
+    <span class="form-label">位置</span>
+    <div id="report-static-map-wrap">
+        <!-- 静的地図の画像。src は report_form.js が付与する -->
+        <img id="report-static-map" data-map-key="{{ GOOGLE_MAPS_API_KEY_FRONT }}" alt="投稿位置">
+        <!-- 中央の照準（＋）。地図の中心＝選択座標なので、画像中央に重ねて位置を示す -->
+        <span id="report-static-reticle">＋</span>
+    </div>
+    <!-- 投稿位置の説明文 -->
+    <p class="report-note">この位置に投稿しようとしています</p>
 
-<div class="report-page">
-<!-- 投稿位置を示す地図（確認用・静的地図）。選択地点は中央の「＋」で示す -->
-<span class="form-label">位置</span>
-<div id="report-static-map-wrap">
-    <!-- 静的地図の画像。src は report_form.js が付与する -->
-    <img id="report-static-map" data-map-key="{{ GOOGLE_MAPS_API_KEY_FRONT }}" alt="投稿位置">
-    <!-- 中央の照準（＋）。地図の中心＝選択座標なので、画像中央に重ねて位置を示す -->
-    <span id="report-static-reticle">＋</span>
+    <!-- 投稿フォーム -->
+    <form method="post" enctype="multipart/form-data">
+        {{ csrf_input }}
+
+        <!-- 地図クリックで取得した緯度・経度（非表示で保持） -->
+        {{ form.latitude }}
+        {{ form.longitude }}
+
+        <!-- タイトル（必須） -->
+        <label for="{{ form.report_title.id_for_label }}" class="form-label">タイトル<span class="required">*</span></label>
+        {{ form.report_title }}
+        {% for error in form.report_title.errors %}
+        <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+
+        <!-- 本文（必須） -->
+        <label for="{{ form.report_description.id_for_label }}" class="form-label">本文<span class="required">*</span></label>
+        {{ form.report_description }}
+        {% for error in form.report_description.errors %}
+        <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+
+        <!-- タグ登録（models.py未設定 -->
+        <label for="tag" class="form-label">タグ</label>
+        <input type="text" class="form-control" id="tag" placeholder="タグ" name="tag">
+
+        <!-- 画像投稿（任意） -->
+        <label for="{{ form.report_image.id_for_label }}" class="form-label">画像投稿</label>
+        {{ form.report_image }}
+        <!-- 画像プレビュー（編集時は既存画像を初期表示。作成時は選択後にJSで表示） -->
+        {% if report and report.report_image_url %}
+        <img id="report-image-preview" class="report-image-preview" src="{{ report.report_image_url }}" alt="現在の画像">
+        {% else %}
+        <img id="report-image-preview" class="report-image-preview" alt="プレビュー" hidden>
+        {% endif %}
+        
+        <!-- フォーム全体のエラー表示 -->
+        {% if form.errors %}
+        <div class="alert alert-danger">
+        入力内容を確認してください。
+        <ul>
+            {% for field in form %}
+            {% for error in field.errors %}
+                <li>{{ field.label }}：{{ error }}</li>
+            {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors() %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        </div>
+        {% endif %}
+
+        <!-- 注記 -->
+        <p class="form-note">* は必須項目です</p>
+        <!-- 報告する（送信）ボタン -->
+        <button type="submit" class="btn btn-purple mt-3">報告する</button>
+
+    </form>
 </div>
-<!-- 投稿位置の説明文 -->
-<p class="report-note">この位置に投稿しようとしています</p>
-
-<!-- 投稿フォーム -->
-<form method="post" enctype="multipart/form-data">
-    {{ csrf_input }}
-
-    <!-- 地図クリックで取得した緯度・経度（非表示で保持） -->
-    {{ form.latitude }}
-    {{ form.longitude }}
-
-    <!-- 投稿タイトル -->
-    <label for="report_title" class="form-label">タイトル</label>
-    <input type="text" class="form-control" id="report_title" placeholder="タイトル" name="report_title">
-
-    <!-- 本文 -->
-    <label for="report_description" class="form-label">本文</label>
-    <textarea class="form-control" id="report_description" placeholder="本文" style="height: 100px" name="report_description"></textarea>
-
-    <!-- タグ登録（models.py未設定 -->
-    <label for="tag" class="form-label">タグ</label>
-    <input type="text" class="form-control" id="tag" placeholder="タグ" name="tag">
-
-    <!-- 画像投稿（添付ファイル） -->
-    <label for="report_image_url" class="form-label">画像投稿</label>
-    <input class="form-control" type="file" id="report_image_url" name="report_image">
-
-    <!-- 報告する（送信）ボタン -->
-    <button type="submit" class="btn btn-purple mt-3">報告する</button>
-
-</form>
 </div>
 {% endblock %}

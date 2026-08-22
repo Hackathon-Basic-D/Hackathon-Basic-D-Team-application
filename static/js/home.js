@@ -155,7 +155,7 @@ function setupLocateButton(AdvancedMarkerElement) {
     btn.addEventListener("click", () => {
         // この端末が位置情報に対応していなければ
         if (!navigator.geolocation) {
-            alert("この端末では現在地を取得できません。");  // 処理を中断
+            showToast("この端末では現在地を取得できません。");  // 処理を中断
         return;
     }
     // 取得中は二度押し防止でボタンを無効化
@@ -193,9 +193,9 @@ function setupLocateButton(AdvancedMarkerElement) {
             btn.disabled = false;       // ボタンを有効化
             // 許可が拒否された場合
             if (err.code === err.PERMISSION_DENIED) {
-                alert("位置情報の利用が許可されていません。ブラウザの設定で許可してください。");
+                showToast("位置情報の利用が許可されていません。ブラウザの設定で許可してください。");
             } else {    // それ以外(取得失敗・時間切れ等)
-                alert("現在地を取得できませんでした。");
+                showToast("現在地を取得できませんでした。");
             }
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 } // 取得の設定：高精度・10秒で時間切れ・キャッシュ不可
@@ -254,7 +254,10 @@ function resetHome() {
 let pendingPos = null;
 document.getElementById("report-confirm").addEventListener("click", () => {
     const pos = getSelectedPosition();
-    if (!pos) { alert("報告する場所を選択してください。"); return; }
+    if (!pos) {
+        showToast("報告する場所を選択してください。");
+        return;
+    }
     pendingPos = pos;
     document.getElementById("report-check").classList.add("show");
     map.setOptions({ gestureHandling: "none" });   // 確認中は地図を動かせないように（中心＝選択位置がズレないため）
@@ -264,7 +267,7 @@ document.getElementById("report-confirm").addEventListener("click", () => {
 document.getElementById("report-check-yes").addEventListener("click", () => {
     if (!pendingPos) return;
     const base = reportBtn ? reportBtn.getAttribute("href") : "/reports/create/";
-    location.href = `${base}?lat=${pendingPos.lat}&lng=${pendingPos.lng}`;
+    location.href = `${base}?lat=${pendingPos.lat.toFixed(8)}&lng=${pendingPos.lng.toFixed(8)}`;
 });
 
 // 「戻る」：確認を閉じて選択に戻る

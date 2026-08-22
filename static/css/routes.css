@@ -1,96 +1,116 @@
-/* ルート一覧・作成画面：中身を中央寄せの列にし、上下に余白を確保 */
-.route-page {
-    max-width: 600px;
-    margin: 0 auto;            /* 中央寄せ（全体の左寄りを解消） */
-    padding: 64px 16px 140px;  /* 上:ハンバーガー分 / 左右:16 / 下:フッター分(126px)＋余白 */
+/* ===== ルート関連（一覧 / 作成 / 詳細 / 選択） ===== */
+
+/* --- ルート一覧・作成 共通の枠 --- */
+
+/* .route-page 内の送信ボタン：中央寄せ・内容幅 */
+.route-page button {
+    display: block;        /* 単独ブロック */
+    width: fit-content;    /* 内容の幅 */
+    margin: 16px auto 0;   /* 中央寄せ＋上に余白 */
+    padding: 10px 32px;    /* 横に広め */
 }
 
-/* ルート一覧画面：ルート記事一つ一つの区切り線を追加 */
-.route-card{
-    /*コレ*/border-top: 3px solid #800080;
-    /*コレ*/border-bottom: 3px solid #800080;
-    padding: 10px;
+/* --- ルート一覧（route_list） --- */
+
+/* ルート1件のカード（上下に区切り線） */
+.route-card {
+    border-top: 3px solid #800080;     /* 上の区切り線 */
+    border-bottom: 3px solid #800080;  /* 下の区切り線 */
+    padding: 10px;                     /* 内側の余白 */
 }
 
-/* ルート一覧画面：ルート作成ボタンを右下に固定 */
+/* ルート作成ボタン（右下に固定の丸アイコン） */
 .route_create_btn {
-      position: fixed;
-      bottom: 20%;
-      right: 10%;
-      margin: 10px;
+    position: fixed;   /* 画面に固定 */
+    bottom: 20%;       /* 下から20% */
+    right: 10%;        /* 右から10% */
+    margin: 10px;      /* 端との余白 */
 }
 
+/* 作成ボタンのアイコン画像 */
 .route_create_btn img {
-    width: 60px;
-    height: 60px;
+    width: 60px;    /* 幅 */
+    height: 60px;   /* 高さ */
 }
 
-/* ルート記事作成画面：スマホ幅に合わせ、スクロールできるように設定 */
-.selected_reports_field{
-   width: 100%;
-   height: 250px;
-   border: 1px solid #000;/*内容がない時にわかりやすいように枠表示用*/
-   overflow-y: scroll;
+/* --- ルート作成（route_create） --- */
+
+/* 選択した投稿の並び替えリスト（スクロール領域） */
+.selected_reports_field {
+    width: 100%;             /* 横いっぱい */
+    height: 250px;           /* 固定の高さ */
+    border: 1px solid #000;  /* 中身が無い時に分かるよう枠表示 */
+    overflow-y: scroll;      /* 縦スクロール */
 }
 
-/* 紫ラベル（PDFの紫背景・白文字のピル） */
-.form-label {
-    display: block;             /* 固定幅を効かせる */
-    width: 180px;               /* 全ラベル共通の固定幅 */
-    background-color: #800080;
-    color: #fff;
-    font-weight: bold;
-    font-size: 18px;            /* 文字サイズ18px */
-    padding: 6px 12px;
-    border-radius: 4px;
-    margin-bottom: 6px;
-    text-align: center;         /* ラベル文字を中央に（PDF準拠） */
-}
-
-/* 薄紫の入力欄（テキスト・都道府県セレクト共通）。 */
-.form-control, .form-select{
-    width: 100%;
-    padding: 8px 10px;
-    font-size: 18px;
-    border: 1px solid #b39ddb;
-    border-radius: 4px;
-    background-color: #E6E6FA;
-}
-
-/* 報告ボタン：中央寄せ・内容幅（全幅をやめる） */
-.route-page button{
-    display: block;
-    width: fit-content;      /* 内容の幅にする */
-    margin: 16px auto 0;     /* 中央寄せ＋上に余白 */
-    padding: 10px 32px;      /* 横に広め */
-}
-
-/* ルート詳細画面：中身を中央寄せ＋余白（ハンバーガー/フッター分を確保） */
-.route-detail {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 64px 16px 140px;   /* 上:ハンバーガー分 / 左右16 / 下:フッター分＋余白 */
-}
-
-/* ルート詳細画面：地図（上部に固定高さで表示） */
-#route-map {
-    width: 100%;
-    height: 250px;
-    border-radius: 8px;
-    margin-bottom: 12px;
-}
-
-/* 作成画面：ルートプレビューの地図 */
+/* 作成プレビューの地図（「確定」を押すまで隠す。JSで表示） */
 #route-preview-map {
-    width: 100%;
-    height: 250px;
-    border-radius: 8px;
-    margin-top: 12px;
-    display: none;   /* 「確定」を押すまで隠す（JSで表示） */
+    width: 100%;          /* 横いっぱい */
+    height: 250px;        /* 固定の高さ */
+    border-radius: 8px;   /* 角丸 */
+    margin-top: 12px;     /* 上に余白 */
+    display: none;        /* 初期は非表示（JSで表示） */
 }
 
+/* プレビューの距離・時間などの情報 */
 #route-preview-info {
-    font-size: 14px;
+    font-size: 14px;      /* 文字サイズ */
 }
+
+/* --- ルート詳細（route_detail） --- */
+/* ※詳細の枠・見出し・本文・操作ボタンは detail.css（.detail-*）に統一。ここは地図だけ。 */
+
+/* 詳細ページ上部の地図（固定高さ） */
+#route-map {
+    width: 100%;          /* 横いっぱい */
+    height: 250px;        /* 固定の高さ */
+    border-radius: 8px;   /* 角丸 */
+    margin-bottom: 12px;  /* 下に余白 */
+}
+
+/* --- ルート選択（route_select_reports） --- */
+
+/* 「ルート作成へ」ボタン（地図下部中央に浮かせる） */
+/* ルート用レポート選択画面：作成ボタン（地図の下部中央に浮かせる） */
+#route-next-btn {
+    position: fixed;                        /* 画面に固定 */
+    left: 50%;                              /* 横中央 */
+    transform: translateX(-50%);           /* 中央寄せ */
+    bottom: calc(var(--footer-h) + 16px);   /* フッターの少し上 */
+    z-index: 5;                            /* 地図より前面（メッセージ6・シート900より後ろ） */
+    background-color: #800080;             /* 紫の塗り */
+    color: #fff;                           /* 白文字 */
+    font-weight: bold;                     /* 太字 */
+    border: none;                          /* 枠なし */
+    border-radius: 8px;                    /* 角丸 */
+    padding: 12px 20px;                    /* 内側の余白 */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3); /* 影 */
+    cursor: pointer;                       /* 指カーソル */
+}
+
+/* 選択数の警告メッセージ（作成ボタンの少し上に浮かせる） */
+#route-alert {
+    display: none;                          /* 通常は非表示 */
+    position: fixed;                        /* 画面に固定 */
+    left: 50%;                              /* 横中央 */
+    transform: translateX(-50%);           /* 中央寄せ */
+    bottom: calc(var(--footer-h) + 80px);   /* 作成ボタンの少し上 */
+    z-index: 1100;                         /* シート(900)・フッター(1000)より前面 */
+    background: rgba(220, 53, 69, 0.95);   /* 警告色（赤系） */
+    color: #fff;                           /* 白文字 */
+    font-weight: bold;                     /* 太字 */
+    padding: 10px 16px;                    /* 内側の余白 */
+    border-radius: 8px;                    /* 角丸 */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3); /* 影 */
+    max-width: 90%;                        /* 端で見切れない上限 */
+    text-align: center;                    /* 中央寄せ */
+}
+#route-alert.show {
+    display: block;                         /* JSで show を付けた時だけ表示 */
+}
+
+
+
+
 
 
