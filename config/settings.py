@@ -20,14 +20,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-svhmxr1n0n@%2wujd4!wz5=4q^)br&(fh=_z3o2bd-^r6x&18a'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-only-insecure-key')
 # GoogleMapのAPIキーを取得（# .envファイル⇒docker-compose.yml⇒ここ）
-GOOGLE_MAPS_API_KEY_FRONT = os.environ.get('GOOGLE_MAPS_API_KEY_FRONT', '') 
+GOOGLE_MAPS_API_KEY_FRONT = os.environ.get('GOOGLE_MAPS_API_KEY_FRONT', '')
 GOOGLE_MAPS_API_KEY_BACK = os.environ.get('GOOGLE_MAPS_API_KEY_BACK', '')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
 
 # Application definition
@@ -68,7 +68,7 @@ TEMPLATES = [
             # 戻り値のdictが全テンプレートのcontextに自動マージ。
             # 'request'  : requestオブジェクト自体をテンプレートで使えるようにする
             # config/jinja2.pyの'auth_status': 上で追加した、ログイン状態(logged_in)を配る処理
-            'context_processors':[
+            'context_processors': [
                 'django.template.context_processors.request',
                 'config.jinja2.auth_status'
             ]
@@ -102,7 +102,7 @@ DATABASES = {
         'NAME': os.environ.get('MYSQL_DATABASE'),
         'USER': os.environ.get('MYSQL_USER'),
         'PASSWORD': os.environ.get('MYSQL_PASSWORD'),
-        'HOST': 'db',   # docker-compose.ymlのサービス名
+        'HOST': os.environ.get('MYSQL_HOST', 'db'),
         'PORT': '3306',
     }
 }
@@ -144,13 +144,14 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # 画像アップロード先のローカルストレージ設定
 # AWS構築後は STORAGE['default'] を S3Boto3Storage に切り替えるた想定のため、
 # アプリ側のコード（views.py）は変更不要になる
 # MEDIA_URLは画像URLの接頭辞を、MEDIA_ROOTは画像が保存されるディレクトリの絶対パスを示す
 MEDIA_URL = 'media/'    # ブラウザからアクセスする際のURLのプレフィックス(例：/media/reports/xxx.png）
-MEDIA_ROOT = BASE_DIR / 'media' # サーバー上で実際にファイルを保存するディレクトリの絶対パス
+MEDIA_ROOT = BASE_DIR / 'media'  # サーバー上で実際にファイルを保存するディレクトリの絶対パス
 
 
 # Default primary key field type
