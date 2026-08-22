@@ -1,0 +1,114 @@
+/* ===== 一覧（フィード）＝ レポート一覧 / ルート一覧 / スポット一覧で共通 ===== */
+
+/* --- 切替タブ（mypost/myroute の「作成したレポート / 作成した経路」）--- */
+
+/* タブの並び（2つを横に並べる入れ物） */
+.feed-tabs {
+    display: flex;             /* 2タブを横並びに */
+    margin: 54px 0 8px;       /* 上：ハンバーガー分 / 下：一覧との間隔 */
+}
+
+/* タブ1つ分の見た目 */
+.feed-tab {
+    flex: 1 1 0;              /* 2タブを均等幅に */
+    text-align: center;       /* ラベル中央寄せ */
+    padding: 16px 8px;        /* 高さを確保（詰まり防止） */
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;    /* 下線なし */
+    border-radius: 10px 10px 0 0;  /* 上側だけ角丸＝タブらしく */
+}
+
+/* 選択中のタブ */
+.feed-tab.active {
+    background-color: #800080; /* 選択中：濃い紫 */
+    color: #fff;              /* 白文字 */
+}
+
+/* 非選択のタブ（押すと選択中と入れ替わる） */
+.feed-tab:not(.active) {
+    background-color: #E6E6FA; /* 非選択：薄い紫 */
+    color: #800080;           /* 紫文字（押すと切替） */
+}
+
+/* --- 見出し（「作成したレポート一覧」など）--- */
+.feed-heading {
+    margin: 54px 0 8px;        /* 上：ハンバーガー分 / 下：一覧との間隔 */
+    padding: 10px 16px;        /* 帯の内側余白 */
+    background-color: #800080; /* 紫の帯 */
+    color: #fff;              /* 白文字 */
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;        /* 中央寄せ */
+}
+
+/* 一覧（フィード）行リスト */
+.feed-list {
+    padding: 0 0 140px;             /* 下：フッター分の余白 */
+    border-top: 4px solid #800080;  /* 一覧最上部の区切り線 */
+}
+
+/* 一覧の各行（リンク） */
+.feed-row {
+    display: flex;             /* サムネ＋本文を横並び */
+    align-items: center;       /* 縦中央にそろえる */
+    gap: 12px;                 /* サムネと本文の間隔 */
+    padding: 12px 16px;        /* 行の内側余白 */
+    text-decoration: none;     /* 下線なし */
+    color: #333;               /* 文字色 */
+    border-bottom: 4px solid #800080;  /* 各行の下に区切り線（最終行にも付く） */
+}
+
+/* 行左のサムネ枠 */
+.feed-thumb {
+    flex: 0 0 auto;            /* 縮まない固定枠 */
+    width: 56px;
+    height: 56px;
+    display: flex;             /* 中の画像を中央に */
+    align-items: center;
+    justify-content: center;
+}
+
+/* サムネ画像：枠内に収める */
+.feed-thumb img {
+    max-width: 56px;
+    max-height: 56px;
+    object-fit: contain;       /* 縦横比を保って枠内に収める */
+}
+
+/* 行右の本文側 */
+.feed-body {
+    flex: 1 1 auto;            /* 残り幅いっぱいに広がる */
+    min-width: 0;              /* 省略表示(...)を効かせるために必要 */
+}
+
+/* 日付（右寄せ） */
+.feed-date {
+    font-size: 11px;
+    font-weight: bold;
+    text-align: right;         /* 右寄せ */
+}
+
+/* タイトル（1行で省略） */
+.feed-title {
+    font-weight: bold;
+    font-size: 16px;
+    white-space: nowrap;       /* 折り返さない */
+    overflow: hidden;          /* はみ出しを隠す */
+    text-overflow: ellipsis;   /* 省略記号(...)を付ける */
+}
+
+/* 説明（2行で省略） */
+.feed-desc {
+    font-size: 12px;
+    display: -webkit-box;          /* 複数行省略のための箱表示 */
+    -webkit-line-clamp: 2;         /* 2行で打ち切り */
+    -webkit-box-orient: vertical;  /* 縦方向に積む */
+    overflow: hidden;              /* はみ出しを隠す */
+}
+
+/* 該当なし・空一覧のメッセージ */
+.feed-empty {
+    padding: 80px 16px;        /* 上下に大きめ余白 */
+    text-align: center;        /* 中央寄せ */
+}

@@ -3,38 +3,40 @@
 
 {% block page_css %}
     <link rel="stylesheet" href="{{ static('css/auth.css') }}">
+    <link rel="stylesheet" href="{{ static('css/form.css') }}">
 {% endblock %}
 
 {% block content %}
 <a href="{{ url('users:welcome') }}"><img class="logo" src="{{ static('image/logo.png') }}" alt="あやかしさんぽ"></a>
     <img class="nueimg" src="{{ static('image/nue-b.png') }}" alt="鵺">
 <div class="row justify-content-center">
-  <div class="col-md-5">
-    <!--
-    <h2 class="mb-4">ユーザー登録</h2>
-    -->
-    <form method="post">
-      {{ csrf_input }}
-      {% for field in form %}
-      <div class="mb-3">
-            <label for="{{ field.id_for_label }}" class="form-label">
-                {{ field.label }}
-            </label>
+    <div class="col-md-5">
+        <!--
+        <h2 class="mb-4">ユーザー登録</h2>
+        -->
+        <div class="content-column flush">
+        <form method="post">
+            {{ csrf_input }}
+            {% for field in form %}
+            <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">
+                    {{ field.label }}
+                </label>
 
-            {{ field }}
+                {{ field }}
 
-            {% if field.errors %}
-                {% for error in field.errors %}
-                    <div class="invalid-feedback d-block">{{ error }}</div>
-                {% endfor %}
-            {% endif %}
-      </div>
-      {% endfor %}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        {% endfor %}
 
-
-      <button type="submit" class="btn btn-purple">登録する</button>
-      <a href="{{ url('users:login') }}" class="auth-link">ログインはこちら</a>
-    </form>
-  </div>
+        <button type="submit" class="btn btn-purple">登録する</button>
+        <a href="{{ url('users:login') }}" class="auth-link">ログインはこちら</a>
+        </form>
+        </div>
+    </div>
 </div>
 {% endblock %}

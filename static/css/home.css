@@ -1,308 +1,65 @@
-/* === 高さの基準値（仮。実際の値はチームで調整） === */
-:root {
-    --sheet-h: 180px;   /* ボトムシートの固定高さ（仮） */
+/* ===== ホーム画面 専用（レポート位置選択モードなど） =====
+   地図まわりの共通UIは map.css。home は map.css と併せて読み込む。 */
+
+
+/* レポート位置選択：地図中央の照準（十字） */
+#report-reticle {
+    display: none;                    /* 通常は非表示 */
+    position: fixed;                  /* 画面中央に固定 */
+    top: calc(50% - (var(--footer-h) - var(--header-h)) / 2);   /* 画面中央ではなく「地図の中心」に合わせる（下のフッター分だけ上へ） */
+    left: 50%;                        /* 横中央 */
+    transform: translate(-50%,-50%);  /* 自分の中心を画面中央に */
+    z-index: 6;                       /* 地図より前面 */
+    font-size: 48px;                  /* 十字の大きさ */
+    color: #8e24aa;                   /* 紫 */
+    text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff;  /* 白フチで見やすく */
+    pointer-events: none;             /* 地図操作を邪魔しない */
+}
+#report-reticle.show {
+    display: block;                   /* 位置選択モード中だけ表示 */
 }
 
-/* メッセージの見た目。通常は非表示、モード中だけ表示 */
-#report-message {
-    display: none;                        /* 通常は非表示 */
-    position: fixed;
-    top: calc(var(--header-h) + 12px);    /* ヘッダー下・地図の上部に重ねる */
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 6;                           /* 地図より前面 */
-    background: rgba(255,255,255,0.95);
-    color: #8e24aa;
-    font-weight: bold;
-    padding: 8px 16px;
-    border: 1px solid #8e24aa;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    white-space: nowrap;
-}
-
-#report-message.show {
-    display: block;                       /* 報告モード中だけ表示 */
-}
-
-/* マップ表示 */
-#map {
-    width: 100%;        /* 横幅を親いっぱいに */
-    height: calc(100dvh - var(--header-h) - var(--footer-h));  /* 画面高 − ヘッダー − フッター */
-    transition: height 0.25s ease;           /* transform変化を0.25秒でなめらかに（スライド演出） */
-}
-
-/* シートを開いている間は、さらにシート高さぶん縮める。
-   → 地図の下端（Googleロゴ・規約）がシートの上に来て隠れない */
-#map.sheet-open {
-    height: calc(100dvh - var(--header-h) - var(--footer-h) - var(--sheet-h));
-}
-
-/* 現在地ボタン（地図の左下に浮かせる） */
-#locate-btn {
-    position: fixed;                            /* 画面に固定 */
-    left: 12px;                                 /* 左下に配置（左12・下24px） */
-    bottom: 180px;
-    background: none;           /* ボタン自体の背景・枠は無し */
-    border: none;                               /* 枠線なし */
-    padding: 0;                                 /* 余白を無くして画像を中央に */
-    cursor: pointer;
-    cursor: pointer;                            /* 指カーソル */
-    display: flex;                              /* 中の画像を中央寄せするため */
-    flex-direction: column;     /* ひし形の下にラベルを置く */
-    align-items: center;
-    gap: 4px;
-    z-index: 800;
-}
-
-/* ひし形の枠（正方形を45度回転） */
-#locate-diamond {
-    width: 40px;
-    height: 40px;
-    background: rgba(255,255,255,0.9);   /* 中の白 */
-    border: 2px solid #8e24aa;           /* 紫の枠（デザインに合わせて色を調整） */
-    transform: rotate(45deg);            /* 正方形 → ひし形 */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-}
-
-
-/* 中のアイコンは逆回転で水平に戻す */
-#locate-icon {
-    transform: rotate(-45deg);  /* ひし形の傾き(45deg)を打ち消して正しい向きに */
-    width: 20px;                /* 画像の幅を固定 */
-    height: 22px;               /* 画像の高さを固定 */
-    object-fit: contain;        /* 縦横比を保ったまま枠内に収める */
-    display: block;             /* 余白の原因になるインライン隙間を消す */
-}
-
-
-/* ラベル「現在地取得」 */
-#locate-label {
-    font-size: 11px;
-    color: #8e24aa;             /* 紫（デザインに合わせて調整） */
-    font-weight: bold;
-    white-space: nowrap;        /* 折り返さない */
-}
-
-/* 現在地マーカー（青い丸） */
-.current-dot {
-    width: 16px;                                /* 16px四方 */
-    height: 16px;
-    background: #4285f4;                        /* Googleブルー */
-    border: 2px solid #fff;                     /* 白い縁取り */
-    border-radius: 50%;                         /* 円形 */
-    box-shadow: 0 0 0 2px rgba(66,133,244,0.3); /* 周囲に薄青のリング */
-}
-
-/* ボトムシート（下からスライド） */
-#bottom-sheet {
-    position: fixed;                            /* 画面に固定 */
-    left: 0;                                    /* 左右いっぱいに広げる */
-    right: 0;
-    bottom: var(--footer-h);                    /* フッターの上に置く（フッターのナビは隠さない） */
-    height: var(--sheet-h);                       /* ボトムシートの高さ固定 */
-    z-index: 900;                              /* フッター(1000)より後ろにして隠す */
-    overflow-y: auto;               /* 入りきらない中身はシート内スクロール */
-    background: #e5e6fa;                           /* 背景は白 */
-    border: 2px solid #800080;                 /* 紫の枠線 */
-    border-radius: 16px 16px 0 0;               /* 上の左右だけ角丸（シートらしい形） */
-    box-shadow: 0 -2px 12px rgba(0,0,0,0.25);   /* 上方向に影 */
-    padding: 12px 20px 28px;                    /* 内側余白：上12・左右20・下28px */
-    transform: translateY(100%);  /* 初期は画面外へ隠す */
-    transition: transform 0.25s ease;           /* transform変化を0.25秒でなめらかに（スライド演出） */
-}
-#bottom-sheet.open {
-    transform: translateY(0);       /* せり上げて表示 */
-}
-/* ボトムシート */
-#bottom-sheet-handle {
-    width: 40px;                                /* つまみの幅 */
-    height: 4px;                                /* つまみの高さ（細い棒） */
-    background: #ccc;                           /* 灰色 */
-    border-radius: 2px;                         /* 角を軽く丸める */
-    margin: 4px auto 12px;                      /* 上4・左右auto(中央寄せ)・下12px */
-}
-#bs-close {
-    position: absolute;                         /* 親(#bottom-sheet)を基準に配置する */
-    top: 8px;                                   /* 親の上端から8px */
-    right: 14px;                                /* 親の右端から14px（右上に置く） */
-    border: none;                               /* 枠線なし */
-    background: none;                           /* 背景なし（×の文字だけ） */
-    font-size: 22px;                            /* ×を大きめに */
-    cursor: pointer;                            /* マウスを乗せると指カーソルに（押せると分かる） */
-}
-/* タイトルと「詳細を見る」を横並びに */
-#bs-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-}
-/* ボトムシート内のスタイル（ルート作成スポット選択画面に合わせる） */
-#bs-title {
-    color: #800080;        /* マゼンタの見出し */
-    font-weight: bold;
-    font-size: 20px;
-    margin: 0;
-}
-#bs-date {
-    color: #800080;        /* 紫の日時 */
-    font-weight: bold;
-    text-align: right;
-    margin: 8px 0 0;
-}
-#bs-nav {
-    display: inline-block;
-    text-decoration:none
-}
-
-/* レポート位置選択モード用 */
-/* 中央照準（地図中央の十字） */
-#report-reticle { display:none; position:fixed; top:50%; left:50%;
-    transform:translate(-50%,-50%); z-index:6; font-size:32px; color:#8e24aa;
-    pointer-events:none; }                 /* 地図の操作を邪魔しない */
-#report-reticle.show { display:block; }
-
-/* 位置の選び方の切替 */
-#report-method { display:none; position:fixed; top:calc(var(--header-h) + 52px);
-    left:50%; transform:translateX(-50%); z-index:6; background:rgba(255,255,255,.95);
-    padding:4px 10px; border-radius:8px; font-size:13px; }
-#report-method.show { display:block; }
-
-/* 確定ボタン */
-#report-confirm { display:none; position:fixed; bottom:calc(var(--footer-h) + 16px);
-    left:50%; transform:translateX(-50%); z-index:6; background:#8e24aa; color:#fff;
-    border:none; border-radius:24px; padding:12px 24px; font-weight:bold;
-    box-shadow:0 2px 8px rgba(0,0,0,.3); cursor:pointer; }
-#report-confirm.show { display:block; }
-
-/* 報告モード中は現在地ボタンを隠す */
-#locate-btn.hide { display:none; }
-
-
-/* 選択中の炎ピンの演出 */
-/* 選択中の炎ピンの演出 */
-.fire-marker {
-    position: relative;
-    display: inline-block;
-    line-height: 0;
-}
-
-/* 炎画像 */
-.fire-marker-image {
-    position: relative;
-    z-index: 2;
-    display: block;
-}
-
-/* 火の玉の後ろに置く発光 */
-.fire-pulse {
-    position: absolute;
-
-    /* fire-v.png の火の玉付近 */
-    left: 50%;
-    top: 80%;
-
-    width: 36%;
-    aspect-ratio: 1;
-
-    border-radius: 50%;
-
-    background: rgba(170, 0, 255, 0.45);
-
-    box-shadow:
-        0 0 5px rgba(170, 0, 255, 0.75),
-        0 0 10px rgba(170, 0, 255, 0.45);
-
-    transform:
-        translate(-50%, -50%)
-        scale(0.85);
-
-    opacity: 0;
-
-    z-index: 1;
-    pointer-events: none;
-}
-
-/* 選択された炎だけ鼓動 */
-.fire-marker.burning .fire-pulse {
-    animation: fire-pulse 1.4s ease-in-out infinite;
-}
-
-@keyframes fire-pulse {
-    0%, 100% {
-        transform:
-            translate(-50%, -50%)
-            scale(0.55);
-        opacity: 0.3;
-    }
-    50% {
-        transform:
-            translate(-50%, -50%)
-            scale(1.35);
-        opacity: 0.8;
-    }
-}
-
-/* 位置選択確認メッセージ */
-#report-check {
-    display: none;                              /* 初期は非表示 */
-    position: fixed;
-    bottom: calc(var(--footer-h) + 72px);      /* 確定ボタンの少し上 */
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 7;
-    background: rgba(255,255,255,.97);
-    border: 1px solid #8e24aa;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.3);
-    padding: 12px 16px;
-    text-align: center;
-}
-#report-check.show { display: block; }
-#report-check-text { margin: 0 0 8px; color: #8e24aa; font-weight: bold; }
-#report-check-actions { display: flex; gap: 8px; justify-content: center; }
-#report-check .btn-purple { display: inline-block; }   /* base.css の block を打ち消して横並びに */
-#report-check-back {
-    background: #fff; color: #8e24aa; border: 1px solid #8e24aa;
-    border-radius: 6px; padding: 8px 16px; font-weight: bold; cursor: pointer;
-}
-
-/* ルート用レポート選択画面：作成ボタン（地図の下部中央に浮かせる） */
-#route-next-btn {
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: calc(var(--footer-h) + 16px);   /* フッターの少し上 */
-    z-index: 5;                              /* 地図より前面（メッセージ6・シート900より後ろ） */
-    background-color: #800080;
-    color: #fff;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    cursor: pointer;
-}
-
-/* ルート選択画面：操作の警告メッセージ（作成ボタンの少し上に浮かせる） */
-#route-alert {
+/* レポート位置選択：確定ボタン */
+#report-confirm {
     display: none;                          /* 通常は非表示 */
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: calc(var(--footer-h) + 80px);   /* 作成ボタンの少し上 */
-    z-index: 1100;                          /* ボトムシート(900)・フッター(1000)より前面に出す */
-    background: rgba(220, 53, 69, 0.95);   /* 警告色（赤系。紫にしたい等あれば調整します） */
-    color: #fff;
-    font-weight: bold;
-    padding: 10px 16px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    max-width: 90%;
-    text-align: center;
+    position: fixed;                        /* 画面下部に固定 */
+    bottom: calc(var(--footer-h) + 72px);   /* フッターより上 */
+    left: 50%;                              /* 横中央 */
+    transform: translateX(-50%);           /* 中央寄せ */
+    z-index: 6;                            /* 地図より前面 */
+    background: #8e24aa;                    /* 紫の塗り */
+    color: #fff;                           /* 白文字 */
+    border: none;                          /* 枠なし */
+    border-radius: 24px;                   /* 丸みの強いボタン */
+    padding: 12px 24px;                    /* 内側の余白 */
+    font-weight: bold;                     /* 太字 */
+    box-shadow: 0 2px 8px rgba(0,0,0,.3);  /* 影 */
+    cursor: pointer;                       /* 指カーソル */
 }
-#route-alert.show { display: block; }       /* JSで show を付けた時だけ表示 */
+#report-confirm.show {
+    display: block;                        /* 表示状態 */
+}
+
+/* 位置選択モード中は現在地ボタンを隠す */
+#locate-btn.hide {
+    display: none;                         /* 非表示 */
+}
+
+/* 位置確認カード：配置と表示切替だけ home 固有（見た目・中身は .card-box / .confirm-* を共用） */
+#report-check {
+    display: none;                          /* 通常は非表示 */
+    position: fixed;                        /* 画面下部に固定 */
+    bottom: calc(var(--footer-h) + 72px);   /* 確定ボタンの少し上 */
+    left: 50%;                              /* 横中央 */
+    transform: translateX(-50%);           /* 中央寄せ */
+    z-index: 7;                            /* 確定ボタンより前面 */
+    padding: 12px 16px;                    /* インラインカード用の余白 */
+    min-width: 240px;                      /* 窮屈にならない最小幅（お好みで調整） */
+}
+#report-check.show {
+    display: block;                        /* 表示（インラインなので block。モーダルの flex とは別） */
+}
+
+
+
+

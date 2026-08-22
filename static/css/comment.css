@@ -1,0 +1,102 @@
+/* ===== コメント機能（レポート詳細のコメントパネル） ===== */
+
+/* コメントパネル本体（画面下からせり上がる。Bootstrap Offcanvasを上書き） */
+#offcanvasBottom {
+    position: fixed;               /* Bootstrapが稀にstaticになる対策で明示 */
+    left: 0;                       /* 左端まで */
+    right: 0;                      /* 右端まで（横幅いっぱい） */
+    bottom: 0;                     /* 画面下端まで覆う */
+    height: 65vh;                  /* 画面高さの65% */
+    background: #f5dced;           /* 薄ピンクの背景 */
+    border-radius: 16px 16px 0 0;  /* 上の左右だけ角丸（シート風） */
+    display: flex;                 /* 中身を縦積みにする入れ物 */
+    flex-direction: column;        /* 一覧＝上、入力欄＝下 に並べる */
+}
+
+/* コメント一覧エリア（入りきらない分はここだけスクロール） */
+#offcanvasBottom .offcanvas-body {
+    flex: 1 1 auto;            /* 余った縦スペースを全部使う */
+    overflow-y: auto;          /* 縦スクロール */
+}
+
+/* コメント1件分 */
+.comment-item {
+    padding: 10px 4px;         /* 内側の余白 */
+    border-bottom: 1px solid rgba(128, 0, 128, .2);  /* 薄紫の区切り線 */
+}
+
+/* コメント本文 */
+.comment-text {
+    margin: 0;                 /* 余白リセット */
+    font-weight: bold;         /* 太字 */
+}
+
+/* コメントの日時（右寄せ・小さめ） */
+.comment-date {
+    text-align: right;         /* 右寄せ */
+    color: #800080;            /* 紫 */
+    font-weight: bold;         /* 太字 */
+    font-size: 13px;           /* 小さめ */
+    margin: 2px 0 0;           /* 本文との間隔 */
+}
+
+/* 自分のコメントの操作（編集・削除）の並び：右寄せ */
+.comment-actions {
+    text-align: right;         /* 右寄せ */
+    margin-top: 4px;           /* 上に少し余白 */
+}
+
+/* 編集・削除リンク（テキストボタン風） */
+.comment-action {
+    background: none;          /* ボタンの背景を消す */
+    border: none;              /* 枠を消す */
+    padding: 0;                /* 余白を消してリンク風に */
+    cursor: pointer;           /* 指カーソル */
+    color: #800080;            /* 紫 */
+    font-size: 13px;           /* 小さめ */
+    font-weight: bold;         /* 太字 */
+    margin-left: 14px;         /* 隣との間隔 */
+    text-decoration: none;     /* 下線なし */
+}
+
+/* 削除だけ赤字で区別 */
+.comment-action.del {
+    color: #b00;               /* 赤 */
+}
+
+/* 入力欄エリア（パネル最下部に固定） */
+.comment-footer {
+    padding: 10px 12px calc(32px + env(safe-area-inset-bottom, 0px));  /* 下はスマホの安全領域分も加える */
+    border-top: 1px solid rgba(128, 0, 128, .2);  /* 上に区切り線 */
+    background: #f5dced;       /* パネルと同じ薄ピンク */
+}
+
+/* 入力欄＋送信ボタンの並び */
+.comment-form {
+    display: flex;             /* 横並び */
+    gap: 8px;                  /* 入力欄と送信の間隔 */
+    margin: 0;                 /* 余白リセット */
+}
+
+/* 入力欄：残り幅いっぱいに広げる */
+.comment-form .form-control {
+    flex: 1 1 auto;            /* 送信ボタン以外の幅を全部使う */
+    margin: 0;                 /* 余白リセット */
+}
+
+/* 送信ボタン（紫） */
+.comment-send {
+    background: #800080;       /* 紫の塗り */
+    color: #fff;               /* 白文字 */
+    border: none;              /* 枠なし */
+    border-radius: 4px;        /* 角丸 */
+    padding: 8px 18px;         /* 内側の余白 */
+    font-weight: bold;         /* 太字 */
+    white-space: nowrap;       /* 「送信」を折り返さない */
+    flex: 0 0 auto;            /* 幅は内容ぶんで固定 */
+}
+
+/* 再オープン時はスライドのアニメを切る（開き直しのガタつき防止） */
+#offcanvasBottom.no-anim {
+    transition: none !important;  /* アニメ無効（!importantでBootstrapに勝つ） */
+}

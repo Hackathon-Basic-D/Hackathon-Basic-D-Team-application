@@ -1,0 +1,27 @@
+/* ===== ボタン・ボタン状態（共通パーツ） ===== */
+
+/* 基本の紫ボタン（アプリ全体で使用。幅などは必要なページ側で上書きする） */
+.btn-purple {
+    background-color: #800080; /* テーマの紫 */
+    color: white;              /* 文字は白 */
+    width: 200px;              /* 既定の幅（各ページで上書きして調整する前提） */
+    border: none;              /* 枠なし */
+    padding: 10px;             /* 内側の余白 */
+    display: block;            /* 単独ブロック（幅・中央寄せを効かせる） */
+    text-align: center;        /* ラベル中央寄せ */
+    border-radius: 6px;        /* 角丸 */
+}
+
+/* 紫ボタンのホバー時（少し明るい紫に） */
+.btn-purple:hover {
+    background-color: #9a00a0; /* ホバーで明るい紫 */
+    color: white;              /* 文字は白のまま */
+}
+
+
+/* ログインが必要な操作を「無効」に見せる状態（未ログイン時に付与）。
+   タップは login_hint.js が拾って遷移を止め、ログイン案内トーストを出す */
+.needs-login {
+    filter: grayscale(1);      /* 色を抜いてグレーに（押せない雰囲気） */
+    opacity: 0.55;             /* 半透明にして無効感を強める */
+}

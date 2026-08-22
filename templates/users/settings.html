@@ -3,19 +3,18 @@
 {% block page_css %}
     {# フォームの紫ラベル・入力欄・ボタンのスタイル #}
     <link rel="stylesheet" href="{{ static('css/reports.css') }}">
+    <link rel="stylesheet" href="{{ static('css/form.css') }}">
 {% endblock %}
 
 {% block content %}
 {# 中央寄せの入力フォーム領域（レポート作成と同じ .report-page を流用） #}
-<div class="report-page">
+<div class="content-column report-page">
     {# 保存成功のメッセージ（?saved=1 のときだけ表示） #}
     {% if saved %}
     <div class="alert alert-success">変更を保存しました。</div>
     {% endif %}
-
     <form method="post">
         {{ csrf_input }}   {# CSRF対策トークン #}
-
         {# フォームの各項目（ユーザー名・メール・メインエリア・パスワード・確認）を順に表示 #}
         {% for field in form %}
         <div class="mb-3">

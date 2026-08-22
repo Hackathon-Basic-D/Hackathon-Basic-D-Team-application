@@ -1,0 +1,111 @@
+/* ===== 共通オーバーレイUI（お知らせトースト＋確認カード） ===== */
+
+/* --- お知らせトースト（画面下に一時表示。app=汎用 / login=ログイン案内）---
+   2種は見た目が同じなので共通部分をまとめる */
+.app-toast,
+.login-toast {
+    position: fixed;              /* スクロールしても画面基準で固定 */
+    left: 50%;                    /* 画面中央へ（transformと併用） */
+    bottom: 150px;               /* フッターの少し上に出す */
+    transform: translateX(-50%); /* 自分の幅の半分だけ左へ＝真ん中に */
+    max-width: 90%;              /* 端で見切れないよう最大幅を制限 */
+    background: #333;            /* 濃いグレーの背景 */
+    color: #fff;                /* 文字は白 */
+    padding: 10px 16px;         /* 内側の余白 */
+    border-radius: 8px;         /* 角丸 */
+    font-size: 14px;            /* 文字サイズ */
+    text-align: center;         /* 中央寄せ */
+    z-index: 1100;             /* フッター等より前面 */
+    opacity: 0;                /* 通常は透明（非表示） */
+    pointer-events: none;      /* 透明時は操作を受けない */
+    transition: opacity 0.2s;  /* 表示/非表示をふわっと切替 */
+}
+
+/* 汎用トースト表示時（toast.js が .show を付与） */
+.app-toast.show {
+    opacity: 1;                /* 不透明にして表示 */
+}
+
+/* ログイン案内トースト表示時（login_hint.js が .show を付与） */
+.login-toast.show {
+    opacity: 1;                /* 不透明にして表示 */
+    pointer-events: auto;      /* 中のログインリンクを押せるように */
+}
+
+/* ログイン案内トースト内のリンク（「ログイン」部分） */
+.login-toast a {
+    color: #ffd54a;            /* 目立つ黄色 */
+    font-weight: bold;         /* 太字 */
+}
+
+
+/* --- 確認カード（削除確認などで使用）--- */
+
+/* 画面全体を覆う半透明の膜。中央にカードを置く */
+.confirm-overlay {
+    position: fixed;                  /* 画面全体に固定 */
+    inset: 0;                         /* top/right/bottom/left をすべて0（全面） */
+    background: rgba(0, 0, 0, 0.4);   /* 背景を薄暗く */
+    display: none;                    /* 通常は非表示 */
+    align-items: center;              /* カードを縦中央に */
+    justify-content: center;          /* カードを横中央に */
+    z-index: 1200;                    /* トーストよりさらに前面 */
+}
+
+/* 表示状態（confirm-dialog.js が .show を付与） */
+.confirm-overlay.show {
+    display: flex;             /* flexにして中央寄せを有効化＝表示 */
+}
+
+/* 確認系カードの共通見た目（汎用確認カード と home の位置確認カードで共用） */
+.card-box {
+    background: rgba(255, 255, 255, .97);     /* ほぼ白の背景 */
+    border: 1px solid #8e24aa;                /* 紫の枠 */
+    border-radius: 8px;                       /* 角丸 */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .3);  /* 影で浮かせる */
+    text-align: center;                       /* 中央寄せ */
+}
+
+/* 汎用確認カードの本体（大きさ・余白だけ） */
+.confirm-box {
+    padding: 16px;        /* 内側の余白 */
+    width: 80%;           /* 画面幅の80% */
+    max-width: 300px;     /* ただし最大300px */
+}
+
+/* カード内のメッセージ文 */
+.confirm-message {
+    margin: 0 0 12px;          /* 下にだけ余白（ボタンとの間） */
+    color: #8e24aa;            /* 紫 */
+    font-weight: bold;         /* 太字 */
+}
+
+/* 「はい / いいえ」ボタンの並び */
+.confirm-actions {
+    display: flex;             /* 横並び */
+    gap: 8px;                  /* ボタン間の間隔 */
+    justify-content: center;   /* 中央寄せ */
+}
+
+/* 2つのボタン共通 */
+.confirm-actions > button {
+    flex: 1;                   /* 2つを均等幅に */
+    padding: 10px 0;           /* 上下の余白（高さ確保） */
+    border-radius: 6px;        /* 角丸 */
+    font-weight: bold;         /* 太字 */
+    cursor: pointer;           /* 押せると分かる指カーソル */
+}
+
+/* 「はい」ボタン（実行） */
+.confirm-ok {
+    background: #800080;       /* 紫の塗り */
+    color: #fff;              /* 白文字 */
+    border: none;            /* 枠なし */
+}
+
+/* 「いいえ」ボタン（キャンセル） */
+.confirm-cancel {
+    background: #fff;         /* 白の塗り */
+    color: #8e24aa;          /* 紫文字 */
+    border: 1px solid #8e24aa; /* 紫の枠 */
+}

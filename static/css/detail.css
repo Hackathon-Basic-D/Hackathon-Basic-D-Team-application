@@ -1,0 +1,88 @@
+/* ===== 詳細画面の共通スタイル（レポート詳細 / スポット詳細 / ルート詳細で共通） ===== */
+
+/* メイン画像：横幅いっぱいに大きく表示 */
+.detail-image {
+    display: block;            /* 画像下の余白を消す */
+    width: 100%;               /* 親の幅いっぱいに */
+    max-width: none;           /* 上限を外して全幅で表示 */
+    height: auto;              /* 縦横比を保つ */
+    margin: 0 auto 16px;       /* 中央寄せ＋下に余白 */
+    border: 1px solid #999;    /* 枠（レポート作成のプレビュー・静的地図と同じ色） */
+    border-radius: 8px;        /* 角丸 */
+    background: #fff;          /* 透過PNGでも背景が白で境界がはっきりする */
+}
+
+/* タイトル */
+.detail-title {
+    color: #800080;            /* テーマの紫 */
+    font-weight: bold;         /* 太字 */
+    font-size: 20px;           /* 本文より大きく */
+    margin: 0 0 8px;           /* 下に少し余白 */
+}
+
+/* タグ（#妖怪 #地域 など）：右寄せ */
+.detail-tags {
+    text-align: right;         /* 右寄せ */
+    color: #800080;            /* 紫 */
+    font-weight: bold;         /* 太字 */
+    margin-bottom: 12px;       /* 下に余白 */
+}
+
+/* 投稿日時：右寄せ */
+.detail-date {
+    display: block;            /* 単独の行にする */
+    text-align: right;         /* 右寄せ */
+    color: #800080;            /* 紫 */
+    font-weight: bold;         /* 太字 */
+    margin-bottom: 16px;       /* 下に余白 */
+}
+
+/* 本文 */
+.detail-desc {
+    font-weight: bold;         /* 太字 */
+    white-space: pre-wrap;     /* 本文中の改行をそのまま表示 */
+    margin-bottom: 20px;       /* 下に余白 */
+}
+
+/* 「行き方を調べる（Googleマップへ）」ボタン：中央の紫ボタン */
+.detail-nav {
+    display: block;            /* 単独ブロックに */
+    width: fit-content;        /* 内容の幅に合わせる */
+    margin: 0 auto;            /* 中央寄せ */
+    background-color: #800080; /* 紫の塗り */
+    color: #fff;               /* 白文字 */
+    font-weight: bold;         /* 太字 */
+    padding: 10px 24px;        /* 内側の余白 */
+    border-radius: 6px;        /* 角丸 */
+    text-decoration: none;     /* 下線なし */
+    text-align: center;        /* 中央寄せ */
+}
+
+/* コメントを開くリンク（詳細画面上の入口。開いた後のパネル本体は comment.css） */
+.detail-comment-link {
+    display: block;            /* 単独の行に */
+    text-align: right;         /* 右寄せ */
+    color: #333;               /* 黒に近いグレー */
+    font-weight: bold;         /* 太字 */
+    text-decoration: none;     /* 下線なし */
+    margin: 4px 0 16px;        /* 上下の余白 */
+    font-size: 18px;           /* 少し大きめ */
+}
+
+/* 編集・削除ボタンの並び（自分の投稿のときだけ表示） */
+.detail-actions {
+    display: flex;             /* 横並び */
+    justify-content: center;   /* 中央寄せ */
+    gap: 12px;                 /* ボタン間の間隔 */
+    margin-top: 20px;          /* 上に余白 */
+}
+
+/* 並びの中の各要素（編集リンク・削除フォーム）を均等幅に */
+.detail-actions > * {
+    flex: 1;                   /* 2つを均等幅に */
+}
+
+/* 並びの中の紫ボタンは枠いっぱいに */
+.detail-actions .btn-purple {
+    width: 100%;               /* 親（均等幅）いっぱいに広げる */
+}

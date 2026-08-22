@@ -1,0 +1,80 @@
+/* ===== スポット一覧：検索・地域フィルタ（spot_list） ===== */
+
+/* フィルタ領域全体の枠 */
+.spot-filter {
+    padding: 54px 16px 8px;    /* 上：ハンバーガー分 / 左右16 / 下8 */
+}
+
+/* 「地域」などの紫ラベル */
+.spot-label {
+    display: inline-block;     /* 文字幅ぶんのピルに */
+    background-color: #800080; /* 紫の背景 */
+    color: #fff;               /* 白文字 */
+    font-weight: bold;         /* 太字 */
+    padding: 4px 12px;         /* 内側の余白 */
+    border-radius: 4px;        /* 角丸 */
+    margin-bottom: 6px;        /* 下の入力欄との間隔 */
+}
+
+/* 検索ボックス＋ボタンの横並び */
+.spot-search-row {
+    display: flex;             /* 横並び */
+    gap: 8px;                  /* 要素間の間隔 */
+    margin-bottom: 12px;       /* 下の地域セレクトとの間隔 */
+}
+
+/* 検索テキスト入力（残り幅いっぱい） */
+#spot-search {
+    flex: 1 1 auto;            /* ボタン以外の幅を全部使う */
+    padding: 8px 10px;         /* 入力しやすい余白 */
+    border: 1px solid #ccc;    /* 枠 */
+    border-radius: 4px;        /* 角丸 */
+    background-color: #E6E6FA; /* 薄紫の背景 */
+}
+
+/* 検索ボタン（紫） */
+#spot-search-btn {
+    background-color: #800080; /* 紫の塗り */
+    color: #fff;               /* 白文字 */
+    border: none;              /* 枠なし */
+    border-radius: 4px;        /* 角丸 */
+    padding: 0 16px;           /* 左右の余白（高さは行に合わせる） */
+    font-weight: bold;         /* 太字 */
+}
+
+/* 地域の絞り込みセレクト */
+#spot-region {
+    padding: 6px 10px;         /* 内側の余白 */
+    border: 1px solid #ccc;    /* 枠 */
+    border-radius: 4px;        /* 角丸 */
+    background-color: #E6E6FA; /* 薄紫の背景 */
+}
+
+/* スポット行の右端の矢印（list.css の .feed-row と併用） */
+.spot-chevron-chevron {
+    flex: 0 0 auto;            /* 縮まない固定幅 */
+    color: #800080;            /* 紫 */
+    font-size: 22px;           /* 大きめの矢印 */
+    font-weight: bold;         /* 太字 */
+    padding-left: 8px;         /* 本文との間隔 */
+}
+
+/* スポット詳細：出典（sources の一覧） */
+.spot-sources {
+    margin-top: 20px;              /* 本文との間隔 */
+    padding-top: 12px;            /* 区切り線からの余白 */
+    border-top: 1px solid #ccc;   /* 上に区切り線 */
+    font-size: 13px;             /* 小さめ */
+}
+.spot-sources-title {
+    margin: 0 0 4px;             /* 下に少し余白 */
+    color: #800080;             /* 紫 */
+    font-weight: bold;          /* 太字 */
+}
+.spot-sources ul {
+    margin: 0;                  /* 余白リセット */
+    padding-left: 1.2em;        /* 箇条書きのインデント */
+}
+.spot-sources a {
+    color: #800080;            /* リンクは紫 */
+}
