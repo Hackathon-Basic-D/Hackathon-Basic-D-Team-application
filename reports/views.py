@@ -8,6 +8,7 @@ from .forms import ReportForm
 # ここのコードは変更せずにS3保存に切り替え可能
 from django.core.files.storage import default_storage
 from django.urls import reverse   # 成功メッセージ用に ?created=1 を付けてリダイレクトするため
+from django.db.models import Q   # 複数条件を OR/AND/NOT で組み立てる Django のクエリオブジェクト
 
 # ログイン済みかどうかチェック
 def check_login(request):
@@ -21,8 +22,19 @@ def mypost(request):
 
     # ログイン中のuser_idに紐づくレポートのみ取り込む    
     reports = Report.objects.filter(user_id=request.session.get('user_id'))
-    return render(request, 'reports/mypost.html', {'reports': reports})
+    q = request.GET.get('q', '').strip()   # 検索キーワード（GETの ?q=）
+    if q:
+        reports = reports.filter(Q(report_title__icontains=q) | Q(report_description__icontains=q))
+    return render(request, 'reports/mypost.html', {'reports': reports, 'q': q})
 
+# レポート一覧（公開・未ログインでも表示・キーワード検索）
+def report_list(request):
+    q = request.GET.get('q', '').strip()   # 検索キーワード（GETの ?q=）
+    reports = Report.objects.all()          # SoftDeleteManager が削除済みを自動除外
+    if q:
+        # 「タイトル または 本文」に部分一致（OR）。__icontains は大小無視の部分一致（LIKE '%q%'）
+        reports = reports.filter(Q(report_title__icontains=q) | Q(report_description__icontains=q))
+    return render(request, 'reports/report_list.html', {'reports': reports, 'q': q})
 
 # 緯度・経度を小数8桁に丸めるヘルパー。
 # 目的：Googleマップ由来の座標は小数十数桁あり、DBの桁数上限（緯度10桁/経度11桁）を超えて弾かれる

@@ -78,3 +78,15 @@
     font-size: 12px;            /* 小さめの注記 */
     color: #666;                /* 目立ちすぎないグレー */
 }
+
+/* メニュー下部の装飾画像（寝ている妖怪）。下端をフッター上端に合わせる */
+.menu-yokai {
+    position: absolute;          /* offcanvas（fixed）を基準に配置 */
+    left: 50%;                      /* 中央寄せ（transformと併用） */
+    transform: translateX(-50%);    /* 自分の半分だけ左へ＝中央 */
+    bottom: calc(var(--footer-h)/2);     /* フッターの高さぶん上げる＝画像の下端がフッター上端に */
+    width: 80%;                 /* 横いっぱい（横長に寝ている想定） */
+    max-width: 480px;               /* 大きくなりすぎない上限 */
+    height: auto;                /* 縦横比を維持 */
+    pointer-events: none;        /* メニュー操作を邪魔しない */
+}

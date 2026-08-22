@@ -21,8 +21,8 @@
 <!-- レポートタイトル -->
 <h1 class="detail-title">{{ report.report_title }}</h1>
 
-<!-- タグ -->
-<div class="detail-tags" id="detail-tags"></div>
+{# <!-- タグ --> #}
+{# <div class="detail-tags" id="detail-tags"></div> #}
 
 <!-- 本文 -->
 <p class="detail-desc">{{ report.report_description }}</p>
@@ -43,7 +43,7 @@
 {% if is_owner %}
 <div class="detail-actions">
     <a href="{{ url('reports:report_edit', report.pk) }}" class="btn btn-purple btn-sm">編集</a>
-    <form method="post" action="{{ url('reports:report_delete', report.pk) }}" data-confirm="このレポートを削除しますか？" style="display:inline;">
+        <form method="post" action="{{ url('reports:report_delete', report.pk) }}" data-confirm="このレポートを削除しますか？" style="display:inline;">
         {{ csrf_input }}
         <button type="submit" class="btn btn-purple btn-sm">削除</button>
     </form>

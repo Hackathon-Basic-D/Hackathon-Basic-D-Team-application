@@ -26,7 +26,7 @@ const PIN_SIZE_SELECTED = "64px";  // タップ時のピン高さ
 const spots = window.REPORTS_DATA || [];
 
 // ===== この画面で選んだスポットの状態 =====
-const MAX_SPOTS = 9;      // 最大9件
+const MAX_SPOTS = 3;      // 最大3件（GoogleマップURLのモバイル経由地上限）
 const MIN_SPOTS = 2;      // 最小2件（送信時にチェック）
 const selectedIds = [];   // 選んだレポートIDをタップ順で保持
 const markerById = {};    // id からマーカーを引く（選択印の付け外し用）
@@ -95,6 +95,15 @@ async function initMap() {
     });
     // ボトムシートの「ルートに追加／外す」
     document.getElementById("bs-add").addEventListener("click", toggleAdd);
+
+    // 編集モード：PRESELECTED_IDS の順に選択状態を復元（バッジ・件数も反映）
+    (window.PRESELECTED_IDS || []).forEach((pid) => {
+        const spot = spots.find((s) => String(s.id) === String(pid));
+        if (spot && !selectedIds.includes(spot.id) && selectedIds.length < MAX_SPOTS) {
+            selectedIds.push(spot.id);
+        }
+    });
+    updateBadges();  // 復元した選択にバッジを付ける
     updateCount();   // 初期件数（0）を表示
 
     // 「選択した投稿でルート作成する」の送信
@@ -130,12 +139,13 @@ function clearSelectedMarker() {
     }
 }
 
-// ボトムシートを開く（段階1：タイトル・本文・日時のみ表示）
+// ボトムシートを開く（タイトル・本文・日時のみ表示）
 function openBottomSheet(spot) {
     currentSpot = spot;   // いま開いているスポット（追加/外すの対象）を覚える
     document.getElementById("bs-title").textContent = spot.title;
     document.getElementById("bs-desc").textContent = spot.description;
     document.getElementById("bs-date").textContent = spot.date;
+    // document.getElementById("bs-detail").href = `/reports/${spot.id}/`;  // タップしたレポートの詳細へ
     updateAddButton();    // ボタン表示を選択状態に合わせる（追加 or 外す）
     document.getElementById("bottom-sheet").classList.add("open");
     document.getElementById("map").classList.add("sheet-open");

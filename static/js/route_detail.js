@@ -11,6 +11,20 @@ const points = Array.from(document.querySelectorAll(".route-point")).map((el) =>
     order: el.dataset.order,
 }));
 
+// Googleマップ遷移ボタン：現在地起点（origin省略）で、選んだレポートを順に巡る徒歩ルートを開く
+// 決定事項：origin は送らない（Google Mapが現在地を出発地にする）／URL必須の目的地＝最後のレポート／
+// それ以外を経由地（順番どおり）／モバイルの経由地上限3（＝選択上限3が前提）
+(function setupRouteNav() {
+    const navBtn = document.getElementById("route-nav");
+    if (!navBtn || points.length === 0) return;
+    const toStr = (p) => `${p.lat},${p.lng}`;
+    const destination = toStr(points[points.length - 1]);       // 目的地＝最後のレポート（URLに必須）
+    const waypoints = points.slice(0, -1).map(toStr).join("|"); // それ以外を経由地（origin は送らない）
+    let url = `https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=${destination}`;
+    if (waypoints) url += `&waypoints=${encodeURIComponent(waypoints)}`;
+    navBtn.href = url;
+})();
+
 async function initRouteMap() {
     const mapEl = document.getElementById("route-map");
     if (!mapEl || points.length === 0) return;   // 地図要素や地点が無ければ何もしない
@@ -24,7 +38,7 @@ async function initRouteMap() {
         mapId: MAP_ID,
         streetViewControl: false,
         mapTypeControl: false,
-        fullscreenControl: false,
+        fullscreenControl: true,   // 全画面ボタンを表示
     });
 
     // 全地点にマーカーを立て、表示範囲を全地点が入るよう調整
@@ -88,16 +102,24 @@ async function initRouteMap() {
                     summary.textContent = "徒歩ルート" + (parts.length ? "：" + parts.join(" / ") : "");
                     info.appendChild(summary);
 
-                    const caution = document.createElement("p");
-                    caution.textContent = "※ 徒歩ルートは歩道や歩行者用通路が反映されていない場合があります。実際の道路状況に十分ご注意ください。選択された地点の位置によっては、ルートが正確に表示されない場合があります。";
-                    caution.style.fontSize = "12px";
-                    info.appendChild(caution);
+                    // 注意書き（文ごとに改行して読みやすく）
+                    const cautionLines = [
+                        "※ 徒歩ルートは歩道や歩行者用通路が反映されていない場合があります。",
+                        "※ 実際の道路状況に十分ご注意ください。",
+                        "※ 選択された地点の位置によっては、ルートが正確に表示されない場合があります。",
+                    ];
+                    cautionLines.forEach((text) => {
+                        const caution = document.createElement("p");
+                        caution.textContent = text;
+                        caution.className = "route-caution";
+                        info.appendChild(caution);
+                    });
 
                     // APIから警告が返ってきていれば併せて表示
                     (data.warnings || []).forEach((w) => {
                         const p = document.createElement("p");
                         p.textContent = "※ " + w;
-                        p.style.fontSize = "12px";
+                        p.className = "route-caution";
                         info.appendChild(p);
                     });
                 }
