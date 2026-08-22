@@ -24,7 +24,7 @@ def mypost(request):
     return render(request, 'reports/mypost.html', {'reports': reports})
 
 
-# 緯度・経度を小数6桁に丸めるヘルパー。
+# 緯度・経度を小数8桁に丸めるヘルパー。
 # 目的：Googleマップ由来の座標は小数十数桁あり、DBの桁数上限（緯度10桁/経度11桁）を超えて弾かれる
 #       クライアントの値をそのまま信用せず、サーバ側で桁を落として正規化
 def _round_coord(v):
@@ -45,7 +45,7 @@ def report_create(request):
         data = request.POST.copy()                      # request.POST は変更不可なのでコピーを作る
         for key in ('latitude', 'longitude'):           # 緯度・経度の2項目について
             if data.get(key):                           # 値が入っているときだけ処理（空なら必須エラーに任せる）
-                data[key] = str(_round_coord(data[key]))  # 6桁に丸め、文字列として入れ直す
+                data[key] = str(_round_coord(data[key]))  # 8桁に丸め、文字列として入れ直す
         # request.FILESを渡さないとアップロードされた画像を受け取れない
         form = ReportForm(data, request.FILES)          # 丸めた data でフォームを作る（request.POST の代わり）
 
