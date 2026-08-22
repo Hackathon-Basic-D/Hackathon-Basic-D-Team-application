@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from reports.models import Report
-from .models import Route, RouteReport
+from .models import Route, RouteReport, RouteTag, RouteTagging
 from .forms import RouteForm
 import json
 import urllib.request
@@ -33,7 +33,20 @@ def myroute(request):
 # ルート一覧画面（誰でも閲覧可能）
 def route_list(request):
     routes = Route.objects.all()
-    return render(request, 'routes/route_list.html', {'routes': routes})
+    # タグ絞り込み：一覧画面のプルダウン（<select name="tag">）で選ばれたタグIDをGETパラメータで受け取る
+    tag_id = request.GET.get('tag')
+    if tag_id:
+        # route_taggings(中間テーブル）経由でそのタグが付与されているルートだけに絞り込む
+        # 同じルートに複数タグが付いていても中間テーブルの行が複数ヒットして重複しうるためdistinct()で除去
+        routes = routes.filter(route_taggings__tag_id=tag_id).distinct()
+
+    # プルダウンの選択肢として、有効な（論理削除されていない）タグを全件渡す
+    tags = RouteTag.objects.all()
+    return render(request, 'routes/route_list.html', {
+        'routes': routes,
+        'tags': tags,
+        'selected_tag_id': tag_id,  # テンプレート側でプルダウンの選択状態を復元するために渡す
+        })
 
 
 # ルート詳細画面（誰でも閲覧可能）
@@ -187,7 +200,11 @@ def route_create(request):
             # 選択されたレポートに順番を付けて中間テーブルに保存
             for order, report_id in enumerate(ordered_ids, start=1):
                 RouteReport.objects.create(route=route, report_id=report_id, sequence_order=order)
-            
+
+            # 選択されたタグ（RouteTagのリスト）ごとに中間テーブル（RouteTagging）を作成
+            # ルートは作成直後で既存タグの紐づけがないので、重複チェック不要でそのままcreateでよい
+            for tag in form.cleaned_data['tags']:
+                RouteTagging.objects.create(route=route, tag=tag)
             
             # 作成終了後、セッションに一時保存していたデータは削除
             if 'selected_report_ids' in request.session:
@@ -227,10 +244,31 @@ def route_edit(request, pk):
         form = RouteForm(request.POST, instance=route)
         if form.is_valid():
             form.save()
+
+            # 編集時は既にタグが紐づいている可能性があるため、
+            # 単純にcreateするのではなく「選択解除されたタグを外し、新たに選ばれたタグだけ追加する」差分更新にする
+            selected_tags = form.cleaned_data['tags']
+
+            # 1. フォームで選ばれなかった（チェックが外れた）タグの紐づけを削除
+            #    RouteTaggingは中間テーブルなので、ここでの delete() は物理削除
+            route.route_taggings.exclude(tag__in=selected_tags).delete()
+
+            # 2. まだ紐づいていない、新たに選ばれたタグだけを追加
+            #    （既に紐づいているタグをcreateしようとするとunique_together制約でエラーになるため、
+            #     既存タグIDのセットを作って差分だけ処理）
+            existing_tag_ids = set(route.route_taggings.values_list('tag_id', flat=True))
+            for tag in selected_tags:
+                if tag.id not in existing_tag_ids:
+                    RouteTagging.objects.create(route=route, tag=tag)
             return redirect('routes:route_detail', pk=route.pk)
         # 無効な入力の場合、下のrenderで再表示する
     else:
-        form = RouteForm(instance=route)    # GET時、既存データが入ったフォームを用意
+        # GET時：編集画面を開いた時点で、既に紐づいているタグをプルダウンの選択済み状態にする
+        # ModelMultipleChoiceFieldのinitialにはpkのリストを渡せばよい
+        form = RouteForm(instance=route,
+                         initial={
+                             'tags': route.route_taggings.values_list('tag_id', flat=True),
+        })    # GET時、既存データが入ったフォームを用意
 
     return render(request, 'routes/route_edit.html', {'route': route, 'form': form})
 
