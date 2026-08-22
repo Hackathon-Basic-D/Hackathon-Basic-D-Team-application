@@ -1,6 +1,632 @@
 [
-  { "id": 1, "region": "福岡", "title": "旧・犬鳴トンネル", "description": "夜な夜な聞こえる女性の声と怨念。噂の噂。", "tags": ["心霊", "トンネル"], "lat": null, "lng": null },
-  { "id": 2, "region": "山梨", "title": "青木ヶ原樹海", "description": "迷い込むと戻れないという自殺の名所。", "tags": ["樹海"], "lat": null, "lng": null },
-  { "id": 3, "region": "東京", "title": "将門の首塚", "description": "動かすと必ず祟りがあると恐れられる場所。", "tags": ["祟り"], "lat": null, "lng": null },
-  { "id": 4, "region": "岩手", "title": "緑風荘", "description": "幸運を呼ぶ座敷童子の宿と伝わる。", "tags": ["座敷童"], "lat": null, "lng": null }
+  {
+    "id": "spot_001",
+    "region": "大阪府",
+    "title": "鵺塚",
+    "description": "『平家物語』によれば、近衛天皇を悩ませた怪鳥を源頼政が射落とし、その遺骸を丸木舟に乗せて淀川へ流したとされます。大阪市には、その鵺が旧澤上江の渚へ漂着し、祟りを恐れた村人が手厚く弔って埋葬したものが鵺塚だという伝承が残っています。現在の塚は明治3年に改修され、祠も昭和32年に地元の人々によって改修されています。",
+    "tags": [
+      "鵺"
+    ],
+    "sources": [
+      {
+        "title": "都島区の都市景観資源（鵺塚）",
+        "publisher": "大阪市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.osaka.lg.jp/toshikeikaku/page/0000196224.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_002",
+    "region": "京都府",
+    "title": "大江山・酒呑童子の里",
+    "description": "福知山市の大江山には、源頼光一行による酒呑童子退治の伝説が伝わっています。頼光らは山伏姿で大江山へ入り、鬼たちに酒を飲ませて討ち取ったと語られます。現在の大江山酒呑童子の里には日本の鬼の交流博物館などがあり、周辺には酒呑童子や鬼退治に結び付く伝承地が点在しています。",
+    "tags": [
+      "酒呑童子"
+    ],
+    "sources": [
+      {
+        "title": "大江山酒呑童子の里",
+        "publisher": "福知山市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.fukuchiyama.lg.jp/soshiki/65/1084.html"
+      },
+      {
+        "title": "3つの鬼伝説",
+        "publisher": "福知山市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.fukuchiyama.lg.jp/soshiki/65/23700.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_003",
+    "region": "京都府",
+    "title": "鬼ヶ城",
+    "description": "福知山市の鬼ヶ城には、酒呑童子の一党として知られる茨木童子にまつわる伝承が残っています。福知山市は、鬼ヶ城を茨木童子の伝承が残る山として紹介しており、地域に残る鬼文化と福知山の歴史が重なる場所の一つです。",
+    "tags": [
+      "茨木童子"
+    ],
+    "sources": [
+      {
+        "title": "御城印（鬼ヶ城）",
+        "publisher": "福知山市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.fukuchiyama.lg.jp/site/promotion/36225.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_004",
+    "region": "京都府",
+    "title": "二瀬川渓流",
+    "description": "大江山の二瀬川渓流には、酒呑童子伝説に結び付く『鬼の足跡』や『頼光の腰掛岩』などが残っています。福知山市は、渓流の景観とともにこれらの伝承地を周辺スポットとして紹介しています。大江山の鬼退治伝説を、実際の岩や地形と結び付けて見ることができる場所です。",
+    "tags": [
+      "酒呑童子"
+    ],
+    "sources": [
+      {
+        "title": "二瀬川渓流",
+        "publisher": "福知山市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.fukuchiyama.lg.jp/soshiki/65/1108.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_005",
+    "region": "京都府",
+    "title": "宇治橋・橋姫",
+    "description": "橋姫は宇治川に架かる宇治橋の守護神であり、結界の象徴として語られてきました。一方で、後世には嫉妬から鬼女となる橋姫の伝説も広がっています。宇治では、橋を守る存在としての橋姫と、怪異的な鬼女としての橋姫という複数の側面をたどることができます。",
+    "tags": [
+      "橋姫"
+    ],
+    "sources": [
+      {
+        "title": "オリジナル映像作品『橋姫』について",
+        "publisher": "宇治市 源氏物語ミュージアム",
+        "source_type": "自治体公式",
+        "url": "https://www.city.uji.kyoto.jp/site/genji/5588.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_006",
+    "region": "奈良県",
+    "title": "不審ヶ辻子",
+    "description": "奈良市には、元興寺の鐘楼に夜な夜な鬼が現れ、法師と激しく争ったという話が伝わっています。夜明けを嫌った鬼が逃げ、法師が追いかけたところ、ならまちの一角で突然姿を消しました。その鬼を見失った場所が『不審ヶ辻子』と呼ばれるようになったとされ、鬼は『元興寺（がごぜ）』と伝えられています。",
+    "tags": [
+      "元興寺（がごぜ）"
+    ],
+    "sources": [
+      {
+        "title": "奈良市に伝わる『鬼』の物語（不審ヶ辻子の由来）",
+        "publisher": "奈良市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.nara.lg.jp/uploaded/attachment/155571.pdf"
+      }
+    ]
+  },
+  {
+    "id": "spot_007",
+    "region": "愛知県",
+    "title": "鹽竈神社",
+    "description": "鹽竈神社の境内には、河童の『むさんどさん』の像があり、無三殿社には無三殿主大神が祀られています。名古屋市図書館も『むさんどの神さま』を、鹽竈神社で祀られている河童の姿をした神として紹介しています。名古屋の地域的な河童信仰を知ることができる場所です。",
+    "tags": [
+      "河童"
+    ],
+    "sources": [
+      {
+        "title": "中川運河周辺の見どころ",
+        "publisher": "名古屋市中川区",
+        "source_type": "自治体公式",
+        "url": "https://www.city.nagoya.jp/nakagawa/miryoku/1022715/1022721/1022722/1022723.html"
+      },
+      {
+        "title": "音読テキスト『むさんどの神さま』",
+        "publisher": "名古屋市図書館",
+        "source_type": "公立図書館",
+        "url": "https://www.library.city.nagoya.jp/guide/ondoku_text_bk.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_008",
+    "region": "愛知県",
+    "title": "音聞山・旧きよの坂",
+    "description": "名古屋市天白区には、音聞山に『きよの坂』と呼ばれる急坂があり、島田地蔵寺へ抜ける『地蔵みち』でもあったと伝えられています。明治初めごろ、肥料を運んでいた男性が美しい娘に化けた狐に気を取られ、その間に仲間の狐が荷物を食べてしまったという昔話が残っています。",
+    "tags": [
+      "狐"
+    ],
+    "sources": [
+      {
+        "title": "天白の民話と昔話",
+        "publisher": "名古屋市天白区",
+        "source_type": "自治体公式",
+        "url": "https://www.city.nagoya.jp/tempaku/miryoku/1025781/1025783.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_009",
+    "region": "愛知県",
+    "title": "龍耳社",
+    "description": "龍耳社は猪子石神明社の境内社です。神社の由緒では、明治初期に三河碧海郡で『耳のある蛇』が捕らえられ、後に耳の祭神として祀られたとされます。昭和初期から猪子石神明社の末社として祀られ、現在は耳の守護神として信仰されています。",
+    "tags": [],
+    "sources": [
+      {
+        "title": "耳の守護 龍耳社",
+        "publisher": "猪子石神明社",
+        "source_type": "神社公式",
+        "url": "https://inokoishishin.jimdofree.com/%E8%80%B3%E3%81%AE%E5%AE%88%E8%AD%B7-%E9%BE%8D%E8%80%B3%E7%A4%BE/"
+      }
+    ]
+  },
+  {
+    "id": "spot_010",
+    "region": "福岡県",
+    "title": "田主丸町・巨瀬川周辺",
+    "description": "久留米市は田主丸町を、古くから河童伝承が集中する地域として紹介しています。巨瀬川から筑後川にかけては多くの河童伝承が残り、民間伝承では巨瀬入道と九千坊が河童の頭目として語られます。現在も河童の石像や木像などが残り、一部は市指定文化財となっています。",
+    "tags": [
+      "河童"
+    ],
+    "sources": [
+      {
+        "title": "久留米市景観計画（田主丸の河童伝承）",
+        "publisher": "久留米市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.kurume.fukuoka.jp/1050kurashi/2070machi/3070keikan/files/Kkei01.pdf"
+      },
+      {
+        "title": "郷土の文化財（田主丸の河童）",
+        "publisher": "久留米市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.kurume.fukuoka.jp/1080kankou/2015bunkazai/3010bunkazai/files/P13-28.pdf"
+      }
+    ]
+  },
+  {
+    "id": "spot_011",
+    "region": "福岡県",
+    "title": "宗岳寺・羽犬の塚",
+    "description": "筑後市には、羽犬塚の地名にまつわる代表的な二つの伝説があります。一つは、羽を持つ獰猛な犬を豊臣秀吉が退治し、その強さを称えて塚を築いたという話。もう一つは、羽が生えたように素早く動く秀吉の愛犬がこの地で死に、悲しんだ秀吉が塚を築いたという話です。宗岳寺には『羽犬の塚』が残っています。",
+    "tags": [
+      "羽犬"
+    ],
+    "sources": [
+      {
+        "title": "羽犬物語",
+        "publisher": "筑後市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.chikugo.lg.jp/library/file/chikugosyoukai/gaikyo/FILE_42_12.pdf"
+      }
+    ]
+  },
+  {
+    "id": "spot_012",
+    "region": "福岡県",
+    "title": "龍宮寺",
+    "description": "福岡市の資料では、貞応元年（1222）に博多の海に人魚が現れ、国家長久の瑞兆と占われたため寺内に埋葬されたと伝えられています。これを機に寺名が龍宮寺へ改められたとされ、現在も人魚伝説で知られています。福岡市地下鉄の案内では、境内の人魚塚や、一般公開されていない人魚の骨・掛け軸が伝えられていることも紹介されています。",
+    "tags": [
+      "人魚"
+    ],
+    "sources": [
+      {
+        "title": "冷泉地区 史跡・文化財（龍宮寺）",
+        "publisher": "福岡市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.fukuoka.lg.jp/shimin/community/life/kakukunokoukude-tasyuu/documents/r01_hk4_reisen_book.pdf"
+      },
+      {
+        "title": "おでかけガイド 龍宮寺",
+        "publisher": "福岡市地下鉄",
+        "source_type": "自治体公式",
+        "url": "https://subway.city.fukuoka.lg.jp/odekake/course/spot/details/?id=42"
+      }
+    ]
+  },
+  {
+    "id": "spot_013",
+    "region": "佐賀県",
+    "title": "秀林寺・猫塚",
+    "description": "白石町の資料では、秀林寺に『猫大明神』の祠があり、『白石化け猫騒動』に関係して猫を供養する意味を持つものと紹介されています。町の資料には化け猫騒動の物語も掲載されており、地域に残る化け猫伝説を知ることができる場所です。",
+    "tags": [
+      "化け猫"
+    ],
+    "sources": [
+      {
+        "title": "おもしろいし（猫塚・秀林寺）",
+        "publisher": "白石町",
+        "source_type": "自治体公式",
+        "url": "https://www.town.shiroishi.lg.jp/var/rev0/0032/8135/070122omoshiroishi.pdf"
+      }
+    ]
+  },
+  {
+    "id": "spot_014",
+    "region": "長崎県",
+    "title": "水神神社・河童石",
+    "description": "長崎市の水神神社には『河童石』と呼ばれる石があり、河童にまつわる伝説が残っています。いたずらの多い河童を神官が宴に招き、古い竹を食べさせて懲らしめると、河童は神官を慕っていたずらをやめたとされます。その後、神官が献立を書いた紙を石に置くと、翌朝その材料が用意されるようになり、その石が河童石と呼ばれるようになったと伝えられています。",
+    "tags": [
+      "河童"
+    ],
+    "sources": [
+      {
+        "title": "水神神社のかっぱ伝説",
+        "publisher": "長崎市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.nagasaki.lg.jp/kiji/koho202505/56792.html"
+      },
+      {
+        "title": "ナガジン 水神神社",
+        "publisher": "長崎市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.nagasaki.lg.jp/nagazine/hakken0901/index1.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_015",
+    "region": "大阪府",
+    "title": "葛葉稲荷神社・信太の森",
+    "description": "和泉市は信太の地を『葛の葉伝説』の舞台とし、人と狐の婚姻を描く『狐女房』や、陰陽師・安倍晴明の誕生譚として紹介しています。伝説では、白狐が人間の女性・葛の葉となり、安倍保名との間に童子丸をもうけ、正体を知られた後に信太の森へ去ったと語られます。信太の森の鏡池も、この伝説を彩る場所として伝えられています。",
+    "tags": [
+      "葛の葉"
+    ],
+    "sources": [
+      {
+        "title": "信太の森ふるさと館の概要",
+        "publisher": "和泉市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.osaka-izumi.lg.jp/kakukano/syougaibu/bunkaisan/bunkazai_facilities/shinodanomori_furusatokan/furusatokan.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_016",
+    "region": "大阪府",
+    "title": "古川筋・河太郎",
+    "description": "門真市の民話では、古川に河太郎という河童が住んでいたとされます。日照りで水が減り畑を荒らした河太郎は村人に捕らえられますが、雨を祈ると三日三晩雨が降りました。河太郎は捕らえられたまま亡くなり、村人は古川筋に葬って『水神』と刻んだ石碑を建てたと伝えられています。",
+    "tags": [
+      "河童"
+    ],
+    "sources": [
+      {
+        "title": "かどまの民話『古川のカッパ』",
+        "publisher": "門真市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.kadoma.osaka.jp/soshiki/shiminbunkabu/shogaigakushuka/4/2/3/2808.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_017",
+    "region": "愛知県",
+    "title": "蛇池",
+    "description": "名古屋市山田図書館は、蛇池に関する複数の伝説を郷土資料から整理しています。内容には、織田信長が大蛇を求めて池に潜った話、『竜神の玉』、大蛇昇天などがあり、一つの物語ではなく異なる伝承が同じ池に重なっています。蛇池そのものは現在の場所を確認できるため、複数伝承が蓄積したスポットとして扱えます。",
+    "tags": [],
+    "sources": [
+      {
+        "title": "山田地区に伝わる伝説・むかし話",
+        "publisher": "名古屋市山田図書館",
+        "source_type": "公立図書館",
+        "url": "https://www.library.city.nagoya.jp/img/oshirase/adult2015/yamada_201602_1_1.pdf"
+      }
+    ]
+  },
+  {
+    "id": "spot_018",
+    "region": "愛知県",
+    "title": "音聞山・狐の嫁さん",
+    "description": "八事村の助七郎が山で罠にかかった狐を助けた後、『おこん』という女性が現れて妻となり、二人の間には子どもが生まれます。ある日、犬に驚いたおこんが狐の姿を見られたことで正体が知られ、音聞山へ去りました。残された子どもが泣いたとき、音聞山の大松へ連れていくと泣き止んだという話が名古屋市に残されています。",
+    "tags": [
+      "狐"
+    ],
+    "sources": [
+      {
+        "title": "天白の民話と昔話『狐の嫁さん』",
+        "publisher": "名古屋市天白区",
+        "source_type": "自治体公式",
+        "url": "https://www.city.nagoya.jp/tempaku/miryoku/1025781/1025783.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_019",
+    "region": "愛知県",
+    "title": "猿子橋",
+    "description": "名古屋市中川区は、昔、河童が猿と見間違えられたことから『猿侯』と呼ばれ、この辺りに河童が住んでいたという説があると紹介しています。現在の猿子橋という具体的な場所に、河童にまつわる地名・橋名の伝承が残っている点が特徴です。",
+    "tags": [
+      "河童"
+    ],
+    "sources": [
+      {
+        "title": "中川運河周辺の見どころ（猿子橋）",
+        "publisher": "名古屋市中川区",
+        "source_type": "自治体公式",
+        "url": "https://www.city.nagoya.jp/nakagawa/miryoku/1022715/1022721/1022722/1022723.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_020",
+    "region": "福岡県",
+    "title": "北野天満宮",
+    "description": "久留米市の資料では、北野天満宮に『河伯之手（河童の手）』が保存されていると紹介されています。その由来には二説あり、一つは菅原道真を追手から助けようとした河童の総大将・三千坊が右手を失ったという話、もう一つは道真の馬を川へ引き込もうとした河童の手を道真が斬ったという話です。異なる二つの河童伝説が同じ『河伯之手』に結び付いています。",
+    "tags": [
+      "河童"
+    ],
+    "sources": [
+      {
+        "title": "れきしさんぽ No.29 久留米市の河童",
+        "publisher": "久留米市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.kurume.fukuoka.jp/1080kankou/2015bunkazai/3050kurumeshishi/files/historywalk29.pdf"
+      }
+    ]
+  },
+  {
+    "id": "spot_021",
+    "region": "福岡県",
+    "title": "石垣山観音寺",
+    "description": "石垣山観音寺の寺伝では、夜中に鐘が鳴り、牛や馬、村人が消える怪異が続いた後、頭は牛、体つきは鬼という怪物『牛鬼』が現れたとされます。住職が読経と宝剣によって牛鬼を退治し、手を寺に保存し、耳を付近の山へ納めたことから『耳納山』と呼ぶようになったと語られています。現在も寺では『牛鬼の手』と伝わるものが秘蔵され、福岡県公式観光情報でも紹介されています。",
+    "tags": [
+      "牛鬼"
+    ],
+    "sources": [
+      {
+        "title": "観音寺について・牛鬼伝説と耳納山",
+        "publisher": "石垣山観音寺",
+        "source_type": "寺院公式",
+        "url": "https://ishikakizan-kannonji.jp/rekishi"
+      },
+      {
+        "title": "石垣山観音寺 さざんか祭り",
+        "publisher": "福岡県 クロスロードふくおか",
+        "source_type": "都道府県公式観光",
+        "url": "https://www.crossroadfukuoka.jp/event/13454"
+      }
+    ]
+  },
+  {
+    "id": "spot_022",
+    "region": "福岡県",
+    "title": "鬼杉",
+    "description": "英彦山の鬼杉には、鬼たちがこの山に住む場所を求め、一夜で家を建てる条件を課されたという伝説が残っています。鬼たちが予想以上の速さで家を完成させそうになったため、英彦山の神が夜明けを装い、鬼たちは山を去りました。そのとき鬼の首領が山に刺した杉の杖が、現在の鬼杉になったと伝えられています。",
+    "tags": [
+      "鬼"
+    ],
+    "sources": [
+      {
+        "title": "鬼杉",
+        "publisher": "福岡県 クロスロードふくおか",
+        "source_type": "都道府県公式観光",
+        "url": "https://www.crossroadfukuoka.jp/spot/12966"
+      }
+    ]
+  },
+  {
+    "id": "spot_023",
+    "region": "福岡県",
+    "title": "高住神社・豊前坊",
+    "description": "高住神社は英彦山信仰圏の一角にあり、古くから天狗の棲む秘境として知られてきました。主祭神は豊日別神ですが、日本八大天狗に数えられる『豊前坊天狗』も祀られています。福岡県の公式観光情報では、豊前坊を九州の天狗の頭領とする伝承も紹介されています。",
+    "tags": [
+      "天狗"
+    ],
+    "sources": [
+      {
+        "title": "高住神社",
+        "publisher": "福岡県 クロスロードふくおか",
+        "source_type": "都道府県公式観光",
+        "url": "https://www.crossroadfukuoka.jp/spot/14826"
+      },
+      {
+        "title": "英彦山 天狗の霊力でご利益アップ！",
+        "publisher": "福岡県 クロスロードふくおか",
+        "source_type": "都道府県公式観光",
+        "url": "https://www.crossroadfukuoka.jp/feature/mt_hiko"
+      }
+    ]
+  },
+  {
+    "id": "spot_024",
+    "region": "福岡県",
+    "title": "七ッ石・花月伝説",
+    "description": "添田町には、少年・花月が英彦山からの帰り道に天狗にさらわれたという伝説が残っています。花月がさらわれたとされる場所は二か所あり、その一つが旧彦山参詣道沿いの七ッ石です。七ッ石は二つに割れており、天狗が花月をさらうときに蹴り割ったと伝えられています。",
+    "tags": [
+      "天狗"
+    ],
+    "sources": [
+      {
+        "title": "添田町の伝説 花月",
+        "publisher": "添田町",
+        "source_type": "自治体公式",
+        "url": "https://www.town.soeda.fukuoka.jp/site/soeda-shinwa/1587.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_025",
+    "region": "福岡県",
+    "title": "求菩提山",
+    "description": "福岡県の公式観光情報では、豊前市の修験の山・求菩提山に、山伏の姿をした『カラス天狗』が住んでいたという伝説が紹介されています。現在の『豊前市カラス天狗祭り』も、この求菩提山の伝説にちなんだものです。修験道の歴史と天狗伝承を一緒に紹介できる場所です。",
+    "tags": [
+      "カラス天狗"
+    ],
+    "sources": [
+      {
+        "title": "豊前市カラス天狗祭り",
+        "publisher": "福岡県 クロスロードふくおか",
+        "source_type": "都道府県公式観光",
+        "url": "https://www.crossroadfukuoka.jp/event/11038"
+      },
+      {
+        "title": "豊前市観光ガイド",
+        "publisher": "福岡県 クロスロードふくおか",
+        "source_type": "都道府県公式観光",
+        "url": "https://www.crossroadfukuoka.jp/areaguide/buzen-shi"
+      }
+    ]
+  },
+  {
+    "id": "spot_026",
+    "region": "福岡県",
+    "title": "姪浜住吉神社",
+    "description": "福岡市の資料では、伊邪那岐大神が小戸の海岸で禊をする際、波が荒れて困っていたところへ河童が現れ、波の静かな場所まで案内したという伝承が紹介されています。人々はその河童を徳の高い存在と考え、河童面を守りとして祀るようになったとされます。姪浜住吉神社には、この伝承に基づく河童信仰が残っています。",
+    "tags": [
+      "河童"
+    ],
+    "sources": [
+      {
+        "title": "姪浜住吉神社による副市長表敬（河童面の伝承）",
+        "publisher": "福岡市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.fukuoka.lg.jp/shisei/kouhou-hodo/hodo-happyo/2023/documents/230714_meinohamasumiyoshijinjafukushicyouhyoukei.pdf"
+      }
+    ]
+  },
+  {
+    "id": "spot_027",
+    "region": "大阪府",
+    "title": "柳町・旧高橋周辺『おさの狐』",
+    "description": "門真市の民話では、柳町に『高橋』という小さな橋があり、その陰に『おさの狐』が住んでいたとされます。おさの狐は美しい女性に化けて豆腐や油揚げを買い、支払った小銭が後で蜆貝に変わるといういたずらをしたと語られます。明治末期に鉄道が通るようになると、信太山へ移ったとも伝えられています。",
+    "tags": [
+      "狐"
+    ],
+    "sources": [
+      {
+        "title": "かどまの民話『おさの狐』",
+        "publisher": "門真市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.kadoma.osaka.jp/soshiki/shiminbunkabu/shogaigakushuka/4/2/3/2809.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_028",
+    "region": "大阪府",
+    "title": "常盤町・旧代官所周辺『黒さん狸』",
+    "description": "門真市の民話では、旧横地村、現在の常盤町にあった代官所の炭倉に『黒さん狸』という古狸が住んでいたとされます。黒さん狸は美女や代官に化けて人々へいたずらをしましたが、最後には捕らえられて改心し、村人や子どもたちと親しく暮らしたと語られています。",
+    "tags": [
+      "狸"
+    ],
+    "sources": [
+      {
+        "title": "かどまの民話『黒さん狸』",
+        "publisher": "門真市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.kadoma.osaka.jp/soshiki/shiminbunkabu/shogaigakushuka/4/2/3/2822.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_029",
+    "region": "大阪府",
+    "title": "深北緑地・旧河北村『河北の狐』",
+    "description": "旧河北村の五軒堀川付近には、大きな狐が住んでいたという民話が残っています。狐は尾を左右に振り、人を道に迷わせたと語られます。五軒堀川は現在、寝屋川の遊水地の中に消えていますが、寝屋川市は『河北の狐』に関連する現在の場所として深北緑地を示しています。",
+    "tags": [
+      "狐"
+    ],
+    "sources": [
+      {
+        "title": "河北の狐",
+        "publisher": "寝屋川市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.neyagawa.osaka.jp/kanko/bunka/bunkazai/mukashibanasi/10846.html"
+      },
+      {
+        "title": "寝屋川のむかしばなし（関連する市内場所）",
+        "publisher": "寝屋川市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.neyagawa.osaka.jp/kanko/bunka/bunkazai/mukashibanasi/10865.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_030",
+    "region": "大阪府",
+    "title": "淀川河川公園太間地区『相場師と狐』",
+    "description": "寝屋川市の民話では、約150年前の太間の舟着場で、ある相場師が狐を捕まえてほしいと村人へ頼んだとされます。相場師は、狐に赤飯と油揚げをごちそうして逃がせば相場で儲かるという話を信じていました。捕らえられた狐は丁重に扱われ、後に元の竹藪へ戻ったと語られます。",
+    "tags": [
+      "狐"
+    ],
+    "sources": [
+      {
+        "title": "狐のはなし（相場師と狐）",
+        "publisher": "寝屋川市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.neyagawa.osaka.jp/kanko/bunka/bunkazai/mukashibanasi/10847.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_031",
+    "region": "大阪府",
+    "title": "東神田町付近『助けられた狐』",
+    "description": "寝屋川市の民話では、茂右衛門が肥溜めに落ちた狐を助けた翌朝、田植えの準備をしていた田の半分で、いつの間にか田植えが終わっていたとされます。茂右衛門は、助けた狐が命を救われたお礼に田植えをしてくれたのではないかと考えました。その年、その田は豊作になったと語られています。",
+    "tags": [
+      "狐"
+    ],
+    "sources": [
+      {
+        "title": "助けられた狐",
+        "publisher": "寝屋川市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.neyagawa.osaka.jp/organization_list/shiminkatsudou/bunkasport/bunkazai/mukashibanasi/1378085417570.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_032",
+    "region": "大阪府",
+    "title": "淀川堤・太間町付近の狸",
+    "description": "寝屋川市には、畑で捕らえられた子狸を家へ連れ帰ったところ、夜中に親狸が訪ねてきたという昔話が残っています。親狸は人の言葉で子狸を返してほしいと頼み、子狸が解放されると親子で淀川堤の竹藪へ帰っていったと語られます。寝屋川市は関連場所を淀川堤の太間町付近としています。",
+    "tags": [
+      "狸"
+    ],
+    "sources": [
+      {
+        "title": "狸のはなし",
+        "publisher": "寝屋川市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.neyagawa.osaka.jp/kanko/bunka/bunkazai/mukashibanasi/10863.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_033",
+    "region": "大阪府",
+    "title": "鞆呂岐神社・茨田蛇の池跡",
+    "description": "寝屋川市の民話では、かつて木屋に大きな池があり、そこに竜神が住んでいたとされます。村人が食べ物を供え、雨を願うと竜神が雨を降らせたと語られています。池は後に姿を消しましたが、鞆呂岐神社には『史跡 茨田蛇の池跡』の碑があり、池と竜神の伝承を現在へ伝えています。",
+    "tags": [],
+    "sources": [
+      {
+        "title": "木屋の竜神さま",
+        "publisher": "寝屋川市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.neyagawa.osaka.jp/organization_list/shiminkatsudou/bunkasport/bunkazai/mukashibanasi/1378086963407.html"
+      },
+      {
+        "title": "寝屋川のむかしばなし（関連する市内場所）",
+        "publisher": "寝屋川市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.neyagawa.osaka.jp/kanko/bunka/bunkazai/mukashibanasi/10865.html"
+      }
+    ]
+  },
+  {
+    "id": "spot_034",
+    "region": "大阪府",
+    "title": "若宮八幡宮・菱に乗ってきた竜神",
+    "description": "寝屋川市の民話では、大雨で村が水に沈みかけたとき、菱の上に大きな蛇のような生き物が現れ、村人は竜神だと考えました。その竜神が黒雲とともに天へ昇ると雨が止み、水が引いたため、村人はその場所を神域として祀ったとされます。寝屋川市は、この昔話に関連する現在の場所として若宮八幡宮を示しています。",
+    "tags": [],
+    "sources": [
+      {
+        "title": "菱に乗ってきた竜神さま",
+        "publisher": "寝屋川市",
+        "source_type": "自治体公式",
+        "url": "https://www.city.neyagawa.osaka.jp/kanko/bunka/bunkazai/mukashibanasi/10855.html"
+      }
+    ]
+  }
 ]
