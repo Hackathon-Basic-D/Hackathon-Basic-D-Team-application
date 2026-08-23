@@ -80,7 +80,6 @@ def report_create(request):
                 saved_path = default_storage.save(f'reports/{uploaded_image.name}', uploaded_image)
                 # 保存先パスからブラウザがアクセスできるURLを取得し、DBに保存するURLとして使う
                 report.report_image_url = default_storage.url(saved_path)
-                report.report_image_url = default_storage.url(saved_path)
 
             report.save()
             # return redirect('reports:report_detail', pk=report.pk)
