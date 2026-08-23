@@ -15,6 +15,12 @@ from django.core.exceptions import ValidationError
 
 from django.db.models import Q   # 複数条件を OR/AND/NOT で組み立てる Django のクエリオブジェクト
 
+# タイトル先頭の【…】抽出・付与（地域ラベル用）
+#   extract_region(title)            : タイトル先頭の【…】の中身（例 '大阪府'）。無ければ ''
+#   with_region_prefix(title, region): 先頭の既存【…】を外して【region】を付け直す（region空なら【その他】）
+#   UNKNOWN_REGION                   : 判定不可のときの代替ラベル
+from users.regions import extract_region, with_region_prefix, UNKNOWN_REGION
+
 # 失敗をログに残す
 logger = logging.getLogger(__name__)
 
@@ -225,6 +231,20 @@ def route_create(request):
                 route = form.save(commit=False)
                 if edit_route is None:   # 新規のみ作成者をセット（編集は元の作成者を維持）
                     route.user_id = request.session.get('user_id')
+                # ルートタイトル先頭に地域ラベルを付ける
+                # 含まれるレポートのタイトル先頭の【…】を集約して作る（座標から再判定しない）
+                # ordered_ids（検証済みの並び順）の順に地域を抽出→重複除去→'・'で連結
+                _reports_by_id = {str(r.pk): r for r in Report.objects.filter(pk__in=ordered_ids)}
+                _regions = []
+                for _rid in ordered_ids:
+                    _r = _reports_by_id.get(str(_rid))
+                    if _r is None:
+                        continue
+                    _reg = extract_region(_r.report_title)   # 例 '大阪府'（'その他' の場合もある）
+                    if _reg and _reg not in _regions:        # 重複除去（順番は維持）
+                        _regions.append(_reg)
+                # 1件も取れなければ with_region_prefix 側で【その他】が付く
+                route.route_title = with_region_prefix(route.route_title, '・'.join(_regions))
                 route.save()
 
                 # 編集は含めるレポートの追加・削除もあり＝行数と構成が変わるため、
@@ -254,7 +274,16 @@ def route_create(request):
         if str(report_id) in reports_dict
     ]
 
-    return render(request, 'routes/route_create.html', {'reports': reports, 'form': form, 'is_edit': edit_route is not None})
+    # 作成画面に「先頭に【○○】が付きます」と見せるための地域ラベル（表示用）
+    # 保存時と同じ集約ロジックで作り、表示と保存結果を一致
+    _regions = []
+    for _r in reports:
+        _reg = extract_region(_r.report_title)
+        if _reg and _reg not in _regions:
+            _regions.append(_reg)
+    region = '・'.join(_regions) or UNKNOWN_REGION   # 空なら【その他】
+
+    return render(request, 'routes/route_create.html', {'reports': reports, 'form': form, 'is_edit': edit_route is not None, 'region': region})
 
 
 # ルート編集画面

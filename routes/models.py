@@ -4,7 +4,6 @@ from django.utils import timezone
 from reports.models import Report
 from users.models import SoftDeleteManager, AllObjectsManager, User
 
-
 class Route(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='作成者')
     route_title = models.CharField(max_length=50, verbose_name='ルートタイトル')
@@ -92,7 +91,7 @@ class RouteTag(models.Model):
 
     def __str__(self):
         return self.tag_name
-
+    
     @property
     def is_deleted(self):
         # deleted_atに値があれば「削除済み」と判定

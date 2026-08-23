@@ -10,6 +10,10 @@ from django.core.files.storage import default_storage
 from django.urls import reverse   # 成功メッセージ用に ?created=1 を付けてリダイレクトするため
 from django.db.models import Q   # 複数条件を OR/AND/NOT で組み立てる Django のクエリオブジェクト
 
+# 緯度経度から地域（都道府県）を判定し、タイトル先頭に地域ラベルを付ける
+#   prefecture_of(lat, lng) : 座標 → 都道府県名（例 '大阪府'）。該当なし（海上・国外・不正値）は ''
+from users.regions import prefecture_of, UNKNOWN_REGION
+
 # ログイン済みかどうかチェック
 def check_login(request):
     return 'user_id' in request.session
@@ -76,11 +80,12 @@ def report_create(request):
                 saved_path = default_storage.save(f'reports/{uploaded_image.name}', uploaded_image)
                 # 保存先パスからブラウザがアクセスできるURLを取得し、DBに保存するURLとして使う
                 report.report_image_url = default_storage.url(saved_path)
+                report.report_image_url = default_storage.url(saved_path)
 
             report.save()
             # return redirect('reports:report_detail', pk=report.pk)
             return redirect(f"{reverse('reports:report_detail', kwargs={'pk': report.pk})}?created=1")
-        # form.is_valid()がFalseの場合、何もせずに下のrenderに進む
+    # form.is_valid()がFalseの場合、何もせずに下のrenderに進む
     else:
         initial = {
             # URLの lat/lng も丸めてから初期値にする（hidden に正規化済みの値が入る）
@@ -90,7 +95,15 @@ def report_create(request):
         # GETならURLのlat/lngを初期値にしてフォームを表示
         form = ReportForm(initial=initial)
 
-    return render(request, 'reports/report_form.html', {'form': form})
+    # 作成画面に「タイトル先頭に【○○】が付きます」と“事前に”見せるための地域名を求める
+    # サーバ側で判定する理由：判定に使う GeoJSON（約13MB）はブラウザに持たせたくないため、
+    #                        画面描画のタイミングでサーバ側で計算して渡す
+    # form['latitude'].value() の意味：
+    #   ・GET（新規表示）    → 上の initial に入れた座標
+    #   ・POST で入力不備の再表示 → 送信されてきた座標
+    #   のどちらでも「今フォームに入っている座標」を返すので、その座標で都道府県を判定する
+    region = prefecture_of(form['latitude'].value(), form['longitude'].value()) or UNKNOWN_REGION
+    return render(request, 'reports/report_form.html', {'form': form, 'region': region})
 
 # レポート詳細画面（未ログインでも閲覧可能）
 def report_detail(request, pk):
@@ -142,7 +155,10 @@ def report_edit(request, pk):
     else:
         form = ReportForm(instance=report)  # 既存の値が入ったフォームを表示
 
-    return render(request, 'reports/report_form.html', {'report': report, 'form': form})
+    # 編集画面でも「先頭に【○○】が付きます」を表示するため、既存レポートの座標から地域名を求める
+    # （instance の緯度経度が form['latitude'].value() で取れる）
+    region = prefecture_of(form['latitude'].value(), form['longitude'].value()) or UNKNOWN_REGION
+    return render(request, 'reports/report_form.html', {'report': report, 'form': form, 'region': region})
 
 
 # レポート削除処理(画面は持たない）
