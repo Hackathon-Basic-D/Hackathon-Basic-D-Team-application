@@ -19,7 +19,8 @@
         <!-- レポート作成へ（未ログイン時はグレー＋タップで案内、遷移しない） -->
         <div class="footer-item">
             {% if logged_in %}
-            <a href="{{ url('reports:report_create') }}">
+            {# レポートは必ずホームの位置選択モードから。?report=1 でホームへ（ホーム上ではhome.jsが遷移せずモード開始） #}
+            <a href="{{ url('users:home') }}?report=1">
                 <img src="{{ static('image/report-icon.png') }}" alt="レポート">
                 <span>レポート</span>
             </a>

@@ -40,16 +40,22 @@
             {% if logged_in %}
             {# ログイン中のみ表示：本人のデータ・設定 #}
             <a href="{{ url('reports:mypost') }}">作成したレポート／ルート一覧</a>   {# 自分が投稿したレポート一覧 #}
+            <a href="{{ url('reports:report_list') }}">レポート一覧</a>        {# レポート一覧（検索） #}
+            <a href="{{ url('routes:route_list') }}">ルート一覧</a>
             <a href="{{ url('spots:spot_list') }}">スポット一覧</a>          {# 有名スポット一覧（公開） #}
             <a href="{{ url('users:setting') }}">設定</a>                    {# アカウント設定 #}
             <a href="{{ url('users:logout') }}">ログアウト</a>
             {% else %}
             {# 未ログイン時：公開ページとログインのみ #}
+            <a href="{{ url('reports:report_list') }}">レポート一覧</a>        {# レポート一覧（検索） #}
+            <a href="{{ url('routes:route_list') }}">ルート一覧</a>
             <a href="{{ url('spots:spot_list') }}">スポット一覧</a>
             <a href="{{ url('users:login') }}">ログイン</a>
             <p class="menu-note">※ レポート作成・ルート作成にはログインが必要です</p>
             {% endif %}
         </nav>
+        <!-- 下部の装飾（寝ている妖怪）。下端がフッター上端に来る。※ static/image/ に画像を置く（下は仮名） -->
+        <img src="{{ static('image/error.png') }}" alt="" class="menu-yokai">
     </div>
 </div>
 </header>

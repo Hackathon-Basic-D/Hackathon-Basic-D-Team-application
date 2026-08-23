@@ -1,6 +1,7 @@
 {% extends 'base_main.html' %}
-{% block title %}ルート一覧{% endblock %}
+{% block title %}ルート作成{% endblock %}
 {% block page_css %}
+<link rel="stylesheet" href="{{ static('css/form.css') }}">
 <link rel="stylesheet" href="{{ static('css/routes.css') }}">
 <script>
     window.GOOGLE_MAPS_API_KEY = "{{ GOOGLE_MAPS_API_KEY_FRONT }}";
@@ -10,12 +11,12 @@
 {% endblock %}
 
 {% block content %}
-<div class="route-page">
+<div class="content-column">
     <!-- 選択中のレポート（スクロールできる） -->
     <div class="selected_reports_field">
         {% if reports %}
             <div class="selected_reports">
-                <h3>以下の投稿を選択しています。</h3>
+                <h3>以下のレポートを選択しています。</h3>
                 <ul id="reorder-list" class="reorder-list">
                 {% for report in reports %}
                     <li class="reorder-item" data-report-id="{{ report.pk }}"
@@ -30,6 +31,9 @@
             </div>
         {% endif %}
     </div>
+
+    <!-- レポートを選び直す（押したときだけ地図＝route_select へ。現在の選択は保持） -->
+    <a href="{{ url('routes:route_select_reports') }}" class="reselect-link">レポートを選び直す</a>
 
     <!-- この順番でルートを確定（確定すると下に地図でルートが表示される） -->
     <button type="button" class="btn btn-purple fw-bold" id="route-confirm-btn">この順番でルートを確定</button>
@@ -46,25 +50,36 @@
         <form method="post" action="{{ url('routes:route_create') }}">
             <!-- セキュリティ対策（CSRFトークン） -->
             {{ csrf_input }}
+            
+            <!-- サーバー側検証のエラー（件数・無効idなど） -->
+            {% if form.non_field_errors() %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors() %}<p>{{ error }}</p>{% endfor %}
+            </div>
+            {% endif %}
 
             <!-- 並び替えた順番を送る hidden input（JSが reorder-list の順に生成する） -->
             <div id="route-ids-container"></div>
 
             <!-- forms.py で定義した入力項目（route_title, route_description）を,
-             それぞれlabel,内容に分けて編集できるよう表示 -->
+                それぞれlabel,内容に分けて編集できるよう表示 -->
 
             <div class="mb-3">
                 <label for="{{ form.route_title.id_for_label }}" class="form-label">ルートタイトル</label>
 
                 {{ form.route_title }}
             </div>
-             <div class="mb-3">
+            <div class="mb-3">
                 <label for="{{ form.route_description.id_for_label }}" class="form-label">本文</label>
 
                 {{ form.route_description }}
             </div>
 
-            <button type="submit" class="btn btn-purple fw-bold">作成する</button>
+            <button type="submit" class="btn btn-purple fw-bold">
+                {% if is_edit %}保存する
+                {% else %}作成する
+                {% endif %}
+            </button>
         </form>
     </div>
 

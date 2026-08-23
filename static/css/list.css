@@ -112,3 +112,54 @@
     padding: 80px 16px;        /* 上下に大きめ余白 */
     text-align: center;        /* 中央寄せ */
 }
+
+/* --- 一覧フィルタ（検索・地域ラベル）＝ スポット一覧 / 経路一覧 で共通 --- */
+
+/* フィルタ領域全体の枠（上：ハンバーガー分の余白） */
+.feed-filter {
+    padding: 54px 16px 8px;    /* 上：ハンバーガー分 / 左右16 / 下8 */
+}
+
+/* 「スポット検索」「地域」などの紫ラベル（ピル） */
+.feed-filter-label {
+    display: inline-block;     /* 文字幅ぶんのピルに */
+    background-color: #800080; /* 紫の背景 */
+    color: #fff;               /* 白文字 */
+    font-weight: bold;         /* 太字 */
+    padding: 4px 12px;         /* 内側の余白 */
+    border-radius: 4px;        /* 角丸 */
+    margin-bottom: 6px;        /* 下の入力欄との間隔 */
+}
+
+/* 検索ボックス＋ボタンの横並び */
+.feed-search-row {
+    display: flex;             /* 横並び */
+    gap: 8px;                  /* 要素間の間隔 */
+    margin-bottom: 12px;       /* 下との間隔 */
+}
+
+/* 検索テキスト入力（残り幅いっぱい） */
+.feed-search-input {
+    flex: 1 1 auto;            /* ボタン以外の幅を全部使う */
+    padding: 8px 10px;         /* 入力しやすい余白 */
+    border: 1px solid #ccc;    /* 枠 */
+    border-radius: 4px;        /* 角丸 */
+    background-color: #E6E6FA; /* 薄紫の背景 */
+    height:36px; padding:0 10px; box-sizing:border-box;
+}
+
+/* 検索ボタン（紫） */
+.feed-search-btn {
+    background-color: #800080; /* 紫の塗り */
+    color: #fff;               /* 白文字 */
+    border: none;              /* 枠なし */
+    border-radius: 4px;        /* 角丸 */
+    padding: 0 16px;           /* 左右の余白（高さは行に合わせる） */
+    font-weight: bold;         /* 太字 */
+    height:36px; box-sizing:border-box;
+}
+
+/* タブ下に置く検索フィルタは上余白を詰める（ハンバーガー分の余白はタブ側が持つ） */
+.feed-filter.sub {
+    padding-top: 8px;
+}

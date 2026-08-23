@@ -1,6 +1,7 @@
 {% extends 'base_main.html' %}
 {% block title %}{{ route.route_title }}{% endblock %}
 {% block page_css %}
+    <link rel="stylesheet" href="{{ static('css/detail.css') }}">
     <link rel="stylesheet" href="{{ static('css/routes.css') }}">
     <script>
         window.GOOGLE_MAPS_API_KEY = "{{ GOOGLE_MAPS_API_KEY_FRONT }}";
@@ -10,17 +11,17 @@
 {% endblock %}
 
 {% block content %}
-<div class="route-detail">
+<div class="content-column">
     <!-- 地図・経路線 -->
     <div id="route-map" data-route-pk="{{ route.pk }}"></div>
     <!-- 地図用の地点データ（data属性でJSへ受け渡し。順番どおり） -->
     <div id="route-points" hidden>
     {% for rr in route.route_reports.all() %}
         <span class="route-point"
-              data-lat="{{ rr.report.latitude }}"
-              data-lng="{{ rr.report.longitude }}"
-              data-title="{{ rr.report.report_title }}"
-              data-order="{{ rr.sequence_order }}"></span>
+            data-lat="{{ rr.report.latitude }}"
+            data-lng="{{ rr.report.longitude }}"
+            data-title="{{ rr.report.report_title }}"
+            data-order="{{ rr.sequence_order }}"></span>
     {% endfor %}
     </div>
     <!-- ルートの説明・距離/時間・注意書き（JSが埋める） -->
@@ -28,26 +29,34 @@
     <div id="route-info"></div>
 
     <!-- ルートタイトル -->
-    <h1>{{ route.route_title }}</h1>
+    <h1 class="detail-title">{{ route.route_title }}</h1>
 
     <!-- ルート本文 -->
-    <p>{{ route.route_description }}</p>
+    <p class="detail-desc">{{ route.route_description }}</p>
+
+    <!-- 作成日時（レポート詳細と統一） -->
+    <time class="detail-date">{{ route.created_at.strftime('%Y年%m月%d日 %H:%M') }}</time>
 
     <!-- このルートでたどる投稿（順番どおり） -->
-    <p>【このルートでたどる投稿】</p>
-    <ul>
+    <p class="route-report-heading">【このルートでたどるレポート】</p>
+    <ol class="route-report-list">
     {% for rr in route.route_reports.all() %}
-    <li>{{ loop.index }}. <a href="{{ url('reports:report_detail', rr.report.id) }}">{{ rr.report.report_title }}</a></li>
+    <li><a href="{{ url('reports:report_detail', rr.report.id) }}">{{ rr.report.report_title }}</a></li>
     {% endfor %}
-    </ul>
+    </ol>
+
+    <!-- Googleマップで開く（現在地起点で徒歩。href は route_detail.js が設定） -->
+    <a class="detail-nav" id="route-nav" href="#" target="_blank" rel="noopener">Googleマップで開く</a>
 
     {% if is_owner %}
     <!-- 作成者本人のときだけ編集・削除を表示 -->
-    <a href="{{ url('routes:route_edit', route.pk) }}" class="btn btn-purple">編集</a>
-    <form method="post" action="{{ url('routes:route_delete', route.pk) }}">
-        {{ csrf_input }}
-        <button type="submit" class="btn btn-purple">削除</button>
-    </form>
+    <div class="detail-actions">
+        <a href="{{ url('routes:route_edit', route.pk) }}" class="btn btn-purple">編集</a>
+        <form method="post" action="{{ url('routes:route_delete', route.pk) }}" data-confirm="このルートを削除しますか？">
+            {{ csrf_input }}
+            <button type="submit" class="btn btn-purple">削除</button>
+        </form>
+    </div>
     {% endif %}
 </div>
 {% endblock %}
