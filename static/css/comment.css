@@ -32,7 +32,8 @@
 }
 
 /* コメントの日時（右寄せ・小さめ） */
-.comment-date {
+/* コメントの投稿者名 */
+.comment-date, .comment-author {
     text-align: right;         /* 右寄せ */
     color: #800080;            /* 紫 */
     font-weight: bold;         /* 太字 */
@@ -99,4 +100,30 @@
 /* 再オープン時はスライドのアニメを切る（開き直しのガタつき防止） */
 #offcanvasBottom.no-anim {
     transition: none !important;  /* アニメ無効（!importantでBootstrapに勝つ） */
+}
+
+/* コメントの投稿者・日時を横並びにする箱（名前が長ければ author 側が折り返す） */
+.comment-meta {
+    display: flex;
+    justify-content: space-between;  /* 投稿者=左 / 日時=右 */
+    align-items: baseline;
+    gap: 8px;
+    margin: 2px 0 0;                 /* 本文との間隔 */
+}
+
+/* 箱の中：投稿者は左・長ければ折り返す（切らない） */
+.comment-meta .comment-author {
+    text-align: left;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    margin: 0;
+    flex: 1;
+}
+
+/* 箱の中：日時は右・改行しない・縮まない */
+.comment-meta .comment-date {
+    text-align: right;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin: 0;
 }

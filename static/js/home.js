@@ -129,7 +129,8 @@ function clearSelectedMarker() {
 function openBottomSheet(spot) {
     document.getElementById("bs-title").textContent = spot.title;       // タイトル
     document.getElementById("bs-detail").href = `/reports/${spot.id}/`;  // タイトル横「詳細を見る」→クリックしたスポットの詳細画面へ
-    document.getElementById("bs-date").textContent = spot.date;         // 投稿日時（有効化）
+    document.getElementById("bs-date").textContent = spot.date;         // 投稿日時
+    document.getElementById("bs-author").textContent = "作成者：" + spot.user;      // 投稿者名
 
     // 本文：載せると決めたら次の行を有効化（今は枠だけ）
     // document.getElementById("bs-desc").textContent = spot.description;

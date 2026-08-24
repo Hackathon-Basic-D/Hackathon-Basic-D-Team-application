@@ -65,16 +65,16 @@
                 それぞれlabel,内容に分けて編集できるよう表示 -->
 
             <div class="mb-3">
-                <label for="{{ form.route_title.id_for_label }}" class="form-label">ルートタイトル</label>
+                <label for="{{ form.route_title.id_for_label }}" class="form-label">ルートタイトル<span class="required">*</span></label>
 
                 {{ form.route_title }}
             </div>
             <div class="mb-3">
-                <label for="{{ form.route_description.id_for_label }}" class="form-label">本文</label>
+                <label for="{{ form.route_description.id_for_label }}" class="form-label">本文<span class="required">*</span></label>
 
                 {{ form.route_description }}
             </div>
-
+            <p class="form-note">* は必須項目です</p>
             <button type="submit" class="btn btn-purple fw-bold">
                 {% if is_edit %}保存する
                 {% else %}作成する

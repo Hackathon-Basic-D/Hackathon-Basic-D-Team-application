@@ -144,6 +144,7 @@ function openBottomSheet(spot) {
     currentSpot = spot;   // いま開いているスポット（追加/外すの対象）を覚える
     document.getElementById("bs-title").textContent = spot.title;
     document.getElementById("bs-desc").textContent = spot.description;
+    document.getElementById("bs-author").textContent = "作成者：" + spot.user;
     document.getElementById("bs-date").textContent = spot.date;
     // document.getElementById("bs-detail").href = `/reports/${spot.id}/`;  // タップしたレポートの詳細へ
     updateAddButton();    // ボタン表示を選択状態に合わせる（追加 or 外す）
