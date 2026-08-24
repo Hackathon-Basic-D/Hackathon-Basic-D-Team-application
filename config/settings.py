@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'reports',
     'routes',
     'spots',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -158,3 +159,20 @@ MEDIA_ROOT = BASE_DIR / 'media'  # サーバー上で実際にファイルを保
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# 投稿画像用S3の設定
+AWS_STORAGE_BUCKET_NAME = 'ayakashisanpo-image-359642223473-ap-northeast-1-an'
+AWS_S3_REGION_NAME = 'ap-northeast-1'
+AWS_LOCATION = "media"
+AWS_S3_CUSTOM_DOMAIN = "ayakashi-sanpo.com"
+AWS_QUERYSTRING_AUTH = False
+AWS_S3_FILE_OVERWRITE = False
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
