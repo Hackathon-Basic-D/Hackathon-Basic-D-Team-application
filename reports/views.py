@@ -177,8 +177,8 @@ def report_delete(request, pk):
     if request.method == 'POST':
         try:
             report.delete() # models.pyで論理削除にオーバーライド
-        except:
-            messages.error(request, 'このレポートはルートに使われているため削除できません。')
+        except ProtectedError as e:
+            messages.error(request, e.args[0])
             return redirect('reports:report_detail', pk=report.pk)
         return redirect('reports:mypost')
     return redirect('reports:report_detail', pk=report.pk)
