@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import ProtectedError
 from django.utils import timezone
 
 from users.models import SoftDeleteManager, AllObjectsManager, User
@@ -51,6 +52,14 @@ class Report(models.Model):
 
     # レポートの論理削除
     def delete(self, using=None, keep_parents=False):
+
+        # ルートに組み込まれているレポートは削除不可（ルートから外れれば削除できる）
+        route_reports = self.route_reports.all()
+        if route_reports.exists():
+            raise ProtectedError(
+                'このレポートはルートに使われているため削除できません。',
+                route_reports,
+            )
 
         # レポートが論理削除されたら、それに紐づく全てのレポートコメントも論理削除される
         self.comments.all().delete()

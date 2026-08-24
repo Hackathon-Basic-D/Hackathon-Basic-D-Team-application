@@ -70,7 +70,8 @@ TEMPLATES = [
             # config/jinja2.pyの'auth_status': 上で追加した、ログイン状態(logged_in)を配る処理
             'context_processors':[
                 'django.template.context_processors.request',
-                'config.jinja2.auth_status'
+                'config.jinja2.auth_status',
+                'django.contrib.messages.context_processors.messages'
             ]
         },
     },
