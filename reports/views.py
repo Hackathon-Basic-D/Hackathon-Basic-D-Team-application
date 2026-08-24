@@ -9,6 +9,8 @@ from .forms import ReportForm
 from django.core.files.storage import default_storage
 from django.urls import reverse   # 成功メッセージ用に ?created=1 を付けてリダイレクトするため
 from django.db.models import Q   # 複数条件を OR/AND/NOT で組み立てる Django のクエリオブジェクト
+from django.db.models import ProtectedError
+from django.contrib import messages
 
 # 緯度経度から地域（都道府県）を判定し、タイトル先頭に地域ラベルを付ける
 #   prefecture_of(lat, lng) : 座標 → 都道府県名（例 '大阪府'）。該当なし（海上・国外・不正値）は ''
@@ -173,7 +175,11 @@ def report_delete(request, pk):
     
     # 誤削除防止：削除は POST のときだけ
     if request.method == 'POST':
-        report.delete() # models.pyで論理削除にオーバーライド
+        try:
+            report.delete() # models.pyで論理削除にオーバーライド
+        except ProtectedError as e:
+            messages.error(request, e.args[0])
+            return redirect('reports:report_detail', pk=report.pk)
         return redirect('reports:mypost')
     return redirect('reports:report_detail', pk=report.pk)
 
