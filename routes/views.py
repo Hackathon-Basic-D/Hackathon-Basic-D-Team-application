@@ -143,7 +143,8 @@ def route_select_reports(request):
 
     # 全てのレポートから選択
     # return render(request, 'routes/route_edit.html', {'reports': reports})
-    reports = Report.objects.all()
+    # reports = Report.objects.all()
+    reports = Report.objects.select_related('user').all()   # 作成者名も渡す（user を一緒に取得）
 
     # 地図JS(route_select.js)に渡すため、必要な項目だけJSON化する
     reports_data = [
@@ -154,6 +155,7 @@ def route_select_reports(request):
             "date": r.created_at.strftime("%Y年%m月%d日 %H:%M"),
             "lat": float(r.latitude),
             "lng": float(r.longitude),
+            "user": r.user.user_name if r.user else "退会ユーザー",   # 作成者名（退会でNoneなら代替）
         }
         for r in reports
     ]

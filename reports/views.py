@@ -108,8 +108,9 @@ def report_create(request):
 def report_detail(request, pk):
     report = get_object_or_404(Report, pk=pk)   # 存在しないpkなら404エラー
     session_uid = request.session.get('user_id')
-    # テンプレート側でループ処理できるように、紐づくコメントも一緒に返す
-    comments = ReportComment.objects.filter(report=report)
+    # テンプレート側でループ処理できるように、紐づくコメントも一緒に返す(投稿者も返す)
+    # comments = ReportComment.objects.filter(report=report)
+    comments = ReportComment.objects.filter(report=report).select_related('user') 
     for c in comments:
         c.is_owner = session_uid is not None and str(c.user_id) == str(session_uid)
     # 所有者判定：session(文字列) と report.user_id(UUID) を文字列同士で比較（旧 == は型不一致で常にFalse）

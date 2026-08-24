@@ -55,9 +55,13 @@
     </div>
     {# <!-- タグ表示エリア（ここに #タグ を入れる置き場） --> #}
     {# <div id="bs-tags" class="bs-tags"></div> #}
+    <!-- 本文 -->
     <p id="bs-desc"></p>
-    <!-- 投稿日時 -->
-    <p id="bs-date"></p>
+    <!-- 投稿者・日時（横並び。名前が長ければ折り返す） -->
+    <div class="bs-meta">
+        <p id="bs-author"></p>
+        <p id="bs-date"></p>
+    </div>
     <!-- Googleマップへ（徒歩ルート） -->
     <a class="btn-purple" id="bs-nav" href="#" target="_blank" rel="noopener">ここへ行く（Googleマップ）</a>
 </div>
