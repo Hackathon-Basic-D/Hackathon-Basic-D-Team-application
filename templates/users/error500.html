@@ -2,20 +2,20 @@
 {% block title %}あやかしさんぽ 500 Internal Server Error{% endblock %}
 
 {% block page_css %}
-    <link rel="stylesheet" href="{{ static('css/auth.css') }}">
+    <link rel="stylesheet" href="{{ static('css/error.css') }}">
 {% endblock %}
 
 {% block content %}
     <div class="text-center">
-        <h4>500 Internal Server Error</h4>
-        <!--
+        <p class="error-massage">500 Internal Server Error</p>
+
         <div class="background" style="background-image: url('{{ static("image/background.png") }}');"></div>
-        -->
+
         <img class="error" src="{{ static('image/error.png')}}" alt="エラー画像">
         
-        <!-- welcome画面へ戻る -->
+        <!--  welcome画面へ戻る -->
         <div class="mt-4">
-            <a href="{{ url('home') }}" class="back-home">トップ画面へ戻る</a>
+            <a href="{{ url('welcome') }}" class="back-welcome">トップ画面へ戻る</a>
         </div>
     </div> 
 
