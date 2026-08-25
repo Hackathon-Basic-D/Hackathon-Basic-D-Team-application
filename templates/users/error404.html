@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}あやかしさんぽ 404 Not Found{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="{{ static('css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="text-center">
+        <h4>404 Not Found</h4>
+        <!--
+        <div class="background" style="background-image: url('{{ static("image/background.png") }}');"></div>
+        -->
+        <img class="error" src="{{ static('image/error.png')}}" alt="エラー画像">
+        
+        <!-- welcome画面へ戻る -->
+        <div class="mt-4">
+            <a href="{{ url('home') }}" class="back-home">トップ画面へ戻る</a>
+        </div>
+    </div> 
+
+{% endblock %}
