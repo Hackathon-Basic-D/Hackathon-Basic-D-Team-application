@@ -322,6 +322,11 @@ def route_delete(request, pk):
     # 作成者以外は削除できない
     if str(route.user_id) != str(request.session.get('user_id')):
         return redirect('routes:route_detail', pk=route.pk)
+
+    # 誤削除防止：削除は POST のときだけ実行する（reports/views.py の report_delete と同じ方針）
+    # GET でも削除できる状態だと、/routes/<pk>/delete/ を直接開くだけで消えてしまう
+    if request.method != 'POST':
+        return redirect('routes:route_detail', pk=route.pk)
     
     route.delete()
     return redirect('routes:myroute')
