@@ -7,8 +7,6 @@
 
 {% block content %}
 <div class="content-column">
-    {# スポットに画像フィールドが無いため共通アイコン #}
-    <img class="detail-image" src="{{ static('image/fire-v.png') }}" alt="">
     {# タイトル（【地域】名） #}
     <h1 class="detail-title">【{{ spot.region }}】{{ spot.title }}</h1>
     {# タグ（#付きで並べる） #}

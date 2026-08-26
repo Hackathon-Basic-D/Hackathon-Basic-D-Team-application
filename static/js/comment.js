@@ -11,6 +11,18 @@
         if (neu && cur) { cur.innerHTML = neu.innerHTML; }
     }
 
+    // 401（ログインしていない／切れている）を受けたときに未ログイン時の表示と同じ状態にする
+    function lockCommentForm() {
+        var footer = document.querySelector(OC + ' .comment-footer');
+        if (!footer) { return; }
+        var hint = footer.querySelector('.comment-login-hint');
+        if (hint) { hint.hidden = false; }
+        var input = footer.querySelector('input[name="report_comment"]');
+        if (input) { input.disabled = true; }
+        var send = footer.querySelector('.comment-send');
+        if (send) { send.disabled = true; }
+    }
+
     // フォームをAJAX送信し、成功したら一覧を更新
     function ajaxSubmit(form, done) {
         fetch(form.getAttribute('action') || location.href, {
@@ -19,9 +31,21 @@
             headers: { 'X-Requested-With': 'XMLHttpRequest' },
             credentials: 'same-origin'
         })
-            .then(function (r) { return r.text(); })
-            .then(function (html) { refreshList(html); if (done) done(); })
-            .catch(function () { form.submit(); });        // 失敗時は通常送信にフォールバック
+            .then(function (r) {
+                // サーバーが401を返したら「ログインしていない／切れている」
+                // ここで止めないと、リダイレクト先のログイン画面のHTMLを受け取ってしまい、コメント欄が見つからず一覧も更新されないまま、入力だけ消える状態になる
+                if (r.status === 401) {
+                    lockCommentForm();
+                    return null;                           // 後続で処理を打ち切るための合図
+                }
+                return r.text();
+            })
+            .then(function (html) {
+                if (html === null) { return; }             // 401だったので一覧の更新はしない
+                refreshList(html);
+                if (done) done();
+            })
+            .catch(function () { form.submit(); });        // 通信自体に失敗したときは通常送信にフォールバック
     }
 
     // コメント画面内のフォーム送信をAJAX化（作成・編集・削除）

@@ -7,7 +7,7 @@ import json                         # Reportのリストをjsonに変換
 from reports.models import Report   # レポート一覧を取得するためインポート
 from .areas import get_area_center, DEFAULT_CENTER
 from django.urls import reverse
-
+from django.utils import timezone   # UTCで保存された日時を日本時間に直すため
 # アプリを開いて最初に表示されるページ
 # ログイン or 新規登録をクリックしてログイン画面・新規登録画面へ遷移
 def welcome(request):
@@ -72,7 +72,8 @@ def home(request):
             "description": r.report_description,        # 本文
             "lat": float(r.latitude),                   # JSONに変換するため、DecimalFieldをfloatに変換
             "lng": float(r.longitude),                  # 上記に同じ
-            "date": r.created_at.strftime("%Y年%m月%d日 %H:%M"),    # 投稿日時
+            # UTCで保存されているので、日本時間に直してから整形する（USE_TZ=True のため）
+            "date": timezone.localtime(r.created_at).strftime("%Y年%m月%d日 %H:%M"),
             "user": r.user.user_name if r.user else "退会ユーザー",  # 投稿者名（退会でuserがNoneなら代替）
         }
         for r in reports

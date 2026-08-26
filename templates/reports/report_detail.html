@@ -31,7 +31,7 @@
 <p class="detail-author">作成者：{{ report.user.user_name if report.user else '退会ユーザー' }}</p>
 
 <!-- 投稿日時 -->
-<time class="detail-date">{{ report.created_at.strftime('%Y年%m月%d日 %H:%M') }}</time>
+<time class="detail-date">{{ jst(report.created_at, '%Y年%m月%d日 %H:%M') }}</time>
 
 <!-- コメント -->
 <a class="detail-comment-link" data-bs-toggle="offcanvas" href="#offcanvasBottom" role="button" aria-controls="offcanvasBottom">
@@ -69,7 +69,7 @@
             <!-- 投稿者・日時（横並び。名前が長ければ折り返す） -->
             <div class="comment-meta">
                 <p class="comment-author">投稿者：{{ comment.user.user_name }}</p>
-                <p class="comment-date">{{ comment.created_at.strftime('%Y年%m月%d日 %H:%M') }}</p>
+                <p class="comment-date">{{ jst(comment.created_at, '%Y年%m月%d日 %H:%M') }}</p>
             </div>
             <!-- 自分のコメントの場合のみ編集・削除 -->
             {% if comment.is_owner %}
@@ -92,10 +92,14 @@
         {% endfor %}
     </div>
     <div class="comment-footer">
+    {# 未ログインのときは、案内を出したうえで入力欄と送信ボタンを操作不可にする #}
+    {# ログイン中に状態が変わった場合（401）は、comment.js がこれと同じ状態に切り替える #}
+    <p class="comment-login-hint" {% if logged_in %}hidden{% endif %}>コメントするには<a href="{{ url('users:login') }}">ログイン</a>が必要です</p>
     <form method="post" action="{{ url('reports:comment_create', report.id) }}" class="comment-form">
         {{ csrf_input }}
-        <input type="text" class="form-control" name="report_comment" placeholder="コメントを入力">
-        <button type="submit" class="comment-send">送信</button>
+        {# disabled が付いた入力欄は文字を打てず、フォーム送信の対象にもならない #}
+        <input type="text" class="form-control" name="report_comment" placeholder="コメントを入力" {% if not logged_in %}disabled{% endif %}>
+        <button type="submit" class="comment-send" {% if not logged_in %}disabled{% endif %}>送信</button>
     </form>
     </div>
 </div>
