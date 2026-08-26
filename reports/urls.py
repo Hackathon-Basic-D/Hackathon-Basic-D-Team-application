@@ -1,11 +1,10 @@
 from django.urls import path
 from . import views
-from django.views.generic import TemplateView
 
 app_name = 'reports'
 
 urlpatterns = [    
-    path('detail/', TemplateView.as_view(template_name='reports/report_detail.html'), name='report_detail_preview'), # フロント用仮置きです
+    # path('detail/', TemplateView.as_view(template_name='reports/report_detail.html'), name='report_detail_preview'), # フロント用仮置きです
     path('create/',            views.report_create,  name='report_create'),     # レポート作成画面
     path('list/',              views.report_list,    name='report_list'),       # レポート一覧（公開・検索）
     path('<int:pk>/',          views.report_detail,  name='report_detail'),     # レポート詳細画面
