@@ -13,8 +13,20 @@ from users.models import User
 from users.areas import get_area_center, DEFAULT_CENTER
 from django.core.exceptions import ValidationError
 
+from django.db.models import Q   # 複数条件を OR/AND/NOT で組み立てる Django のクエリオブジェクト
+
+# タイトル先頭の【…】抽出・付与（地域ラベル用）
+#   extract_region(title)            : タイトル先頭の【…】の中身（例 '大阪府'）。無ければ ''
+#   with_region_prefix(title, region): 先頭の既存【…】を外して【region】を付け直す（region空なら【その他】）
+#   UNKNOWN_REGION                   : 判定不可のときの代替ラベル
+from users.regions import extract_region, with_region_prefix, UNKNOWN_REGION
+
 # 失敗をログに残す
 logger = logging.getLogger(__name__)
+
+# 経路に含めるレポート数の制限（route_select.js の MIN_SPOTS/MAX_SPOTS と一致させる）
+MIN_REPORTS_PER_ROUTE = 2   # 最小2件（経路線に必要）
+MAX_REPORTS_PER_ROUTE = 3   # 最大3件（GoogleマップURLのモバイル経由地上限）
 
 # ログイン済みかどうかチェック
 def check_login(request):
@@ -27,19 +39,30 @@ def myroute(request):
         return redirect('users:login')
     
     routes = Route.objects.filter(user_id=request.session.get('user_id'))
-    return render(request, 'routes/myroute.html', {'routes': routes})
+    q = request.GET.get('q', '').strip()   # 検索キーワード（GETの ?q=）
+    if q:
+        routes = routes.filter(Q(route_title__icontains=q) | Q(route_description__icontains=q))
+    return render(request, 'routes/myroute.html', {'routes': routes, 'q': q})
 
 
 # ルート一覧画面（誰でも閲覧可能）
 def route_list(request):
+    q = request.GET.get('q', '').strip()   # 検索キーワード（GETの ?q=）
     routes = Route.objects.all()
-    return render(request, 'routes/route_list.html', {'routes': routes})
+    if q:
+        # 「タイトル または 本文」に部分一致（OR）。通常の filter(kwargs) は AND になるため Q で OR を表現。
+        # __icontains は大文字小文字を無視した部分一致（SQL の LIKE '%q%'）。
+        routes = routes.filter(Q(route_title__icontains=q) | Q(route_description__icontains=q))
+    return render(request, 'routes/route_list.html', {'routes': routes, 'q': q})
 
 
 # ルート詳細画面（誰でも閲覧可能）
 def route_detail(request, pk):
     route = get_object_or_404(Route, pk=pk)
-    return render(request, 'routes/route_detail.html', {'route': route})
+    session_uid = request.session.get('user_id')
+    # 所有者判定：session(文字列) と route.user_id を文字列同士で比較（report_detail と同じ方式）
+    is_owner = session_uid is not None and route.user_id is not None and str(route.user_id) == str(session_uid)
+    return render(request, 'routes/route_detail.html', {'route': route, 'is_owner': is_owner})
 
 
 # 座標リスト [(lat, lng), ...] から徒歩ルートを Routes API で計算して dict を返す（詳細画面・プレビュー共通）
@@ -120,7 +143,8 @@ def route_select_reports(request):
 
     # 全てのレポートから選択
     # return render(request, 'routes/route_edit.html', {'reports': reports})
-    reports = Report.objects.all()
+    # reports = Report.objects.all()
+    reports = Report.objects.select_related('user').all()   # 作成者名も渡す（user を一緒に取得）
 
     # 地図JS(route_select.js)に渡すため、必要な項目だけJSON化する
     reports_data = [
@@ -131,6 +155,7 @@ def route_select_reports(request):
             "date": r.created_at.strftime("%Y年%m月%d日 %H:%M"),
             "lat": float(r.latitude),
             "lng": float(r.longitude),
+            "user": r.user.user_name if r.user else "退会ユーザー",   # 作成者名（退会でNoneなら代替）
         }
         for r in reports
     ]
@@ -144,8 +169,17 @@ def route_select_reports(request):
         center = get_area_center(user.main_area)
     except (User.DoesNotExist, ValidationError):
         pass
-
-    return render(request, 'routes/route_select_reports.html', {'reports': reports, 'reports_json': reports_json, 'map_lat': center[0], 'map_lng': center[1], })
+    
+    # 編集モードのときだけ、現在のレポートを地図に初期選択させる（新規作成は空）
+        # 新規作成の開始（route_list の作成ボタン ?new=1）は編集モード・選択をリセット
+    if request.GET.get('new'):
+        request.session.pop('edit_route_id', None)
+        request.session.pop('selected_report_ids', None)
+    # 現在の選択（編集＝現在のレポート／作成＝途中の選択）を地図に初期反映
+    preselected = request.session.get('selected_report_ids', [])
+    preselected_json = json.dumps([str(x) for x in preselected])
+    
+    return render(request, 'routes/route_select_reports.html', {'reports': reports, 'reports_json': reports_json, 'map_lat': center[0], 'map_lng': center[1], 'preselected_json': preselected_json, })
 
 # 作成画面プレビュー用：保存前に report_ids（並び替え後の順番）から徒歩ルートを計算して返す
 def route_preview(request):
@@ -170,31 +204,66 @@ def route_create(request):
     # select_reportsで選んだレポートIDをセッションから取り出す
     report_ids = request.session.get('selected_report_ids', [])
 
+    # 編集モード判定（route_edit がセットする edit_route_id）。他人のルートは編集させない
+    edit_route = None
+    edit_route_id = request.session.get('edit_route_id')
+    if edit_route_id:
+        edit_route = Route.objects.filter(pk=edit_route_id).first()
+        if edit_route and str(edit_route.user_id) != str(request.session.get('user_id')):
+            edit_route = None
+
     if request.method == 'POST':
-        form = RouteForm(request.POST)
+        form = RouteForm(request.POST, instance=edit_route)  # 編集なら既存を更新、新規なら None（新規作成）
         if form.is_valid():
-            route = form.save(commit=False)
-            route.user_id = request.session.get('user_id')
-            route.save()
-
-            # 選択されたレポートに順番を付けて中間テーブルに保存
-            # for order, report_id in enumerate(report_ids, start=1):
-            #     RouteReport.objects.create(route=route, report_id=report_id, sequence_order=order)
-
-            # 並び替え後の順番（作成画面のフォームから送られた report_ids）を優先
-            # 無ければ選択時の順番（セッション）を使う
+            # 並び替え後の順番（フォームの report_ids）を優先。無ければ選択時の順番（セッション）
             ordered_ids = request.POST.getlist('report_ids') or report_ids
-            # 選択されたレポートに順番を付けて中間テーブルに保存
-            for order, report_id in enumerate(ordered_ids, start=1):
-                RouteReport.objects.create(route=route, report_id=report_id, sequence_order=order)
-            
-            
-            # 作成終了後、セッションに一時保存していたデータは削除
-            if 'selected_report_ids' in request.session:
-                del request.session['selected_report_ids']
-            return redirect('routes:route_detail', pk=route.pk)
+            # --- サーバー側検証（クライアントJSを迂回した不正POST対策） ---
+            # 重複除去（順番は維持）
+            seen = set()
+            ordered_ids = [rid for rid in ordered_ids if not (rid in seen or seen.add(rid))]
+            # 実在するReportのidだけに絞る（順番維持）
+            existing = set(
+                str(pk) for pk in Report.objects.filter(pk__in=ordered_ids).values_list('pk', flat=True)
+            )
+            ordered_ids = [rid for rid in ordered_ids if str(rid) in existing]
+            # 件数チェック（route_select.js の MIN/MAX と一致）
+            if not (MIN_REPORTS_PER_ROUTE <= len(ordered_ids) <= MAX_REPORTS_PER_ROUTE):
+                form.add_error(None, f'ルートには有効なレポートを{MIN_REPORTS_PER_ROUTE}〜{MAX_REPORTS_PER_ROUTE}件選んでください。')
+            else:
+                route = form.save(commit=False)
+                if edit_route is None:   # 新規のみ作成者をセット（編集は元の作成者を維持）
+                    route.user_id = request.session.get('user_id')
+                # ルートタイトル先頭に地域ラベルを付ける
+                # 含まれるレポートのタイトル先頭の【…】を集約して作る（座標から再判定しない）
+                # ordered_ids（検証済みの並び順）の順に地域を抽出→重複除去→'・'で連結
+                _reports_by_id = {str(r.pk): r for r in Report.objects.filter(pk__in=ordered_ids)}
+                _regions = []
+                for _rid in ordered_ids:
+                    _r = _reports_by_id.get(str(_rid))
+                    if _r is None:
+                        continue
+                    _reg = extract_region(_r.report_title)   # 例 '大阪府'（'その他' の場合もある）
+                    if _reg and _reg not in _regions:        # 重複除去（順番は維持）
+                        _regions.append(_reg)
+                # 1件も取れなければ with_region_prefix 側で【その他】が付く
+                route.route_title = with_region_prefix(route.route_title, '・'.join(_regions))
+                route.save()
+
+                # 編集は含めるレポートの追加・削除もあり＝行数と構成が変わるため、
+                # 差分UPDATEではなく古い中間テーブル行を消して作り直す。新規は行が無いので削除不要。
+                if edit_route is not None:
+                    route.route_reports.all().delete()
+                # 上で検証済みの ordered_ids の順で作成（生fetchで上書きしない＝#3検証を保存に反映）
+                for order, report_id in enumerate(ordered_ids, start=1):
+                    RouteReport.objects.create(route=route, report_id=report_id, sequence_order=order)
+                
+                # 作成終了後、セッションに一時保存していたデータは削除
+                request.session.pop('selected_report_ids', None)
+                request.session.pop('edit_route_id', None)
+                return redirect('routes:route_detail', pk=route.pk)
     else:
-        form = RouteForm()
+        # GET：編集なら既存のタイトル・本文を初期表示
+        form = RouteForm(instance=edit_route)
 
     # 選択済みのレポートをDBから取得
     reports = Report.objects.filter(pk__in=report_ids)
@@ -207,7 +276,16 @@ def route_create(request):
         if str(report_id) in reports_dict
     ]
 
-    return render(request, 'routes/route_create.html', {'reports': reports, 'form': form})
+    # 作成画面に「先頭に【○○】が付きます」と見せるための地域ラベル（表示用）
+    # 保存時と同じ集約ロジックで作り、表示と保存結果を一致
+    _regions = []
+    for _r in reports:
+        _reg = extract_region(_r.report_title)
+        if _reg and _reg not in _regions:
+            _regions.append(_reg)
+    region = '・'.join(_regions) or UNKNOWN_REGION   # 空なら【その他】
+
+    return render(request, 'routes/route_create.html', {'reports': reports, 'form': form, 'is_edit': edit_route is not None, 'region': region})
 
 
 # ルート編集画面
@@ -216,23 +294,22 @@ def route_create(request):
 def route_edit(request, pk):
     if not check_login(request):
         return redirect('users:login')
-    
+
     route = get_object_or_404(Route, pk=pk)
 
     # 作成者以外は編集できない
     if str(route.user_id) != str(request.session.get('user_id')):
         return redirect('routes:route_detail', pk=route.pk)
-    
-    if request.method == 'POST':
-        form = RouteForm(request.POST, instance=route)
-        if form.is_valid():
-            form.save()
-            return redirect('routes:route_detail', pk=route.pk)
-        # 無効な入力の場合、下のrenderで再表示する
-    else:
-        form = RouteForm(instance=route)    # GET時、既存データが入ったフォームを用意
 
-    return render(request, 'routes/route_edit.html', {'route': route, 'form': form})
+    # 編集は作成フローに相乗り（編集モード）。対象ルートpkと現在のレポートid（順番どおり）を
+    # セッションに入れて、地図での選び直し（route_select）からやり直す。保存は route_create 側で更新。
+    request.session['edit_route_id'] = str(route.pk)
+    request.session['selected_report_ids'] = [
+        str(rr.report_id)
+        for rr in route.route_reports.all().order_by('sequence_order')
+    ]
+    # 編集は地図を通さず作成画面へ直行（現在のレポートは reorder に出る）。地図は「選び直す」でだけ開く
+    return redirect('routes:route_create')
 
 
 # ルート削除処理（POST専用）

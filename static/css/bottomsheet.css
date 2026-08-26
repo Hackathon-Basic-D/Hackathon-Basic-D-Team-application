@@ -86,10 +86,46 @@
     text-decoration: none;  /* 下線なし */
 }
 
+/* 「ルートに追加」ボタン（route_select のシート内）：中央寄せ（.btn-purple は幅200pxのブロック） */
+#bs-add {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* シート内のタグ表示エリア（home のスポット表示時） */
-.bs-tags {
-    display: flex;      /* タグを横並び */
-    flex-wrap: wrap;    /* 収まらなければ折り返す */
-    gap: 6px;           /* タグ間の間隔 */
-    margin: 8px 0 0;    /* 上に余白 */
+/* .bs-tags { */
+/*     display: flex;      /* タグを横並び */
+/*     flex-wrap: wrap;    /* 収まらなければ折り返す */
+/*     gap: 6px;           /* タグ間の間隔 */
+/*     margin: 8px 0 0;    /* 上に余白 */
+/* } */
+
+/* シート内の投稿者（日時と同じ見た目・右寄せで、日時の上に並べる） */
+#bs-author {
+    text-align: right;     /* 日時と同じ右寄せ */
+    color: #800080;        /* 日時と同じ紫 */
+    font-weight: bold;     /* 日時と同じ太字 */
+    margin: 4px 0 0;       /* 上に少し余白。日時のすぐ上に来る */
+}
+
+/* ボトムシートの投稿者・日時を横並びにする箱（両シート共通） */
+.bs-meta {
+    display: flex;
+    justify-content: space-between;  /* 投稿者=左 / 日時=右 */
+    align-items: baseline;
+    gap: 8px;
+    margin: 8px 0 0;
+}
+.bs-meta #bs-author {
+    text-align: left;
+    min-width: 0;
+    overflow-wrap: anywhere;   /* 長い名前も切らず折り返す */
+    margin: 0;
+    flex: 1;
+}
+.bs-meta #bs-date {
+    text-align: right;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin: 0;
 }

@@ -2,15 +2,21 @@
 {% block title %}あやかしさんぽ経路用レポート選択画面{% endblock %}
 {% block page_css %}
     <!-- CSS -->
-    <link rel="stylesheet" href="{{ static('css/home.css') }}" />
+    <link rel="stylesheet" href="{{ static('css/map.css') }}" />
+    <link rel="stylesheet" href="{{ static('css/bottomsheet.css') }}" />
+    <link rel="stylesheet" href="{{ static('css/routes.css') }}" />
 
     <!-- キーだけテンプレートから渡す -->
     <script>
         window.GOOGLE_MAPS_API_KEY = "{{ GOOGLE_MAPS_API_KEY_FRONT }}";
         window.MAP_CENTER = { lat: {{ map_lat }}, lng: {{ map_lng }} };
+
         // views.pyが渡したJSON文字列をJSのグローバル変数として埋め込み
         // jinja2は autoescape=ONなので、事前にエスケープ済みの文字列を |safe で通す
         window.REPORTS_DATA = {{ reports_json|safe }};
+
+        // 編集モードのとき、最初から選択済みにするレポートid（新規作成は空配列）
+        window.PRESELECTED_IDS = {{ preselected_json|safe }};
     </script>
 
     <!-- クラスタリング用ライブラリ（home.jsより前に） -->
@@ -27,7 +33,7 @@
 {% block footer%}{% include 'footer.html' %}{% endblock%}
 {% block content %}
     <!-- 報告モードの案内（初期は非表示。JSで show クラスを付けて表示） -->
-    <div id="report-message">ルートに追加するポイントを選択してください。</div>
+    <div id="report-message">ルートに追加するレポートを<br>選択してください（最大3件）</div>
     <!-- 操作の警告メッセージ（初期は非表示。JSで show を付けて数秒表示） -->
     <div id="route-alert"></div>
     <!-- 地図はこの要素の中に描画される -->
@@ -36,7 +42,7 @@
     <!-- 現在位置取得ボタン -->
     <button id="locate-btn" type="button" aria-label="現在地へ移動">
         <span id="locate-diamond">
-            <img id="locate-icon" src="{{ static('image/star-v.png') }}" alt="">
+            <img id="locate-icon" src="{{ static('image/candle-b.png') }}" alt="">
         </span>
         <span id="locate-label">現在地取得</span>
     </button>
@@ -52,12 +58,15 @@
             <!-- タイトル -->
             <h2 id="bs-title"></h2>
             <!-- 詳細画面へ -->
-            <a id="bs-detail" href="{{ url('reports:report_detail_preview') }}">詳細を見る</a>
+            {# <a id="bs-detail" href="{{ url('reports:report_detail_preview') }}" target="_blank" rel="noopener">詳細を見る</a> #}
         </div>
         <!-- 本文 -->
         <p id="bs-desc"></p>
-        <!-- 投稿日時 -->
-        <p id="bs-date"></p>
+        <!-- 投稿者・日時（横並び。名前が長ければ折り返す） -->
+        <div class="bs-meta">
+            <p id="bs-author"></p>
+            <p id="bs-date"></p>
+        </div>
         <!-- ルートに追加ボタン -->
         <button id="bs-add" type="button" class="btn-purple">ルートに追加</button>
     </div>

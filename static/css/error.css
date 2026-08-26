@@ -1,0 +1,28 @@
+/* =====エラー3画面共通 =====
+   背景（金雲）は base.css の .background */
+
+/* エラーメッセージ（紫・太字） */
+.error-message {
+    color: #800080;        /* テーマの紫 */
+    font-weight: bold;     /* 太字 */
+    font-size: 24px;       /* 大きめ */
+}
+
+/* 妖怪イラスト（鵺・猫の寝姿）：中央寄せ */
+.error {
+    display: block;        /* 中央寄せのためブロックに */
+    margin: 0 auto;        /* 左右中央寄せ */
+    width: 260px;          /* 大きくなりすぎない固定幅 */
+    height: auto;          /* 縦横比を保つ */
+}
+
+/* welcom画面へ戻る：紫・太字・中央 */
+.back-welcome {
+    display: block;        /* 1リンク1行 */
+    margin: 6px 0;         /* 行間 */
+    color: #800080;        /* 紫 */
+    text-decoration: none; /* 下線なし */
+    font-weight: bold;     /* 太字 */
+    text-align: center;    /* 中央寄せ */
+    font-size: 24px;       /* 大きめ */
+}

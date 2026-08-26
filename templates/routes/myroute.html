@@ -9,6 +9,15 @@
     <a class="feed-tab" href="{{ url('reports:mypost') }}">作成したレポート</a>
     <span class="feed-tab active">作成した経路</span>
 </div>
+<!-- 検索 -->
+<form class="feed-filter sub" method="get" action="{{ url('routes:myroute') }}">
+    <span class="feed-filter-label">ルート検索</span>
+    <div class="feed-search-row">
+        <input type="text" name="q" value="{{ q|default('') }}" class="feed-search-input" placeholder="キーワード">
+        <button type="submit" class="feed-search-btn" aria-label="検索">検索</button>
+    </div>
+</form>
+
 <div class="feed-list">
     {% for route in routes %}
     <a class="feed-row" href="{{ url('routes:route_detail', route.pk) }}">

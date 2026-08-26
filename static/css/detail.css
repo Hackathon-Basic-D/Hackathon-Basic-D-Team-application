@@ -86,3 +86,12 @@
 .detail-actions .btn-purple {
     width: 100%;               /* 親（均等幅）いっぱいに広げる */
 }
+
+/* 投稿者・作成者（右寄せの日時のすぐ上に、日時と同じ見た目で並べる） */
+.detail-author {
+    display: block;        /* 単独の行にする（日時と同じ） */
+    text-align: right;     /* 日時と同じ右寄せ（右寄せ日時の上に来る） */
+    color: #800080;        /* 日時と同じ紫 */
+    font-weight: bold;     /* 日時と同じ太字 */
+    margin-bottom: 2px;    /* 日時のすぐ上に置くため詰める（日時側の margin-bottom:16px はそのまま） */
+}

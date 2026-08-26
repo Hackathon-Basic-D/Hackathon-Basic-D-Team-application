@@ -36,6 +36,9 @@
         {% for error in form.report_title.errors %}
         <div class="invalid-feedback d-block">{{ error }}</div>
         {% endfor %}
+        {# タイトルは保存時に先頭へ【地域】が自動付与される（判定不可のときは【その他】） #}
+        {# region は view が座標から判定して渡すラベル（都道府県名 or その他）。必ず値が入る #}
+        <p class="form-note">※ タイトルの先頭に【{{ region }}】が自動で付きます<br>※先頭に【】は入力しないでください（地域ラベル用です）</p>
 
         <!-- 本文（必須） -->
         <label for="{{ form.report_description.id_for_label }}" class="form-label">本文<span class="required">*</span></label>
@@ -44,9 +47,24 @@
         <div class="invalid-feedback d-block">{{ error }}</div>
         {% endfor %}
 
-        <!-- タグ登録（models.py未設定 -->
+<<<<<<< HEAD
+        {# <!-- タグ登録（models.py未設定 --> #}
+        {# <label for="tag" class="form-label">タグ</label> #}
+        {# <input type="text" class="form-control" id="tag" placeholder="タグ" name="tag"> #}
+=======
+        <!-- タグ１登録 -->
         <label for="tag" class="form-label">タグ</label>
-        <input type="text" class="form-control" id="tag" placeholder="タグ" name="tag">
+        <input type="text" class="form-control" id="tag" placeholder="タグ１" name="tag1">
+
+        <!-- タグ２登録 -->
+        <label for="tag" class="form-label">タグ</label>
+        <input type="text" class="form-control" id="tag" placeholder="タグ２" name="tag2">
+
+        <!-- タグ３登録 -->
+        <label for="tag" class="form-label">タグ</label>
+        <input type="text" class="form-control" id="tag" placeholder="タグ３" name="tag3">
+
+>>>>>>> 052b87c (レポート作成画面タグフォームの修正)
 
         <!-- 画像投稿（任意） -->
         <label for="{{ form.report_image.id_for_label }}" class="form-label">画像投稿</label>

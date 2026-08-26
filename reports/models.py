@@ -1,8 +1,9 @@
 from django.db import models
+from django.db.models import ProtectedError
 from django.utils import timezone
 
 from users.models import SoftDeleteManager, AllObjectsManager, User
-
+from users.regions import prefecture_of, with_region_prefix
 
 # ＜レポートテーブル＞
 # Userが論理削除されても、Reportは削除されない(論理削除）
@@ -31,6 +32,19 @@ class Report(models.Model):
     def __str__(self):
         return self.report_title
 
+    # タイトル先頭の地域ラベルを、保存経路（view・admin・shell 等）に関係なく必ず付けるための共通処理。
+    # view だけに書くと Django admin 等は素通りするため、モデルの save に集約する。
+    def save(self, *args, **kwargs):
+        # 論理削除など report_title を更新しない保存（update_fields 指定）ではスキップする
+        update_fields = kwargs.get('update_fields')
+        if update_fields is None or 'report_title' in update_fields:
+            # 座標から都道府県を判定し、先頭の既存【…】を外して付け直す（大阪→大阪府 の正規化にもなる）
+            self.report_title = with_region_prefix(
+                self.report_title,
+                prefecture_of(self.latitude, self.longitude),
+            )
+        super().save(*args, **kwargs)
+
     @property
     def is_deleted(self):
         # deleted_atに値があれば「削除済み」と判定
@@ -38,6 +52,14 @@ class Report(models.Model):
 
     # レポートの論理削除
     def delete(self, using=None, keep_parents=False):
+
+        # ルートに組み込まれているレポートは削除不可（ルートから外れれば削除できる）
+        route_reports = self.route_reports.all()
+        if route_reports.exists():
+            raise ProtectedError(
+                'このレポートはルートに使われているため削除できません。',
+                route_reports,
+            )
 
         # レポートが論理削除されたら、それに紐づく全てのレポートコメントも論理削除される
         self.comments.all().delete()

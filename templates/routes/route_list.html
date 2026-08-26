@@ -1,30 +1,46 @@
 {% extends 'base_main.html' %}
 {% block title %}ルート一覧{% endblock %}
-{% block page_css %}<link rel="stylesheet" href="{{ static('css/routes.css') }}">{% endblock %}
+{% block page_css %}
+<link rel="stylesheet" href="{{ static('css/list.css') }}">
+<link rel="stylesheet" href="{{ static('css/routes.css') }}">
+{% endblock %}
 
 
 {% block content %}
-<div class="route-page">
-  <!-- ルート一覧（1件ずつ繰り返し表示） -->
-  <div class="route-list">
-    {% for route in routes %}
-      <div class="route-card">
-        <!-- Routeモデルのフィールド（例: name）を表示 -->
-        <h3>{{ route.route_title }}</h3>
+<form class="feed-filter" method="get" action="{{ url('routes:route_list') }}">
+    <span class="feed-filter-label">ルート検索</span>
+    <div class="feed-search-row">
+        <input type="text" name="q" value="{{ q|default('') }}" class="feed-search-input" placeholder="キーワード">
+        <button type="submit" class="feed-search-btn" aria-label="検索">検索</button>
+    </div>
+</form>
+    <!-- ルート一覧（1件ずつ繰り返し表示） -->
+    <div class="feed-list">
+        {% for route in routes %}
+        <a class="feed-row" href="{{ url('routes:route_detail', route.pk) }}">
+            <div class="feed-thumb">
+                <img src="{{ static('image/fire-v.png') }}" alt="">
+            </div>
+            <!-- Routeモデルのフィールド（例: name）を表示 -->
+            <div class="feed-body">
+                <div class="feed-title">{{ route.route_title }}</div>
+                <div class="feed-desc">{{ route.route_description }}</div>
+            </div>
+        </a>
+        {% else %}
+        <p class="feed-empty">登録されているルートはまだありません。</p>
+        {% endfor %}
+    </div>
 
-        <!-- 詳細画面（route_detail）へのリンク -->
-        <a href="{{ url('routes:route_detail', route.pk) }}">詳細を見る</a>
-      </div>
-
-    {% else %}
-      <p>登録されているルートはまだありません。</p>
-    {% endfor %}
-  </div>
-
-  <div class="route_create_btn">
-    <a href="{{ url('routes:route_select_reports') }}">
-      <img src="{{ static('image/writingpen.png') }}" alt="ルート作成">
-    </a>
-  </div>
-</div>
+    <div class="route_create_btn">
+        {% if logged_in %}
+        <a href="{{ url('routes:route_select_reports') }}?new=1">
+            <img src="{{ static('image/writingpen.png') }}" alt="ルート作成">
+        </a>
+        {% else %}
+        <a href="#" class="needs-login" data-login-msg="ルート作成">
+            <img src="{{ static('image/writingpen.png') }}" alt="ルート作成">
+        </a>
+        {% endif %}
+    </div>
 {% endblock %}

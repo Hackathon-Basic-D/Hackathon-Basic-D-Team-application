@@ -21,11 +21,14 @@
 <!-- レポートタイトル -->
 <h1 class="detail-title">{{ report.report_title }}</h1>
 
-<!-- タグ -->
-<div class="detail-tags" id="detail-tags"></div>
+{# <!-- タグ --> #}
+{# <div class="detail-tags" id="detail-tags"></div> #}
 
 <!-- 本文 -->
 <p class="detail-desc">{{ report.report_description }}</p>
+
+<!-- 投稿者 -->
+<p class="detail-author">作成者：{{ report.user.user_name if report.user else '退会ユーザー' }}</p>
 
 <!-- 投稿日時 -->
 <time class="detail-date">{{ report.created_at.strftime('%Y年%m月%d日 %H:%M') }}</time>
@@ -43,7 +46,7 @@
 {% if is_owner %}
 <div class="detail-actions">
     <a href="{{ url('reports:report_edit', report.pk) }}" class="btn btn-purple btn-sm">編集</a>
-    <form method="post" action="{{ url('reports:report_delete', report.pk) }}" data-confirm="このレポートを削除しますか？" style="display:inline;">
+        <form method="post" action="{{ url('reports:report_delete', report.pk) }}" data-confirm="このレポートを削除しますか？" style="display:inline;">
         {{ csrf_input }}
         <button type="submit" class="btn btn-purple btn-sm">削除</button>
     </form>
@@ -63,7 +66,11 @@
         <div class="comment-item">
             <!-- コメント本文 -->
             <p class="comment-text">{{ comment.report_comment }}</p>
-            <p class="comment-date">{{ comment.created_at.strftime('%Y年%m月%d日 %H:%M') }}</p>
+            <!-- 投稿者・日時（横並び。名前が長ければ折り返す） -->
+            <div class="comment-meta">
+                <p class="comment-author">投稿者：{{ comment.user.user_name }}</p>
+                <p class="comment-date">{{ comment.created_at.strftime('%Y年%m月%d日 %H:%M') }}</p>
+            </div>
             <!-- 自分のコメントの場合のみ編集・削除 -->
             {% if comment.is_owner %}
             <div class="comment-actions">

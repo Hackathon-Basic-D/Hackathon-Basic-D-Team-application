@@ -61,7 +61,8 @@ def logout_view(request):
 def home(request):
     # 論理削除されていないレポートを全件取得
     # Report.objects は SoftDeletemanager なので、deleted_at が入っていものは自動で除外
-    reports = Report.objects.all()
+    # reports = Report.objects.all()
+    reports = Report.objects.select_related('user').all()   # 投稿者名も出すので user を一緒に取得
 
     # 地図用JSに渡すため、必要な項目のみを辞書リストに整形してからJSON文字列化
     reports_json = json.dumps([
@@ -72,6 +73,7 @@ def home(request):
             "lat": float(r.latitude),                   # JSONに変換するため、DecimalFieldをfloatに変換
             "lng": float(r.longitude),                  # 上記に同じ
             "date": r.created_at.strftime("%Y年%m月%d日 %H:%M"),    # 投稿日時
+            "user": r.user.user_name if r.user else "退会ユーザー",  # 投稿者名（退会でuserがNoneなら代替）
         }
         for r in reports
     ])

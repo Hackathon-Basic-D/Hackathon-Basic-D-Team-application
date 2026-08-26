@@ -32,5 +32,12 @@
     <script src="{{ static('js/login_hint.js') }}"></script>
     <script src="{{ static('js/toast.js') }}"></script>
     <script src="{{ static('js/confirm-dialog.js') }}"></script>
+    {% if messages %}
+    <script>
+        {% for message in messages %}
+        showToast({{ message|string|tojson }});
+        {% endfor %}
+    </script>
+    {% endif %}
 </body>
 </html>

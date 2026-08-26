@@ -129,7 +129,8 @@ function clearSelectedMarker() {
 function openBottomSheet(spot) {
     document.getElementById("bs-title").textContent = spot.title;       // タイトル
     document.getElementById("bs-detail").href = `/reports/${spot.id}/`;  // タイトル横「詳細を見る」→クリックしたスポットの詳細画面へ
-    document.getElementById("bs-date").textContent = spot.date;         // 投稿日時（有効化）
+    document.getElementById("bs-date").textContent = spot.date;         // 投稿日時
+    document.getElementById("bs-author").textContent = "作成者：" + spot.user;      // 投稿者名
 
     // 本文：載せると決めたら次の行を有効化（今は枠だけ）
     // document.getElementById("bs-desc").textContent = spot.description;
@@ -208,13 +209,17 @@ function googleMapsDirUrl(spot) {
     return `https://www.google.com/maps/dir/?api=1&destination=${spot.lat},${spot.lng}&travelmode=walking`;
 }
 
-// フッターのレポートボタンを横取りして、遷移せず報告モードに入る（ホームでだけ動く）
-const reportBtn = document.querySelector('.footer-menu a[href*="reports/create"]');
+// フッターの「レポート」（?report=1 でホームへ来るリンク）。ホーム上では遷移せず位置選択モードに入る（地図を再読込させない）
+const reportBtn = document.querySelector('.footer-menu a[href*="report=1"]');
 if (reportBtn) {
     reportBtn.addEventListener("click", (e) => {
-        e.preventDefault();     // 作成画面へは遷移しない
+        e.preventDefault();     // ホーム再読込を避ける
         enterReportMode();
     });
+}
+// 他ページから ?report=1 で遷移してきた場合は、開いた時点で位置選択モードに入る
+if (new URLSearchParams(location.search).get("report") === "1") {
+    enterReportMode();
 }
 
 // 報告モードに入る
@@ -266,7 +271,7 @@ document.getElementById("report-confirm").addEventListener("click", () => {
 // 「はい」：選んだ座標をクエリに付けて作成画面へ遷移
 document.getElementById("report-check-yes").addEventListener("click", () => {
     if (!pendingPos) return;
-    const base = reportBtn ? reportBtn.getAttribute("href") : "/reports/create/";
+    const base = "/reports/create/";   // 作成画面のURL（フッターのhrefはホームになったため固定）
     location.href = `${base}?lat=${pendingPos.lat.toFixed(8)}&lng=${pendingPos.lng.toFixed(8)}`;
 });
 

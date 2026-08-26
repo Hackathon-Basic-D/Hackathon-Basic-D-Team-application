@@ -173,15 +173,23 @@
                 summary.textContent = "徒歩ルート" + (parts.length ? "：" + parts.join(" / ") : "");
                 infoEl.appendChild(summary);
 
-                const caution = document.createElement("p");
-                caution.textContent = "※ 徒歩ルートは歩道や歩行者用通路が反映されていない場合があります。実際の道路状況に十分ご注意ください。選択された地点の位置によっては、ルートが正確に表示されない場合があります。";
-                caution.style.fontSize = "12px";
-                infoEl.appendChild(caution);
+                                // 注意書き（文ごとに改行。詳細画面と同じ .route-caution） 
+                const cautionLines = [
+                    "※ 徒歩ルートは歩道や歩行者用通路が反映されていない場合があります。",
+                    "※ 実際の道路状況に十分ご注意ください。",
+                    "※ 選択された地点の位置によっては、ルートが正確に表示されない場合があります。",
+                ];
+                cautionLines.forEach((text) => {
+                    const c = document.createElement("p");
+                    c.textContent = text;
+                    c.className = "route-caution";
+                    infoEl.appendChild(c);
+                });
 
                 (data.warnings || []).forEach((w) => {
                     const p = document.createElement("p");
                     p.textContent = "※ " + w;
-                    p.style.fontSize = "12px";
+                    p.className = "route-caution";
                     infoEl.appendChild(p);
                 });
             }

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}あやかしさんぽ 400 Bad Request{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="{{ static('css/error.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="text-center">
+        <p class="error-massage">400 Bad Request</p>
+
+        <div class="background" style="background-image: url('{{ static("image/background.png") }}');"></div>
+
+        <img class="error" src="{{ static('image/error.png')}}" alt="エラー画像">
+        
+        <!--  welcome画面へ戻る -->
+        <div class="mt-4">
+            <a href="{{ url('welcome') }}" class="back-welcome">トップ画面へ戻る</a>
+        </div>
+    </div> 
+
+{% endblock %}
