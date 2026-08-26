@@ -79,12 +79,18 @@
     color: #666;                /* 目立ちすぎないグレー */
 }
 
+/* メニューの中身を縦に積む。
+   下部の装飾画像を「余白があれば下端、無ければメニューの直後」に置くために必要 */
+.menu-offcanvas .offcanvas-body {
+    display: flex;
+    flex-direction: column;
+}
+
 /* メニュー下部の装飾画像（寝ている妖怪）。下端をフッター上端に合わせる */
 .menu-yokai {
-    position: absolute;          /* offcanvas（fixed）を基準に配置 */
-    left: 50%;                      /* 中央寄せ（transformと併用） */
-    transform: translateX(-50%);    /* 自分の半分だけ左へ＝中央 */
-    bottom: calc(var(--footer-h)/2);     /* フッターの高さぶん上げる＝画像の下端がフッター上端に */
+    margin-top: auto;               /* 上に空きがあれば下端へ寄る。空きが無ければメニューの直後に置かれる＝文字と重ならない */
+    margin-bottom: calc(var(--footer-h)/2);   /* 下端の位置は従来と同じ */
+    align-self: center;             /* 横方向中央（従来の left+transform の代わり） */
     width: 80%;                 /* 横いっぱい（横長に寝ている想定） */
     max-width: 480px;               /* 大きくなりすぎない上限 */
     height: auto;                /* 縦横比を維持 */
