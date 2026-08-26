@@ -80,13 +80,27 @@ _PREFIX_RE = re.compile(r'^\s*【[^】]*】\s*')  # 先頭の【…】
 UNKNOWN_REGION = 'その他'
 
 
-def with_region_prefix(title, region):
-    """タイトル先頭の既存【…】を除去してから【region】を付ける。
-    region が空（prefecture_of が判定できなかった場合）は UNKNOWN_REGION（【その他】）を付ける。"""
+def with_region_prefix(title, region, max_length=None):
+    """タイトル先頭の既存【…】を除去してから【region】を付ける
+    region が空（prefecture_of が判定できなかった場合）は UNKNOWN_REGION（【その他】）を付ける
+    max_length を渡すと、【…】を付けた結果がその文字数を超えないよう本文側を末尾から切り詰める
+    フォームの検証はラベルを付ける前の長さで通るため、ここで保証しないと、カラム長を超えて MySQL の Data too long で保存に失敗する"""
     base = _PREFIX_RE.sub('', title or '')   # 先頭の既存【…】を一旦外す（無ければそのまま）
     label = region or UNKNOWN_REGION          # 判定できれば都道府県名、できなければ代替ラベル
-    return f'【{label}】{base}'                # 必ず先頭に【…】を付けて返す
+    prefix = f'【{label}】'
+    if max_length is not None:
+        # 接頭辞のぶんを差し引いた文字数まで本文を切り詰める。
+        # スライス [:n] は n が文字数を超えても例外にならない。
+        # max(0, ...) は、接頭辞だけで max_length を超える異常系で負のスライスにならないための保険。
+        base = base[:max(0, max_length - len(prefix))]
 
+    return f'{prefix}{base}'                  # 必ず先頭に【…】を付けて返す
+
+
+def strip_region_prefix(title):
+    """タイトル先頭の【…】を外して返す（無ければそのまま）。
+    編集フォームで、自動付与された地域ラベルを入力欄に出さないために使う。"""
+    return _PREFIX_RE.sub('', title or '')
 
 _EXTRACT_RE = re.compile(r'^\s*【([^】]*)】')  # 先頭の【…】の“中身”を取り出す（丸ごとではなくカッコ内）
 

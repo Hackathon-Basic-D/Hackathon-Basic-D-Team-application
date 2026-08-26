@@ -28,7 +28,7 @@
             {% endif %}
         </div>
         <div class="feed-body">
-            <div class="feed-date">{{ report.created_at.strftime('%Y年%m月%d日%H:%M') }}</div>
+            <div class="feed-date">{{ jst(report.created_at, '%Y年%m月%d日%H:%M') }}</div>
             <div class="feed-title">{{ report.report_title }}</div>
             <div class="feed-desc">{{ report.report_description }}</div>
         </div>

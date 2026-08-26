@@ -36,9 +36,6 @@
             data-title="{{ spot.title }}"
             data-description="{{ spot.description }}"
             data-tags="{{ spot.tags|join(' ') }}">           {# タグは空白区切りにして検索対象に #}
-        <div class="feed-thumb">
-            <img src="{{ static('image/fire-v.png') }}" alt="">   {# 画像フィールドが無いため共通アイコン #}
-        </div>
         <div class="feed-body">
             <div class="feed-title">【{{ spot.region }}】{{ spot.title }}</div>   {# 【地域】タイトル #}
             <div class="feed-desc">{{ spot.description }}</div>

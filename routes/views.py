@@ -14,12 +14,12 @@ from users.areas import get_area_center, DEFAULT_CENTER
 from django.core.exceptions import ValidationError
 
 from django.db.models import Q   # 複数条件を OR/AND/NOT で組み立てる Django のクエリオブジェクト
-
-# タイトル先頭の【…】抽出・付与（地域ラベル用）
-#   extract_region(title)            : タイトル先頭の【…】の中身（例 '大阪府'）。無ければ ''
-#   with_region_prefix(title, region): 先頭の既存【…】を外して【region】を付け直す（region空なら【その他】）
-#   UNKNOWN_REGION                   : 判定不可のときの代替ラベル
-from users.regions import extract_region, with_region_prefix, UNKNOWN_REGION
+from django.utils import timezone   # UTCで保存された日時を日本時間に直すため
+# # タイトル先頭の【…】抽出・付与（地域ラベル用）
+# #   extract_region(title)            : タイトル先頭の【…】の中身（例 '大阪府'）。無ければ ''
+# #   with_region_prefix(title, region): 先頭の既存【…】を外して【region】を付け直す（region空なら【その他】）
+# #   UNKNOWN_REGION                   : 判定不可のときの代替ラベル
+# from users.regions import extract_region, with_region_prefix, UNKNOWN_REGION
 
 import time   # 経路線の回数制限で、前回計算した時刻を記録するため
 # 同じルートの経路線を続けて計算できる回数の上限
@@ -48,21 +48,37 @@ def myroute(request):
     if not check_login(request):
         return redirect('users:login')
     
-    routes = Route.objects.filter(user_id=request.session.get('user_id'))
+    # 一覧でレポート名を表示するため関連をまとめて取得する（N+1回避）
+    # prefetch_related は別クエリでまとめて取りPython側で紐づける仕組み
+    # 'route_reports__report' は 中間テーブル → その先のレポートまで2段辿る指定
+    routes = Route.objects.prefetch_related('route_reports__report').filter(user_id=request.session.get('user_id'))
     q = request.GET.get('q', '').strip()   # 検索キーワード（GETの ?q=）
     if q:
-        routes = routes.filter(Q(route_title__icontains=q) | Q(route_description__icontains=q))
+        # ルートタイトルから地域ラベルを外したため、含まれるレポートのタイトルを検索対象に含める
+        # レポートを条件に入れると SQL の JOIN になり、1つのルートで複数のレポートが一致すると同じルートが複数行返るため、distinct() で重複を除く。
+        routes = routes.filter(
+            Q(route_title__icontains=q)
+            | Q(route_description__icontains=q)
+            | Q(route_reports__report__report_title__icontains=q)
+        ).distinct()
     return render(request, 'routes/myroute.html', {'routes': routes, 'q': q})
 
 
 # ルート一覧画面（誰でも閲覧可能）
 def route_list(request):
     q = request.GET.get('q', '').strip()   # 検索キーワード（GETの ?q=）
-    routes = Route.objects.all()
+    # 一覧でレポート名を表示するため関連をまとめて取得する（N+1回避）
+    routes = Route.objects.prefetch_related('route_reports__report').all()
     if q:
         # 「タイトル または 本文」に部分一致（OR）。通常の filter(kwargs) は AND になるため Q で OR を表現。
         # __icontains は大文字小文字を無視した部分一致（SQL の LIKE '%q%'）。
-        routes = routes.filter(Q(route_title__icontains=q) | Q(route_description__icontains=q))
+        # 含まれるレポートのタイトルも対象にする
+        # JOIN になり同じルートが複数行返るため distinct() を付ける。
+        routes = routes.filter(
+            Q(route_title__icontains=q)
+            | Q(route_description__icontains=q)
+            | Q(route_reports__report__report_title__icontains=q)
+        ).distinct()
     return render(request, 'routes/route_list.html', {'routes': routes, 'q': q})
 
 
@@ -193,7 +209,8 @@ def route_select_reports(request):
             "id": r.pk,
             "title": r.report_title,
             "description": r.report_description,
-            "date": r.created_at.strftime("%Y年%m月%d日 %H:%M"),
+            # UTCで保存されているので、日本時間に直してから整形する（USE_TZ=True のため）
+            "date": timezone.localtime(r.created_at).strftime("%Y年%m月%d日 %H:%M"),
             "lat": float(r.latitude),
             "lng": float(r.longitude),
             "user": r.user.user_name if r.user else "退会ユーザー",   # 作成者名（退会でNoneなら代替）
@@ -274,20 +291,24 @@ def route_create(request):
                 route = form.save(commit=False)
                 if edit_route is None:   # 新規のみ作成者をセット（編集は元の作成者を維持）
                     route.user_id = request.session.get('user_id')
-                # ルートタイトル先頭に地域ラベルを付ける
-                # 含まれるレポートのタイトル先頭の【…】を集約して作る（座標から再判定しない）
-                # ordered_ids（検証済みの並び順）の順に地域を抽出→重複除去→'・'で連結
-                _reports_by_id = {str(r.pk): r for r in Report.objects.filter(pk__in=ordered_ids)}
-                _regions = []
-                for _rid in ordered_ids:
-                    _r = _reports_by_id.get(str(_rid))
-                    if _r is None:
-                        continue
-                    _reg = extract_region(_r.report_title)   # 例 '大阪府'（'その他' の場合もある）
-                    if _reg and _reg not in _regions:        # 重複除去（順番は維持）
-                        _regions.append(_reg)
-                # 1件も取れなければ with_region_prefix 側で【その他】が付く
-                route.route_title = with_region_prefix(route.route_title, '・'.join(_regions))
+                # ルートタイトルに地域ラベルは付けない
+                # 一覧で「たどるレポート」の名前を出すと、その先頭に【大阪府】が付くためルート側にも付けると同じ情報が重複する
+                # ルートは最大3地域が連結されて最長16文字になり、50文字のカラムと一覧の1行表示を圧迫
+                # <== 以下、削除 ==>
+                # # ルートタイトル先頭に地域ラベルを付ける
+                # # 含まれるレポートのタイトル先頭の【…】を集約して作る（座標から再判定しない）
+                # # ordered_ids（検証済みの並び順）の順に地域を抽出→重複除去→'・'で連結
+                # _reports_by_id = {str(r.pk): r for r in Report.objects.filter(pk__in=ordered_ids)}
+                # _regions = []
+                # for _rid in ordered_ids:
+                #     _r = _reports_by_id.get(str(_rid))
+                #     if _r is None:
+                #         continue
+                #     _reg = extract_region(_r.report_title)   # 例 '大阪府'（'その他' の場合もある）
+                #     if _reg and _reg not in _regions:        # 重複除去（順番は維持）
+                #         _regions.append(_reg)
+                # # 1件も取れなければ with_region_prefix 側で【その他】が付く
+                # route.route_title = with_region_prefix(route.route_title, '・'.join(_regions))
                 route.save()
 
                 # 編集は含めるレポートの追加・削除もあり＝行数と構成が変わるため、
@@ -317,17 +338,17 @@ def route_create(request):
         if str(report_id) in reports_dict
     ]
 
-    # 作成画面に「先頭に【○○】が付きます」と見せるための地域ラベル（表示用）
-    # 保存時と同じ集約ロジックで作り、表示と保存結果を一致
-    _regions = []
-    for _r in reports:
-        _reg = extract_region(_r.report_title)
-        if _reg and _reg not in _regions:
-            _regions.append(_reg)
-    region = '・'.join(_regions) or UNKNOWN_REGION   # 空なら【その他】
+    # # 作成画面に「先頭に【○○】が付きます」と見せるための地域ラベル（表示用）
+    # # 保存時と同じ集約ロジックで作り、表示と保存結果を一致
+    # _regions = []
+    # for _r in reports:
+    #     _reg = extract_region(_r.report_title)
+    #     if _reg and _reg not in _regions:
+    #         _regions.append(_reg)
+    # region = '・'.join(_regions) or UNKNOWN_REGION   # 空なら【その他】
 
-    return render(request, 'routes/route_create.html', {'reports': reports, 'form': form, 'is_edit': edit_route is not None, 'region': region})
-
+    # return render(request, 'routes/route_create.html', {'reports': reports, 'form': form, 'is_edit': edit_route is not None, 'region': region})
+    return render(request, 'routes/route_create.html', {'reports': reports, 'form': form, 'is_edit': edit_route is not None})
 
 # ルート編集画面
 # GET:既存データが入ったフォームを用意

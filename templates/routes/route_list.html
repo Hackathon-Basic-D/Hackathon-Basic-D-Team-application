@@ -18,13 +18,22 @@
     <div class="feed-list">
         {% for route in routes %}
         <a class="feed-row" href="{{ url('routes:route_detail', route.pk) }}">
-            <div class="feed-thumb">
-                <img src="{{ static('image/fire-v.png') }}" alt="">
-            </div>
+            {# <div class="feed-thumb"> #}
+            {#    <img src="{{ static('image/fire-v.png') }}" alt=""> #}
+            {# </div> #}
             <!-- Routeモデルのフィールド（例: name）を表示 -->
             <div class="feed-body">
                 <div class="feed-title">{{ route.route_title }}</div>
                 <div class="feed-desc">{{ route.route_description }}</div>
+                {# このルートでたどるレポートを順番どおりに表示（どのルートかの判別材料） #}
+                {# route_reports は sequence_order 順に返る（RouteReport.Meta.ordering） #}
+                {# ビュー側の prefetch_related が効くので行ごとの追加クエリは出ない #}
+                <p class="feed-reports-label">このルートでたどるレポート</p>
+                <ol class="feed-reports">
+                {% for rr in route.route_reports.all() %}
+                    <li>{{ rr.report.report_title }}</li>
+                {% endfor %}
+                </ol>
             </div>
         </a>
         {% else %}
@@ -35,11 +44,13 @@
     <div class="route_create_btn">
         {% if logged_in %}
         <a href="{{ url('routes:route_select_reports') }}?new=1">
-            <img src="{{ static('image/writingpen.png') }}" alt="ルート作成">
+            <img src="{{ static('image/writingpen.png') }}" alt="">
+            <span>ルート作成</span>
         </a>
         {% else %}
         <a href="#" class="needs-login" data-login-msg="ルート作成">
-            <img src="{{ static('image/writingpen.png') }}" alt="ルート作成">
+            <img src="{{ static('image/writingpen.png') }}" alt="">
+            <span>ルート作成</span>
         </a>
         {% endif %}
     </div>

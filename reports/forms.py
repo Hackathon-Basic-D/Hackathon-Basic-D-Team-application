@@ -2,6 +2,11 @@ from django import forms
 from .models import Report # models.pyからReportモデルをインポート
 from .models import ReportComment # models.pyからReportCommentモデルをインポート
 
+from users.regions import strip_region_prefix   # 編集時にタイトルから地域ラベルを外すため
+
+# タイトルに入力できる最大文字数
+TITLE_MAX_LENGTH = 50
+
 #　レポート記事作成フォーム
 class ReportForm(forms.ModelForm):
 # ユーザーが投稿する画像ファイルを受け取るためのフィールド
@@ -25,7 +30,8 @@ class ReportForm(forms.ModelForm):
         widgets = {# HTML側で {{ field }} や {{ form.report_title }} を表示したときの見た目を設定
             "report_title": forms.TextInput(attrs={
                 "class": "form-control",
-                "placeholder": "レポートタイトルを入力"
+                "placeholder": "レポートタイトルを入力",
+                "maxlength": TITLE_MAX_LENGTH,   # ブラウザ側の入力制限（サーバー側の検証は clean_report_title）
             }),
             "report_description": forms.Textarea(attrs={
                 "class": "form-control",
@@ -35,7 +41,21 @@ class ReportForm(forms.ModelForm):
             "latitude": forms.HiddenInput(),
             "longitude": forms.HiddenInput(),
         }
+    # 編集画面では、タイトルから先頭の地域ラベル【…】を外して入力欄に表示
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)                      # 通常のフォーム初期化
+        if self.instance and self.instance.pk:                 # 既存レコードの編集のときだけ
+            self.initial['report_title'] = strip_region_prefix(self.instance.report_title)
 
+    # タイトルの長さチェック：
+    # 保存時に Report.save() が先頭へ地域ラベルを付けるため、モデル由来の50文字まで入力させると、検証を通った後にカラム長を超えてしまう
+    # ラベルは自動で付くものなので、ユーザーが入力できるのは本文のみ40文字とする
+    def clean_report_title(self):
+        title = self.cleaned_data.get('report_title', '')                  # フィールド検証を通ったタイトルを取り出す
+        if len(title) > TITLE_MAX_LENGTH:                                  # 上限を超えていたら
+            raise forms.ValidationError(f'タイトルは{TITLE_MAX_LENGTH}文字以下で入力してください。')  # エラーにする
+        return title                                                       # 問題なければそのまま返す
+    
     # 緯度の範囲チェック：有効範囲(-90〜90)の外は不正として弾く。
     # 要件「座標はクライアント由来で信用しない／サーバ側で範囲チェック」への対応。
     def clean_latitude(self):
@@ -50,6 +70,19 @@ class ReportForm(forms.ModelForm):
         if lng is not None and not (-180 <= lng <= 180):   # 値があり、かつ経度の有効範囲外なら
             raise forms.ValidationError('経度が範囲外です。')  # エラーにする
         return lng                                         # 問題なければそのまま返す
+
+    # タイトルはモデル由来の 50 文字ではなく 40 文字を上限にする。
+    # 保存時に Report.save() が先頭へ【神奈川県】など最長6文字の地域ラベルを付けるため、
+    # 50 のままだと検証を通った後に超過してしまう（40 + 6 = 46 ≦ 50）。
+    # 地域ラベルは自動で付くものなので、ユーザーが入力するのは本文だけとして扱う。
+    report_title = forms.CharField(
+        max_length=40,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "レポートタイトルを入力（40文字まで）",
+        }),
+    )
+
 
 #   レポートコメント作成フォーム
 class ReportCommentForm(forms.ModelForm):

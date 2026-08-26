@@ -10,7 +10,7 @@ from users.regions import prefecture_of, with_region_prefix
 # Userが削除された場合、UserはNULLに設定される
 class Report(models.Model):
     user =  models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='ユーザー')
-    report_title = models.CharField(max_length=50, verbose_name='レポートタイトル')
+    report_title = models.CharField(max_length=60, verbose_name='レポートタイトル')
     report_description = models.TextField(verbose_name='レポート本文')
     latitude =  models.DecimalField(max_digits=10, decimal_places=8, verbose_name='緯度')
     longitude = models.DecimalField(max_digits=11, decimal_places=8, verbose_name='経度')
@@ -42,6 +42,9 @@ class Report(models.Model):
             self.report_title = with_region_prefix(
                 self.report_title,
                 prefecture_of(self.latitude, self.longitude),
+                # カラム長を超えないよう切り詰める
+                # _meta.get_field(...).max_length から取るので、後でカラムを広げても自動で追従する
+                max_length=self._meta.get_field('report_title').max_length,
             )
         super().save(*args, **kwargs)
 

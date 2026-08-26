@@ -38,7 +38,7 @@
     <p class="detail-author">作成者：{{ route.user.user_name if route.user else '退会ユーザー' }}</p>
     
     <!-- 作成日時（レポート詳細と統一） -->
-    <time class="detail-date">{{ route.created_at.strftime('%Y年%m月%d日 %H:%M') }}</time>
+    <time class="detail-date">{{ jst(route.created_at, '%Y年%m月%d日 %H:%M') }}</time>
 
     <!-- このルートでたどる投稿（順番どおり） -->
     <p class="route-report-heading">【このルートでたどるレポート】</p>

@@ -31,7 +31,7 @@
 <p class="detail-author">作成者：{{ report.user.user_name if report.user else '退会ユーザー' }}</p>
 
 <!-- 投稿日時 -->
-<time class="detail-date">{{ report.created_at.strftime('%Y年%m月%d日 %H:%M') }}</time>
+<time class="detail-date">{{ jst(report.created_at, '%Y年%m月%d日 %H:%M') }}</time>
 
 <!-- コメント -->
 <a class="detail-comment-link" data-bs-toggle="offcanvas" href="#offcanvasBottom" role="button" aria-controls="offcanvasBottom">
@@ -69,7 +69,7 @@
             <!-- 投稿者・日時（横並び。名前が長ければ折り返す） -->
             <div class="comment-meta">
                 <p class="comment-author">投稿者：{{ comment.user.user_name }}</p>
-                <p class="comment-date">{{ comment.created_at.strftime('%Y年%m月%d日 %H:%M') }}</p>
+                <p class="comment-date">{{ jst(comment.created_at, '%Y年%m月%d日 %H:%M') }}</p>
             </div>
             <!-- 自分のコメントの場合のみ編集・削除 -->
             {% if comment.is_owner %}
