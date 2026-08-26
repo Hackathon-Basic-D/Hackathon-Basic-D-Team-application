@@ -21,6 +21,16 @@ from django.db.models import Q   # 複数条件を OR/AND/NOT で組み立てる
 #   UNKNOWN_REGION                   : 判定不可のときの代替ラベル
 from users.regions import extract_region, with_region_prefix, UNKNOWN_REGION
 
+import time   # 経路線の回数制限で、前回計算した時刻を記録するため
+# 同じルートの経路線を続けて計算できる回数の上限
+# Routes API は呼ぶたびに課金さるため、同じルートのリロードが繰り返されたときに際限なく計算しないようにする
+MAX_POLYLINE_CALLS_PER_ROUTE = 5
+
+# 上のカウントをリセットするまでの間隔（秒）。
+# 前回の計算からこの時間が空いていれば、同じルートでもカウントを0に戻す。
+# 「短時間に繰り返し開いたとき」だけを止めたいので、時間が経てば自然に回復させる。
+POLYLINE_COUNT_RESET_SECONDS = 30 * 60   # 30分
+
 # 失敗をログに残す
 logger = logging.getLogger(__name__)
 
@@ -124,12 +134,43 @@ def _compute_walk_route(coords):
 def route_polyline(request, pk):
     route = get_object_or_404(Route, pk=pk)
 
+    # 経路計算は Routes API を呼ぶ＝呼ぶたびに課金されるため、ログイン中だけに限定
+    # ルート詳細の地図・マーカー・順番は未ログインでも表示される
+    # 未ログインで出なくなるのは経路線と距離・所要時間だけ
+    if not check_login(request):
+        return JsonResponse({'polyline': '', 'reason': 'login_required'}, status=403)
+
+    # 同じルートを続けて計算した回数をセッションで数える。次のどちらかでカウントを0に戻す
+    #   ・直前に計算したルートと違う（別のルートを開いた）
+    #   ・前回の計算から POLYLINE_COUNT_RESET_SECONDS 以上空いている
+    # セッションはブラウザ単位なので、クッキーを消せばリセットされる
+    # 意図的な連打を止めるものではなく、リロードの繰り返しで課金が積み上がるのを防ぐためのもの
+    now = time.time()   # 現在時刻を秒数で取得
+    last_pk = request.session.get('polyline_last_pk')
+    last_at = request.session.get('polyline_last_at', 0)
+    count = request.session.get('polyline_count', 0)
+    if str(last_pk) != str(pk) or (now - last_at) > POLYLINE_COUNT_RESET_SECONDS:
+        count = 0
+
+    if count >= MAX_POLYLINE_CALLS_PER_ROUTE:
+        # 429 = Too Many Requests → API は呼ばずに返す
+        # 「最後に計算できた時刻」から数える
+        return JsonResponse({'polyline': '', 'reason': 'too_many_requests'}, status=429)
+
     # ルートの地点を順番どおりに取得
     coords = [
         (float(rr.report.latitude), float(rr.report.longitude))
         for rr in route.route_reports.all()
     ]
-    return JsonResponse(_compute_walk_route(coords))
+    result = _compute_walk_route(coords)
+
+    # 計算に失敗した回は数えない
+    if not result.get('error'):
+        request.session['polyline_last_pk'] = str(pk)
+        request.session['polyline_last_at'] = now
+        request.session['polyline_count'] = count + 1
+
+    return JsonResponse(result)
 
 # ルート作成のためのレポート選択画面
 def route_select_reports(request):

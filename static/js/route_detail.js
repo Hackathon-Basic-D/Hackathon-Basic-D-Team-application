@@ -25,6 +25,23 @@ const points = Array.from(document.querySelectorAll(".route-point")).map((el) =>
     navBtn.href = url;
 })();
 
+// #route-info にメッセージを1行表示する（経路線を出せないときの説明用）
+function showRouteMessage(text, link) {
+    const info = document.getElementById("route-info");
+    if (!info) return;
+    info.innerHTML = "";                       // 前の内容を消す
+    const p = document.createElement("p");
+    p.className = "route-caution";
+    if (link) {
+        const a = document.createElement("a");
+        a.href = link.href;
+        a.textContent = link.text;
+        p.appendChild(a);
+    }
+    p.appendChild(document.createTextNode(text));
+    info.appendChild(p);
+}
+
 async function initRouteMap() {
     const mapEl = document.getElementById("route-map");
     if (!mapEl || points.length === 0) return;   // 地図要素や地点が無ければ何もしない
@@ -82,7 +99,19 @@ async function initRouteMap() {
         try {
             const res = await fetch(`/routes/${pk}/polyline/`);
             const data = await res.json();
-            if (data.error) console.error("経路線エラー:", data.error);   // 失敗時はコンソールにも出す
+
+            // 未ログイン。地図とマーカーはそのまま、経路線だけ出さない
+            if (res.status === 403) {
+                showRouteMessage("すると徒歩ルートを表示できます", { text: "ログイン", href: "/login/" });
+                return;
+            }
+            // 同じルートの連続計算が上限に達した
+            if (res.status === 429) {
+                showRouteMessage("同じルートの徒歩ルートを続けて表示できる回数の上限に達しました。他のルートを開くと再び表示できます。");
+                return;
+            }
+
+            if (data.error) console.error("経路線エラー:", data.error);   // 原因はコンソールに残す
             if (data.polyline) {
                 // エンコードされたポリラインを座標列に復元して線を描く
                 const { encoding } = await google.maps.importLibrary("geometry");
@@ -123,9 +152,14 @@ async function initRouteMap() {
                         info.appendChild(p);
                     });
                 }
+            } else {
+                // 計算に失敗した（APIキーの制限、Routes API のエラーなど）。
+                // 詳細は上の console.error に出ているので、画面には理由を書かない
+                showRouteMessage("徒歩ルートを表示できませんでした。");
             }
         } catch (e) {
             console.error("経路線の取得に失敗:", e);
+            showRouteMessage("徒歩ルートを表示できませんでした。");
         }
     }
 }
