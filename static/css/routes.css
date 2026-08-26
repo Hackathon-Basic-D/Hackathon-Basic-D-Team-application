@@ -5,7 +5,7 @@
 /* ルート作成ボタン（右下に固定の丸アイコン） */
 .route_create_btn {
     position: fixed;   /* 画面に固定 */
-    bottom: 20%;       /* 下から20% */
+    bottom: calc(var(--footer-h) + 16px);   /* フッターの高さ＋16px。端末によらずフッターのすぐ上に来る */
     right: 16px;       /* 右端から16px */
     margin: 10px 0;    /* 上下だけ余白 */
 }
@@ -14,6 +14,22 @@
 .route_create_btn img {
     width: 60px;    /* 幅 */
     height: 60px;   /* 高さ */
+}
+
+/* アイコンの下にラベルを置く（フッターのナビ .footer-menu a と同じ形） */
+.route_create_btn a {
+    display: flex;               /* 中のアイコンとラベルを並べる */
+    flex-direction: column;      /* アイコンの下にラベル（縦並び） */
+    align-items: center;         /* 横方向中央にそろえる */
+    gap: 2px;                    /* アイコンとラベルの間隔 */
+    text-decoration: none;       /* ラベルの下線を消す */
+    color: #800080;              /* ラベルの文字色（フッターは紫地に白、ここは白地なので紫） */
+}
+
+/* ラベル文字（フッターのラベルと同じ大きさ・太さ） */
+.route_create_btn span {
+    font-size: 12px;
+    font-weight: bold;
 }
 
 /* --- ルート作成（route_create） --- */

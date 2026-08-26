@@ -14,12 +14,22 @@ from users.areas import get_area_center, DEFAULT_CENTER
 from django.core.exceptions import ValidationError
 
 from django.db.models import Q   # 複数条件を OR/AND/NOT で組み立てる Django のクエリオブジェクト
+from django.utils import timezone   # UTCで保存された日時を日本時間に直すため
+# # タイトル先頭の【…】抽出・付与（地域ラベル用）
+# #   extract_region(title)            : タイトル先頭の【…】の中身（例 '大阪府'）。無ければ ''
+# #   with_region_prefix(title, region): 先頭の既存【…】を外して【region】を付け直す（region空なら【その他】）
+# #   UNKNOWN_REGION                   : 判定不可のときの代替ラベル
+# from users.regions import extract_region, with_region_prefix, UNKNOWN_REGION
 
-# タイトル先頭の【…】抽出・付与（地域ラベル用）
-#   extract_region(title)            : タイトル先頭の【…】の中身（例 '大阪府'）。無ければ ''
-#   with_region_prefix(title, region): 先頭の既存【…】を外して【region】を付け直す（region空なら【その他】）
-#   UNKNOWN_REGION                   : 判定不可のときの代替ラベル
-from users.regions import extract_region, with_region_prefix, UNKNOWN_REGION
+import time   # 経路線の回数制限で、前回計算した時刻を記録するため
+# 同じルートの経路線を続けて計算できる回数の上限
+# Routes API は呼ぶたびに課金さるため、同じルートのリロードが繰り返されたときに際限なく計算しないようにする
+MAX_POLYLINE_CALLS_PER_ROUTE = 5
+
+# 上のカウントをリセットするまでの間隔（秒）。
+# 前回の計算からこの時間が空いていれば、同じルートでもカウントを0に戻す。
+# 「短時間に繰り返し開いたとき」だけを止めたいので、時間が経てば自然に回復させる。
+POLYLINE_COUNT_RESET_SECONDS = 30 * 60   # 30分
 
 # 失敗をログに残す
 logger = logging.getLogger(__name__)
@@ -38,21 +48,37 @@ def myroute(request):
     if not check_login(request):
         return redirect('users:login')
     
-    routes = Route.objects.filter(user_id=request.session.get('user_id'))
+    # 一覧でレポート名を表示するため関連をまとめて取得する（N+1回避）
+    # prefetch_related は別クエリでまとめて取りPython側で紐づける仕組み
+    # 'route_reports__report' は 中間テーブル → その先のレポートまで2段辿る指定
+    routes = Route.objects.prefetch_related('route_reports__report').filter(user_id=request.session.get('user_id'))
     q = request.GET.get('q', '').strip()   # 検索キーワード（GETの ?q=）
     if q:
-        routes = routes.filter(Q(route_title__icontains=q) | Q(route_description__icontains=q))
+        # ルートタイトルから地域ラベルを外したため、含まれるレポートのタイトルを検索対象に含める
+        # レポートを条件に入れると SQL の JOIN になり、1つのルートで複数のレポートが一致すると同じルートが複数行返るため、distinct() で重複を除く。
+        routes = routes.filter(
+            Q(route_title__icontains=q)
+            | Q(route_description__icontains=q)
+            | Q(route_reports__report__report_title__icontains=q)
+        ).distinct()
     return render(request, 'routes/myroute.html', {'routes': routes, 'q': q})
 
 
 # ルート一覧画面（誰でも閲覧可能）
 def route_list(request):
     q = request.GET.get('q', '').strip()   # 検索キーワード（GETの ?q=）
-    routes = Route.objects.all()
+    # 一覧でレポート名を表示するため関連をまとめて取得する（N+1回避）
+    routes = Route.objects.prefetch_related('route_reports__report').all()
     if q:
         # 「タイトル または 本文」に部分一致（OR）。通常の filter(kwargs) は AND になるため Q で OR を表現。
         # __icontains は大文字小文字を無視した部分一致（SQL の LIKE '%q%'）。
-        routes = routes.filter(Q(route_title__icontains=q) | Q(route_description__icontains=q))
+        # 含まれるレポートのタイトルも対象にする
+        # JOIN になり同じルートが複数行返るため distinct() を付ける。
+        routes = routes.filter(
+            Q(route_title__icontains=q)
+            | Q(route_description__icontains=q)
+            | Q(route_reports__report__report_title__icontains=q)
+        ).distinct()
     return render(request, 'routes/route_list.html', {'routes': routes, 'q': q})
 
 
@@ -124,12 +150,43 @@ def _compute_walk_route(coords):
 def route_polyline(request, pk):
     route = get_object_or_404(Route, pk=pk)
 
+    # 経路計算は Routes API を呼ぶ＝呼ぶたびに課金されるため、ログイン中だけに限定
+    # ルート詳細の地図・マーカー・順番は未ログインでも表示される
+    # 未ログインで出なくなるのは経路線と距離・所要時間だけ
+    if not check_login(request):
+        return JsonResponse({'polyline': '', 'reason': 'login_required'}, status=403)
+
+    # 同じルートを続けて計算した回数をセッションで数える。次のどちらかでカウントを0に戻す
+    #   ・直前に計算したルートと違う（別のルートを開いた）
+    #   ・前回の計算から POLYLINE_COUNT_RESET_SECONDS 以上空いている
+    # セッションはブラウザ単位なので、クッキーを消せばリセットされる
+    # 意図的な連打を止めるものではなく、リロードの繰り返しで課金が積み上がるのを防ぐためのもの
+    now = time.time()   # 現在時刻を秒数で取得
+    last_pk = request.session.get('polyline_last_pk')
+    last_at = request.session.get('polyline_last_at', 0)
+    count = request.session.get('polyline_count', 0)
+    if str(last_pk) != str(pk) or (now - last_at) > POLYLINE_COUNT_RESET_SECONDS:
+        count = 0
+
+    if count >= MAX_POLYLINE_CALLS_PER_ROUTE:
+        # 429 = Too Many Requests → API は呼ばずに返す
+        # 「最後に計算できた時刻」から数える
+        return JsonResponse({'polyline': '', 'reason': 'too_many_requests'}, status=429)
+
     # ルートの地点を順番どおりに取得
     coords = [
         (float(rr.report.latitude), float(rr.report.longitude))
         for rr in route.route_reports.all()
     ]
-    return JsonResponse(_compute_walk_route(coords))
+    result = _compute_walk_route(coords)
+
+    # 計算に失敗した回は数えない
+    if not result.get('error'):
+        request.session['polyline_last_pk'] = str(pk)
+        request.session['polyline_last_at'] = now
+        request.session['polyline_count'] = count + 1
+
+    return JsonResponse(result)
 
 # ルート作成のためのレポート選択画面
 def route_select_reports(request):
@@ -152,7 +209,8 @@ def route_select_reports(request):
             "id": r.pk,
             "title": r.report_title,
             "description": r.report_description,
-            "date": r.created_at.strftime("%Y年%m月%d日 %H:%M"),
+            # UTCで保存されているので、日本時間に直してから整形する（USE_TZ=True のため）
+            "date": timezone.localtime(r.created_at).strftime("%Y年%m月%d日 %H:%M"),
             "lat": float(r.latitude),
             "lng": float(r.longitude),
             "user": r.user.user_name if r.user else "退会ユーザー",   # 作成者名（退会でNoneなら代替）
@@ -233,20 +291,24 @@ def route_create(request):
                 route = form.save(commit=False)
                 if edit_route is None:   # 新規のみ作成者をセット（編集は元の作成者を維持）
                     route.user_id = request.session.get('user_id')
-                # ルートタイトル先頭に地域ラベルを付ける
-                # 含まれるレポートのタイトル先頭の【…】を集約して作る（座標から再判定しない）
-                # ordered_ids（検証済みの並び順）の順に地域を抽出→重複除去→'・'で連結
-                _reports_by_id = {str(r.pk): r for r in Report.objects.filter(pk__in=ordered_ids)}
-                _regions = []
-                for _rid in ordered_ids:
-                    _r = _reports_by_id.get(str(_rid))
-                    if _r is None:
-                        continue
-                    _reg = extract_region(_r.report_title)   # 例 '大阪府'（'その他' の場合もある）
-                    if _reg and _reg not in _regions:        # 重複除去（順番は維持）
-                        _regions.append(_reg)
-                # 1件も取れなければ with_region_prefix 側で【その他】が付く
-                route.route_title = with_region_prefix(route.route_title, '・'.join(_regions))
+                # ルートタイトルに地域ラベルは付けない
+                # 一覧で「たどるレポート」の名前を出すと、その先頭に【大阪府】が付くためルート側にも付けると同じ情報が重複する
+                # ルートは最大3地域が連結されて最長16文字になり、50文字のカラムと一覧の1行表示を圧迫
+                # <== 以下、削除 ==>
+                # # ルートタイトル先頭に地域ラベルを付ける
+                # # 含まれるレポートのタイトル先頭の【…】を集約して作る（座標から再判定しない）
+                # # ordered_ids（検証済みの並び順）の順に地域を抽出→重複除去→'・'で連結
+                # _reports_by_id = {str(r.pk): r for r in Report.objects.filter(pk__in=ordered_ids)}
+                # _regions = []
+                # for _rid in ordered_ids:
+                #     _r = _reports_by_id.get(str(_rid))
+                #     if _r is None:
+                #         continue
+                #     _reg = extract_region(_r.report_title)   # 例 '大阪府'（'その他' の場合もある）
+                #     if _reg and _reg not in _regions:        # 重複除去（順番は維持）
+                #         _regions.append(_reg)
+                # # 1件も取れなければ with_region_prefix 側で【その他】が付く
+                # route.route_title = with_region_prefix(route.route_title, '・'.join(_regions))
                 route.save()
 
                 # 編集は含めるレポートの追加・削除もあり＝行数と構成が変わるため、
@@ -276,17 +338,17 @@ def route_create(request):
         if str(report_id) in reports_dict
     ]
 
-    # 作成画面に「先頭に【○○】が付きます」と見せるための地域ラベル（表示用）
-    # 保存時と同じ集約ロジックで作り、表示と保存結果を一致
-    _regions = []
-    for _r in reports:
-        _reg = extract_region(_r.report_title)
-        if _reg and _reg not in _regions:
-            _regions.append(_reg)
-    region = '・'.join(_regions) or UNKNOWN_REGION   # 空なら【その他】
+    # # 作成画面に「先頭に【○○】が付きます」と見せるための地域ラベル（表示用）
+    # # 保存時と同じ集約ロジックで作り、表示と保存結果を一致
+    # _regions = []
+    # for _r in reports:
+    #     _reg = extract_region(_r.report_title)
+    #     if _reg and _reg not in _regions:
+    #         _regions.append(_reg)
+    # region = '・'.join(_regions) or UNKNOWN_REGION   # 空なら【その他】
 
-    return render(request, 'routes/route_create.html', {'reports': reports, 'form': form, 'is_edit': edit_route is not None, 'region': region})
-
+    # return render(request, 'routes/route_create.html', {'reports': reports, 'form': form, 'is_edit': edit_route is not None, 'region': region})
+    return render(request, 'routes/route_create.html', {'reports': reports, 'form': form, 'is_edit': edit_route is not None})
 
 # ルート編集画面
 # GET:既存データが入ったフォームを用意
@@ -321,6 +383,11 @@ def route_delete(request, pk):
 
     # 作成者以外は削除できない
     if str(route.user_id) != str(request.session.get('user_id')):
+        return redirect('routes:route_detail', pk=route.pk)
+
+    # 誤削除防止：削除は POST のときだけ実行する（reports/views.py の report_delete と同じ方針）
+    # GET でも削除できる状態だと、/routes/<pk>/delete/ を直接開くだけで消えてしまう
+    if request.method != 'POST':
         return redirect('routes:route_detail', pk=route.pk)
     
     route.delete()

@@ -15,11 +15,25 @@ from django.contrib import messages
 # 緯度経度から地域（都道府県）を判定し、タイトル先頭に地域ラベルを付ける
 #   prefecture_of(lat, lng) : 座標 → 都道府県名（例 '大阪府'）。該当なし（海上・国外・不正値）は ''
 from users.regions import prefecture_of, UNKNOWN_REGION
+from django.http import JsonResponse   # AJAX に JSON でエラーを返すため
 
 # ログイン済みかどうかチェック
 def check_login(request):
     return 'user_id' in request.session
 
+# 未ログイン時に返す応答を、リクエストの種類で切り替える。
+#   ・AJAX（comment.js の fetch）→ ステータス401を返す。
+#     リダイレクトを返すと fetch がそれを自動で追ってログイン画面のHTMLを受け取り、
+#     呼び出し側からは成功したように見えてしまうため（投稿されないのに何も表示されない）。
+#   ・通常のアクセス → これまでどおりログイン画面へリダイレクト。
+# 戻り値が None のときは「ログイン済み。処理を続けてよい」という意味。
+def _require_login(request):
+    if check_login(request):
+        return None
+    # comment.js が送っているヘッダー。fetch からの呼び出しかどうかの判定に使う
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'error': 'login_required'}, status=401)
+    return redirect('users:login')
 
 # 自分のレポート一覧（ハンバーガーメニュー)
 def mypost(request):
@@ -187,8 +201,12 @@ def report_delete(request, pk):
 
 # コメント作成処理(POST専用、レポート詳細画面のモーダル）
 def comment_create(request, pk):
-    if not check_login(request):
-        return redirect('users:login')
+    # if not check_login(request):
+    #     return redirect('users:login')
+    # 未ログインなら、AJAXには401・通常アクセスにはログイン画面へのリダイレクトを返す
+    response = _require_login(request)
+    if response is not None:
+        return response
     
     report = get_object_or_404(Report, pk=pk)
     comment_text = request.POST.get('report_comment')
@@ -207,8 +225,12 @@ def comment_create(request, pk):
 
 # コメント削除処理(POST専用)
 def comment_delete(request, pk):
-    if not check_login(request):
-        return redirect('users:login')
+    # if not check_login(request):
+    #     return redirect('users:login')
+    # 未ログインなら、AJAXには401・通常アクセスにはログイン画面へのリダイレクトを返す
+    response = _require_login(request)
+    if response is not None:
+        return response
     
     comment = get_object_or_404(ReportComment, pk=pk)
     report_pk = comment.report_id   # コメント削除後、どのレポート詳細へ戻るか記憶しておく
@@ -222,8 +244,12 @@ def comment_delete(request, pk):
 
 # コメント編集処理（POST専用）
 def comment_edit(request, pk):
-    if not check_login(request):
-        return redirect('users:login')
+    # if not check_login(request):
+    #     return redirect('users:login')
+    # 未ログインなら、AJAXには401・通常アクセスにはログイン画面へのリダイレクトを返す
+    response = _require_login(request)
+    if response is not None:
+        return response
 
     comment = get_object_or_404(ReportComment, pk=pk)
     report_pk = comment.report_id

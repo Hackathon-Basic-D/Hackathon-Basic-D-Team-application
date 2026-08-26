@@ -163,3 +163,17 @@
 .feed-filter.sub {
     padding-top: 8px;
 }
+
+/* ルート一覧：レポート名リストの見出し */
+.feed-reports-label {
+    margin: 6px 0 2px;
+    font-size: 12px;
+    border-top: 1px solid #ccc;   /* 行の幅いっぱいに引く */
+}
+
+/* ルート一覧：このルートでたどるレポート名（順番どおり） */
+.feed-reports {
+    margin: 4px 0 0;
+    padding-left: 1.4em;       /* 番号のぶんの字下げ。折り返した2行目もこの位置にそろう */
+    font-size: 12px;
+}
