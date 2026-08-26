@@ -92,10 +92,14 @@
         {% endfor %}
     </div>
     <div class="comment-footer">
+    {# 未ログインのときは、案内を出したうえで入力欄と送信ボタンを操作不可にする #}
+    {# ログイン中に状態が変わった場合（401）は、comment.js がこれと同じ状態に切り替える #}
+    <p class="comment-login-hint" {% if logged_in %}hidden{% endif %}>コメントするには<a href="{{ url('users:login') }}">ログイン</a>が必要です</p>
     <form method="post" action="{{ url('reports:comment_create', report.id) }}" class="comment-form">
         {{ csrf_input }}
-        <input type="text" class="form-control" name="report_comment" placeholder="コメントを入力">
-        <button type="submit" class="comment-send">送信</button>
+        {# disabled が付いた入力欄は文字を打てず、フォーム送信の対象にもならない #}
+        <input type="text" class="form-control" name="report_comment" placeholder="コメントを入力" {% if not logged_in %}disabled{% endif %}>
+        <button type="submit" class="comment-send" {% if not logged_in %}disabled{% endif %}>送信</button>
     </form>
     </div>
 </div>

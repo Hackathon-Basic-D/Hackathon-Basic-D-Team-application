@@ -127,3 +127,20 @@
     flex-shrink: 0;
     margin: 0;
 }
+
+/* 未ログイン時にコメント入力欄の上に出す案内 */
+.comment-login-hint {
+    margin: 0;
+    padding: 8px 16px 0;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* 未ログイン時、操作できない入力欄と送信ボタンの見た目。
+   フッターの「レポート」など、他の未ログイン導線と同じ指定にそろえる */
+.comment-form input:disabled,
+.comment-send:disabled {
+    filter: grayscale(1);
+    opacity: .55;
+    cursor: not-allowed;
+}
