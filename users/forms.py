@@ -79,7 +79,7 @@ class SignUpForm(forms.ModelForm):
     
     # Userモデルにはpassword_confirmフィールドはないので、フォーム側で定義する
     password_confirm = forms.CharField(
-        label="パスワード（確認）",
+        label="パスワード(確認)",
         widget=forms.PasswordInput(attrs={
             "class": "form-control",
             "placeholder": "もう一度入力してください"
