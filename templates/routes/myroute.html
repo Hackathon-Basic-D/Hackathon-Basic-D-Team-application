@@ -1,5 +1,5 @@
 {% extends 'base_main.html' %}
-{% block title %}作成した経路一覧{% endblock %}
+{% block title %}作成したルート一覧{% endblock %}
 {% block page_css %}
 <link rel="stylesheet" href="{{ static('css/list.css') }}">
 {% endblock %}
@@ -7,7 +7,7 @@
 {% block content %}
 <div class="feed-tabs">
     <a class="feed-tab" href="{{ url('reports:mypost') }}">作成したレポート</a>
-    <span class="feed-tab active">作成した経路</span>
+    <span class="feed-tab active">作成したルート</span>
 </div>
 <!-- 検索 -->
 <form class="feed-filter sub" method="get" action="{{ url('routes:myroute') }}">

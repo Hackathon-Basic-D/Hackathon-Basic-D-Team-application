@@ -238,6 +238,11 @@ def comment_delete(request, pk):
     # コメント作成者以外は削除できない
     if str(comment.user_id) != str(request.session.get('user_id')):
         return redirect('reports:report_detail', pk=report_pk)
+
+    # 誤削除防止：削除は POST のときだけ実行する（routes/views.py の route_delete と同じ方針）
+    # GET でも削除できる状態だと、/reports/comments/<pk>/delete/ を直接開くだけで消えてしまう
+    if request.method != 'POST':
+        return redirect('reports:report_detail', pk=report_pk)
     
     comment.delete()
     return redirect('reports:report_detail', pk=report_pk)

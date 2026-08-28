@@ -1,6 +1,6 @@
 from django import forms
 from .models import User # models.pyからUserモデルをインポート
-
+from django.contrib.auth.password_validation import validate_password
 # ユーザー管理機能で使用するフォームを定義
 # HTML側では {{ form.フィールド名 }} や {{ field }} で表示される
 
@@ -128,17 +128,28 @@ class SignUpForm(forms.ModelForm):
         return email
 
     # パスワード一致チェック
-    def clean(self):# clean(self)はDjangoの入力チェック関数
+    def clean(self):
         cleaned_data = super().clean()
 
         password = cleaned_data.get("password")
         password_confirm = cleaned_data.get("password_confirm")
 
+        # raise ではなく add_error を使う。
+        # raise だと non-field error になり、フィールド単位でエラーを出すテンプレートに表示されない。
         if password != password_confirm:
-            raise forms.ValidationError("パスワードが一致しません。")
+            self.add_error("password_confirm", "パスワードが一致しません。")
+
+        # settings.py の AUTH_PASSWORD_VALIDATORS を適用する。
+        # このアプリは Django 標準の認証フォームを使っていないため、呼ばないと設定が一度も実行されない。
+        # 第2引数の self.instance で、ユーザー名・メールとの類似も判定できる。
+        if password:
+            try:
+                validate_password(password, self.instance)
+            except forms.ValidationError as e:
+                self.add_error("password", e)
 
         return cleaned_data
-
+    
     # 保存処理
     def save(self, commit=True):
         user = super().save(commit=False)
